@@ -1,10 +1,6 @@
-﻿using System;
+﻿using System.Net;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using System.Net;
 using Xamarin.Forms;
 using Arqus.Connection;
 
@@ -14,7 +10,7 @@ namespace Arqus
 	{
 		public HostList ()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 
             ItemsSource = new List<Host>
             {

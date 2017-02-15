@@ -36,7 +36,7 @@ namespace Arqus
         /// Starts network communication with QTM through specified IP
         /// </summary>
         /// <param name="ipAddress">QTM's instance address</param>
-        public static void Connect(string ipAddress)
+        public void Connect(string ipAddress)
         {
             // Initialize stream class and real-time protocol
             cameraStream = new CameraStream();
@@ -50,13 +50,10 @@ namespace Arqus
             }
                         
             // Connection was successfull
-            SharedProjects.Notification.Show("Success", "Connected to " + cameraStream.GetQTMVersion());            
+            SharedProjects.Notification.Show("Success", "Connected to " + cameraStream.GetQTMVersion());
 
             // Begin streaming 
-            //
-            // .
-            // .
-            //
+            MainPage = new OnlineStreamMenuPage();
         }
 	}
 }

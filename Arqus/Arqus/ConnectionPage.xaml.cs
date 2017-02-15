@@ -30,7 +30,8 @@ namespace Arqus
 
             // Proceed to connect to address
             // Delegate work to application's main class (App)
-            App.Connect(ipAddress);            
+            // Need to cast Current as App
+            ((App)App.Current).Connect(ipAddress);            
         }
 
         /// <summary>

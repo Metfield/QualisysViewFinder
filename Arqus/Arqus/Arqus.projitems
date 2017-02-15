@@ -12,9 +12,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)CameraStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage.xaml.cs">
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)QTMNetworkConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\IPInfoTools.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />

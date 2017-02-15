@@ -22,11 +22,15 @@ namespace Arqus
             string ipAddress = ipEntryField.Text;
 
             // Check if ip is valid
-            if(!IsValidIPv4(ipAddress))
+            if (!IsValidIPv4(ipAddress))
+            {
                 DisplayAlert("Attention", "Please enter a valid IP address", "OK");
+                return;
+            }
 
             // Proceed to connect to address
-                        
+            // Delegate work to application's main class (App)
+            App.Connect(ipAddress);            
         }
 
         /// <summary>
@@ -36,6 +40,10 @@ namespace Arqus
         /// <returns></returns>
         public bool IsValidIPv4(string ipString)
         {
+            // Check for null string
+            if(ipString == null)            
+                return false;            
+
             // Check if it's made of four elements
             if (ipString.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Length != 4)
                 return false;
@@ -51,6 +59,8 @@ namespace Arqus
                     return true;
                 }
             }
+
+            // TODO: Check if address is in LAN and in a valid range!
 
             return false;
         }

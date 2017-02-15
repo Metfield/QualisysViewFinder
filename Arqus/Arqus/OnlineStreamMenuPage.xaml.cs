@@ -13,6 +13,16 @@ namespace Arqus
 		public OnlineStreamMenuPage ()
 		{
 			InitializeComponent ();
+
+            // Get qtm version and set it to label
+            qtmVersion.Text = ((App)App.Current).getCameraStream().GetQTMVersion();
 		}
-	}
+
+        // "Stream" button has been pressed
+        void OnStreamButtonClicked(object sender, EventArgs args)
+        {
+            SharedProjects.Notification.Show("HURRAY!", "STREAM PRESSED!");
+        }
+
+    }
 }

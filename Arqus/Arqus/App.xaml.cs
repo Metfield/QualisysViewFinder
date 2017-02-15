@@ -9,7 +9,7 @@ namespace Arqus
 {
 	public partial class App : Application
 	{
-        static CameraStream cameraStream;        
+        CameraStream cameraStream;        
 
 		public App ()
 		{
@@ -54,6 +54,11 @@ namespace Arqus
 
             // Begin streaming 
             MainPage = new OnlineStreamMenuPage();
+        }
+
+        public CameraStream getCameraStream()
+        {
+            return cameraStream;
         }
 	}
 }

@@ -6,7 +6,7 @@ using QTMRealTimeSDK;
 
 namespace Arqus
 {
-    class CameraStream
+    public class CameraStream
     {
         QTMNetworkConnection qtmConnection;
         RTProtocol rtProtocol;

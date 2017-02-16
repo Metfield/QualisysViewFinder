@@ -11,12 +11,6 @@ namespace Arqus
 		public HostList ()
 		{
 			InitializeComponent();
-
-            ItemsSource = new List<Host>
-            {
-                new Host("mac.local", "192.123.123.12"),
-                new Host("not.mac.loca", "197.123.12.3")
-            };
 		}
 	}
 }

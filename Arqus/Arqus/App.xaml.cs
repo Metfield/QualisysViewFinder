@@ -60,5 +60,6 @@ namespace Arqus
         {
             return cameraStream;
         }
+        
 	}
 }

@@ -3,31 +3,23 @@ using System.Collections.Generic;
 using System.Text;
 
 using QTMRealTimeSDK;
+using QTMRealTimeSDK.Data;
+using System.Linq;
 
 namespace Arqus
 {
     public class QTMNetworkConnection
     {
-        string qtmIPAddress;
+        public string IPAddress { private set; get; }
         RTProtocol rtProtocol;
 
-        public QTMNetworkConnection(string ipAddress, ref RTProtocol rtp)
+        public QTMNetworkConnection(ref RTProtocol rtp, string ipAddress = "127.0.0.1")
         {
-            // Set this connection's IP address
-            setIPAddress(ipAddress);
+            this.IPAddress = ipAddress;
 
             // Set real-time protocol reference
-            rtProtocol = rtp;
-        }
-
-        /// <summary>
-        /// Sets connection's ip address
-        /// </summary>
-        /// <param name="ipAddress"></param>
-        public void setIPAddress(string ipAddress)
-        {
-            qtmIPAddress = ipAddress;
-        }
+            rtProtocol = new RTProtocol();
+        }        
 
         /// <summary>
         /// Connect to previously set IP
@@ -39,7 +31,7 @@ namespace Arqus
             if(!rtProtocol.IsConnected())
             {
                 // Return false if connection was not successfull
-                if(!rtProtocol.Connect(qtmIPAddress))
+                if(!rtProtocol.Connect(IPAddress))
                 {
                     return false;
                 }
@@ -56,8 +48,18 @@ namespace Arqus
         public bool Connect(string ipAddress)
         {
             // Set IP and try to connect
-            setIPAddress(ipAddress);
+            IPAddress = ipAddress;
             return Connect();
+        }
+       
+        public List<DiscoveryResponse> DiscoverQTMServers(ushort port)
+        {
+
+            if (rtProtocol.DiscoverRTServers(port))
+            {
+                return rtProtocol.DiscoveryResponses.ToList();
+            }
+                return null;
         }
     }
 }

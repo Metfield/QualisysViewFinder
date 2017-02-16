@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Forms;
+
+using QTMRealTimeSDK;
+using QTMRealTimeSDK.Data;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Arqus
 {
@@ -18,20 +19,19 @@ namespace Arqus
         // "Connect" button was pressed
         void OnConnectionButtonClicked(object sender, EventArgs args)
         {
-            // Get ip string from field
-            string ipAddress = ipEntryField.Text;
 
-            // Check if ip is valid
-            if (!IsValidIPv4(ipAddress))
+            /*
+            RTProtocol rt = new RTProtocol();
+            QTMNetworkConnection qtm = new QTMNetworkConnection(ref rt);
+            ushort port = 4547;
+            List<DiscoveryResponse> response = qtm.DiscoverQTMServers(port);
+
+            foreach (var server in response)
             {
-                DisplayAlert("Attention", "Please enter a valid IP address", "OK");
-                return;
+                Debug.WriteLine(server.IpAddress);
             }
 
-            // Proceed to connect to address
-            // Delegate work to application's main class (App)
-            // Need to cast Current as App
-            ((App)App.Current).Connect(ipAddress);            
+            Debug.WriteLine("Finished discovery");*/
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Arqus
         public bool ConnectToIP(string ipAddress)
         {
             // Create network connection with given IP
-            qtmConnection = new QTMNetworkConnection(ipAddress, ref rtProtocol);
+            qtmConnection = new QTMNetworkConnection(ref rtProtocol, ipAddress);
 
             // Attempt to connect 
             bool success = qtmConnection.Connect();

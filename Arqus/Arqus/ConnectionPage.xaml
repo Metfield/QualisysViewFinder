@@ -17,6 +17,8 @@
     <Button Text="Connect"
             HorizontalOptions="Center"
             Clicked="OnConnectionButtonClicked" />
+
+    <local:HostList />
   </StackLayout>
 
 </ContentPage>

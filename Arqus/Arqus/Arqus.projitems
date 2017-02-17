@@ -16,6 +16,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage.xaml.cs">
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Host.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HostList.xaml.cs">
+      <DependentUpon>HostList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml.cs">
       <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -45,6 +49,12 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)HostList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

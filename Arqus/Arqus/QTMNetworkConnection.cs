@@ -10,10 +10,11 @@ namespace Arqus
     public class QTMNetworkConnection
     {
         public string IPAddress { private set; get; }
-        static RTProtocol rtProtocol = new RTProtocol();
-
+        public RTProtocol protocol { private set; get; }
+        
         public QTMNetworkConnection(string ipAddress = "127.0.0.1")
         {
+            protocol = new RTProtocol();
             IPAddress = ipAddress;
         }        
 
@@ -24,10 +25,10 @@ namespace Arqus
         public bool Connect()
         {
             // Check if we're already connected
-            if(!rtProtocol.IsConnected())
+            if(!protocol.IsConnected())
             {
                 // Return false if connection was not successfull
-                if(!rtProtocol.Connect(IPAddress))
+                if(!protocol.Connect(IPAddress))
                 {
                     return false;
                 }
@@ -50,10 +51,10 @@ namespace Arqus
        
         public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
-            if (rtProtocol.DiscoverRTServers(port))
+            if (protocol.DiscoverRTServers(port))
             {
                 Debug.WriteLine("Found RT servers");
-                return rtProtocol.DiscoveryResponses
+                return protocol.DiscoveryResponses
                     .ToList();
             }
 

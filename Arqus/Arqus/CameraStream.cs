@@ -12,16 +12,10 @@ namespace Arqus
         RTProtocol rtProtocol;
         string qtmVersion;
 
-        public CameraStream()
-        {
-            // Instantiate rt protocol
-            rtProtocol = new RTProtocol();
-        }
-
         public bool ConnectToIP(string ipAddress)
         {
             // Create network connection with given IP
-            qtmConnection = new QTMNetworkConnection(ref rtProtocol, ipAddress);
+            qtmConnection = new QTMNetworkConnection(ipAddress);
 
             // Attempt to connect 
             bool success = qtmConnection.Connect();

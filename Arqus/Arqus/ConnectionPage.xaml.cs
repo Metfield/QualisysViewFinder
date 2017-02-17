@@ -19,19 +19,8 @@ namespace Arqus
         // "Connect" button was pressed
         void OnConnectionButtonClicked(object sender, EventArgs args)
         {
-
-            /*
-            RTProtocol rt = new RTProtocol();
-            QTMNetworkConnection qtm = new QTMNetworkConnection(ref rt);
-            ushort port = 4547;
-            List<DiscoveryResponse> response = qtm.DiscoverQTMServers(port);
-
-            foreach (var server in response)
-            {
-                Debug.WriteLine(server.IpAddress);
-            }
-
-            Debug.WriteLine("Finished discovery");*/
+            
+           
         }
 
         /// <summary>

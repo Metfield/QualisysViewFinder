@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-
 using QTMRealTimeSDK;
-using QTMRealTimeSDK.Data;
 using System.Linq;
+using Arqus.Connection;
+using System.Diagnostics;
 
 namespace Arqus
 {
     public class QTMNetworkConnection
     {
         public string IPAddress { private set; get; }
-        RTProtocol rtProtocol;
+        static RTProtocol rtProtocol = new RTProtocol();
 
-        public QTMNetworkConnection(ref RTProtocol rtp, string ipAddress = "127.0.0.1")
+        public QTMNetworkConnection(string ipAddress = "127.0.0.1")
         {
-            this.IPAddress = ipAddress;
-
-            // Set real-time protocol reference
-            rtProtocol = new RTProtocol();
+            IPAddress = ipAddress;
         }        
 
         /// <summary>
@@ -52,14 +48,16 @@ namespace Arqus
             return Connect();
         }
        
-        public List<DiscoveryResponse> DiscoverQTMServers(ushort port)
+        public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
-
             if (rtProtocol.DiscoverRTServers(port))
             {
-                return rtProtocol.DiscoveryResponses.ToList();
+                Debug.WriteLine("Found RT servers");
+                return rtProtocol.DiscoveryResponses
+                    .ToList();
             }
-                return null;
+
+            return null;
         }
     }
 }

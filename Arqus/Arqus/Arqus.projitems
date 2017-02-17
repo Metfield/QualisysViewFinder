@@ -16,10 +16,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage.xaml.cs">
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discover.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Host.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)HostList.xaml.cs">
-      <DependentUpon>HostList.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)QTMServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)QTMServerList.xaml.cs">
+      <DependentUpon>QTMServerList.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml.cs">
       <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
@@ -27,11 +28,11 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)QTMNetworkConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\IPInfoTools.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)ConnectionPage.xaml">
@@ -53,7 +54,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)HostList.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)QTMServerList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>

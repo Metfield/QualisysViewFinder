@@ -3,14 +3,18 @@ using System.Collections.Generic;
 
 using Xamarin.Forms;
 using Arqus.Connection;
+using QTMRealTimeSDK;
+using System.Linq;
 
 namespace Arqus
 {
-	public partial class HostList : ListView
+	public partial class QTMServerList : ListView
 	{
-		public HostList ()
+        
+		public QTMServerList ()
 		{
 			InitializeComponent();
+            
 		}
 	}
 }

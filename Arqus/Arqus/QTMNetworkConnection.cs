@@ -4,6 +4,7 @@ using QTMRealTimeSDK;
 using System.Linq;
 using Arqus.Connection;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Arqus
 {

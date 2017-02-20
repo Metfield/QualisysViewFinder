@@ -1,19 +1,22 @@
-﻿using System;
-using System.Net;
-using Xamarin.Forms;
-
-using QTMRealTimeSDK;
-using QTMRealTimeSDK.Data;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using Xamarin.Forms;
 
 namespace Arqus
 {
 	public partial class ConnectionPage : ContentPage
 	{
+        private ConnectionViewModel viewModel = new ConnectionViewModel();
+
 		public ConnectionPage()
 		{
-			InitializeComponent();            
-		}   
+			InitializeComponent();
+            BindingContext = viewModel;
+		}
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            viewModel.RefreshQTMServers();
+        }
     }
 }

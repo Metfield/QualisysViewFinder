@@ -5,7 +5,7 @@
             SeparatorColor="#dddddd"
             HorizontalOptions="Center"
             ItemsSource="{Binding QTMServers}"
-            >
+          >
   <ListView.ItemTemplate>
     <DataTemplate>
         <TextCell 

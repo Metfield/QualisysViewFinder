@@ -10,7 +10,7 @@ namespace Arqus
 
         protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
-            if (Object.Equals(storage, value))
+            if (Equals(storage, value))
                 return false;
 
             storage = value;

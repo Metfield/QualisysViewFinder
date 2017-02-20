@@ -11,9 +11,12 @@ namespace Arqus
 {
 	public partial class ConnectionPage : ContentPage
 	{
+        private ConnectionViewModel viewModel = new ConnectionViewModel();
+
 		public ConnectionPage()
 		{
 			InitializeComponent();
+            BindingContext = viewModel;
 		}
 
         // "Connect" button was pressed
@@ -53,6 +56,13 @@ namespace Arqus
             // TODO: Check if address is in LAN and in a valid range!
 
             return false;
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+
+            viewModel.RefreshQTMServers();
         }
     }
 }

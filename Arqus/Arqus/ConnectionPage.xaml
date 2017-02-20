@@ -22,7 +22,20 @@
             HorizontalOptions="Center"
             Clicked="OnConnectionButtonClicked" />
 
-    <local:QTMServerList />
+    <StackLayout BindingContext="{Binding Source={x:Reference qtmListView}, Path=SelectedItem}">
+      <Label
+        Text="{Binding HostName}"
+      />
+    </StackLayout>
+
+    <local:QTMServerList x:Name="qtmListView"
+                         IsVisible="{Binding IsDoneLoading}"/>
+
+    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                       IsVisible="{Binding IsLoading}"
+                       VerticalOptions="CenterAndExpand"
+                       HorizontalOptions="CenterAndExpand" />
+
   </StackLayout>
 
 </ContentPage>

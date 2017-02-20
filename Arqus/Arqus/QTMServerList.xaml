@@ -5,7 +5,14 @@
             SeparatorColor="#dddddd"
             HorizontalOptions="Center"
             ItemsSource="{Binding QTMServers}"
+            SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
+            IsPullToRefreshEnabled="true"
+            RefreshCommand="{Binding RefreshQTMServers}"
+            IsRefreshing="{Binding IsRefreshing}"
           >
+  <ListView.SelectedItem>
+    
+  </ListView.SelectedItem>
   <ListView.ItemTemplate>
     <DataTemplate>
         <TextCell 

@@ -1,10 +1,4 @@
-﻿using System.Net;
-using System.Collections.Generic;
-
-using Xamarin.Forms;
-using Arqus.Connection;
-using QTMRealTimeSDK;
-using System.Linq;
+﻿using Xamarin.Forms;
 
 namespace Arqus
 {
@@ -14,7 +8,6 @@ namespace Arqus
 		public QTMServerList ()
 		{
 			InitializeComponent();
-            
-		}
-	}
+        }
+    }
 }

@@ -16,18 +16,18 @@ namespace Arqus
         private string connectionIPAddress = "127.0.0.1";
         private QTMNetworkConnection networkConnection = new QTMNetworkConnection();
 
-        // Todo: Make implement selected server so that ViewModel works independently from Xamarin.Forms
-        QTMServer selectedServer;
-
-        /// <summary>
-        /// The selected server to connect to
-        /// </summary>
-        public QTMServer SelectedServer {
-            private set { SetProperty(ref selectedServer, value); }
-            get
-            {
-                return selectedServer;
-            }
+        public ConnectionViewModel()
+        {
+            RefreshQTMServers = new Command(
+                execute: () =>
+                {
+                    LoadQTMServers();
+                },
+                canExecute: () =>
+                {
+                    return !IsRefreshing;
+                }
+            );
         }
 
         IEnumerable<QTMServer> qtmServers;
@@ -37,8 +37,7 @@ namespace Arqus
         /// </summary>
         public IEnumerable<QTMServer> QTMServers
         {
-            private set
-            { SetProperty(ref qtmServers, value); }
+            private set { SetProperty(ref qtmServers, value); }
             get
             {
 
@@ -46,37 +45,59 @@ namespace Arqus
             }
         }
 
-        bool isLoading;
+        // Todo: Make implement selected server so that ViewModel works independently from Xamarin.Forms
+        QTMServer selectedServer = null;
 
-        public bool IsLoading
+        /// <summary>
+        /// The selected server to connect to
+        /// </summary>
+        public QTMServer SelectedServer
         {
-            private set{ SetProperty(ref isLoading, value); }
+            set{
+                if (SetProperty(ref selectedServer, value))
+                {
+
+                    Debug.WriteLine("Updated Selected server");
+                    OnConnectionStarted();
+                }
+            }
             get
             {
-                return isLoading;
+                return selectedServer;
             }
         }
 
-        public bool IsDoneLoading
+
+        public Command RefreshQTMServers { private set; get; }
+
+        bool isRefreshing;
+
+        public bool IsRefreshing
         {
-            get
-            {
-                Debug.WriteLine("Return done loading");
-                return !isLoading;
-            }
+            set{ SetProperty(ref isRefreshing, value); }
+            get{ return isRefreshing; }
         }
 
-        public async void RefreshQTMServers()
+        public bool IsDoneRefreshing
         {
-            IsLoading = true;
-            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = await Task.Run(() => networkConnection.DiscoverQTMServers());
+            get
+            { return !isRefreshing; }
+        }
+
+
+        public void LoadQTMServers()
+        {
+            IsRefreshing = true;
+            Debug.WriteLine("STart loading qtm servers");
+            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
             QTMServers = DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
                         server.HostName,
                         server.Port.ToString(),
                         server.InfoText,
                         server.CameraCount.ToString())
                         );
-            IsLoading = false;
+            Debug.WriteLine("Is done Loading");
+            IsRefreshing = false;
         }
 
         
@@ -95,7 +116,7 @@ namespace Arqus
         void OnConnectionStarted()
         {
             // Get ip string from field
-            string ipAddress = connectionIPAddress;
+            string ipAddress = selectedServer.IPAddress;
 
             // Check if ip is valid
             if (!IsValidIPv4(ipAddress))

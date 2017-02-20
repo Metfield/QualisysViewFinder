@@ -9,26 +9,20 @@
   </ContentPage.BindingContext>
 
   <StackLayout VerticalOptions="Center">
-    <Label Text="Please specify an IP address to connect to"
+    <Label Text="Select a QTM server to connect"
             HorizontalTextAlignment="Center"
-            VerticalTextAlignment="Start" />
-
-    <Entry Text="{Binding ConnectionIPAddress}"
-           Placeholder="IPv4"
-           HorizontalTextAlignment="Center"
-           Keyboard="Telephone" />
-
-    <Button Text="Connect"
-            HorizontalOptions="Center"
-            Command="{Binding ConnectCommand}" />
-
-    <StackLayout BindingContext="{Binding Source={x:Reference qtmListView}, Path=SelectedItem}">
-      <Label
-        Text="{Binding HostName}"
-      />
-    </StackLayout>
-
-    <local:QTMServerList x:Name="qtmListView" />
+            VerticalTextAlignment="Start"
+            FontSize="Large"/>
+    <Frame
+      BackgroundColor="#333333"
+      OutlineColor="#101010"
+      VerticalOptions="Center"
+      HorizontalOptions="Center"
+      Margin="40, 30, 40, 10"
+      Padding="0"
+      HasShadow="true">
+      <local:QTMServerList x:Name="qtmListView" />    
+    </Frame>
 
   </StackLayout>
 

@@ -38,11 +38,7 @@ namespace Arqus
         public IEnumerable<QTMServer> QTMServers
         {
             private set { SetProperty(ref qtmServers, value); }
-            get
-            {
-
-                return qtmServers;
-            }
+            get { return qtmServers;}
         }
 
         // Todo: Make implement selected server so that ViewModel works independently from Xamarin.Forms
@@ -53,18 +49,8 @@ namespace Arqus
         /// </summary>
         public QTMServer SelectedServer
         {
-            set{
-                if (SetProperty(ref selectedServer, value))
-                {
-
-                    Debug.WriteLine("Updated Selected server");
-                    OnConnectionStarted();
-                }
-            }
-            get
-            {
-                return selectedServer;
-            }
+            set{ if(SetProperty(ref selectedServer, value)) OnConnectionStarted(); }
+            get { return selectedServer; }
         }
 
 
@@ -78,17 +64,14 @@ namespace Arqus
             get{ return isRefreshing; }
         }
 
-        public bool IsDoneRefreshing
-        {
-            get
-            { return !isRefreshing; }
-        }
-
-
+        /// <summary>
+        /// Makes a discovery of nearby QTM Servers and updates the known locations accordingly
+        /// During the discovery the list will be in a refresh state
+        /// </summary>
         public void LoadQTMServers()
         {
             IsRefreshing = true;
-            Debug.WriteLine("STart loading qtm servers");
+
             List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
             QTMServers = DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
                         server.HostName,
@@ -96,7 +79,7 @@ namespace Arqus
                         server.InfoText,
                         server.CameraCount.ToString())
                         );
-            Debug.WriteLine("Is done Loading");
+
             IsRefreshing = false;
         }
 

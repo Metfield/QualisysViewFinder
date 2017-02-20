@@ -17,10 +17,6 @@
             CameraCount = cameraCount;
         }
 
-        public string GetDetails()
-        {
-            return IPAddress + ":" + Port + ", " + InfoText + ", Camera count: " + CameraCount;
-        }
+        public string Details { get { return IPAddress + ":" + Port + ", " + InfoText + ", Camera count: " + CameraCount; } }
     }
-
 }

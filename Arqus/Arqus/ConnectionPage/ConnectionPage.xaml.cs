@@ -16,7 +16,7 @@ namespace Arqus
         {
             base.OnAppearing();
 
-            viewModel.RefreshQTMServers();
+            viewModel.LoadQTMServers();
         }
     }
 }

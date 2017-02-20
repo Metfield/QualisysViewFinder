@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Arqus"
+             x:Class="Arqus.ConnectionPage">
+  
+  <ContentPage.BindingContext>
+    <local:ConnectionViewModel />
+  </ContentPage.BindingContext>
+
+  <StackLayout VerticalOptions="Center">
+    <Label Text="Select a QTM server to connect"
+            HorizontalTextAlignment="Center"
+            VerticalTextAlignment="Start"
+            FontSize="Large"/>
+    <Frame
+      BackgroundColor="#333333"
+      OutlineColor="#101010"
+      VerticalOptions="Center"
+      HorizontalOptions="Center"
+      Margin="40, 30, 40, 10"
+      Padding="0"
+      HasShadow="true">
+      <local:QTMServerList x:Name="qtmListView" />    
+    </Frame>
+
+  </StackLayout>
+
+</ContentPage>

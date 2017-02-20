@@ -3,21 +3,36 @@ using System.Collections.Generic;
 using System.Text;
 
 using QTMRealTimeSDK;
+using QTMRealTimeSDK.Data;
 using Xamarin.Forms;
+using System.Threading.Tasks;
 
 namespace Arqus
 {
     public class CameraStream
     {
         QTMNetworkConnection qtmConnection;
-        string qtmVersion;      
+        string qtmVersion;
+        ComponentType currentStreamType;
 
-        public CameraStream()
+        private static CameraStream instance;
+
+        private CameraStream() { }
+
+        // Temporary singleton stuff
+        public static CameraStream Instance
         {
-            // Bind command to method
-            StreamCommand = new Command(OnStreamCommand);
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new CameraStream();
+                }
+
+                return instance;
+            }
         }
-      
+
         public bool ConnectToIP(string ipAddress)
         {
             // Create network connection with given IP
@@ -48,25 +63,66 @@ namespace Arqus
         /// Starts frame streaming of "type"
         /// </summary>
         /// <param name="type">Specifies the component type to stream</param>
-        public void StartStream(QTMRealTimeSDK.Data.ComponentType type)
+        public void StartStream(ComponentType type)
         {
+            currentStreamType = type;
             qtmConnection.protocol.StreamAllFrames(type);
+
+            Console.WriteLine("Starting stream!");
+
+            GetStreamMarkerData();
         }
 
-        // OnlineStreamMenuPage.xaml bindings         
-        //// Stream button command
-        public Command StreamCommand { get; }
-        
-        /// GUI stream start callback
-        void OnStreamCommand()
+        dynamic GetStreamMarkerData()
         {
-            StartStream(QTMRealTimeSDK.Data.ComponentType.Component3d);
+            PacketType packetType;
+            qtmConnection.protocol.ReceiveRTPacket(out packetType, false);
+
+            // Beautiful switch depending on data type
+            if (packetType == PacketType.PacketData)
+            {
+                switch (currentStreamType)
+                {
+                    case ComponentType.Component2d:
+                        return qtmConnection.protocol.GetRTPacket().Get2DMarkerData();
+
+                    case ComponentType.Component2dLinearized:
+                        return qtmConnection.protocol.GetRTPacket().Get2DLinearizedMarkerData();
+                        
+                    case ComponentType.Component3d:
+                        return qtmConnection.protocol.GetRTPacket().Get3DMarkerData();
+
+                    case ComponentType.Component3dNoLabels:
+                        return qtmConnection.protocol.GetRTPacket().Get3DMarkerNoLabelsData();
+
+                    case ComponentType.Component3dNoLabelsResidual:
+                        return qtmConnection.protocol.GetRTPacket().Get3DMarkerNoLabelsResidualData();
+
+                    case ComponentType.Component3dResidual:
+                        return qtmConnection.protocol.GetRTPacket().Get3DMarkerResidualData();
+
+                    case ComponentType.Component6d:
+                        return qtmConnection.protocol.GetRTPacket().Get6DOFData();
+
+                    case ComponentType.Component6dEuler:
+                        return qtmConnection.protocol.GetRTPacket().Get6DOFEulerData();
+
+                    case ComponentType.Component6dEulerResidual:
+                        return qtmConnection.protocol.GetRTPacket().Get6DOFEulerResidualData();
+
+                    case ComponentType.Component6dResidual:
+                        return qtmConnection.protocol.GetRTPacket().Get6DOFResidualData();
+                }
+            }
+
+            // TODO: Handle special streaming events
+            //
+            // ..
+            // ..
+            //
+                
+            return null;
         }
 
-        //// QtmVersion string binding to text label
-        public string QtmVersion
-        {
-            set { qtmVersion = value; }
-        }
     }
 }

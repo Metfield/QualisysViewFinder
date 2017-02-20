@@ -38,8 +38,8 @@ namespace Arqus
         /// <param name="ipAddress">QTM's instance address</param>
         public void Connect(string ipAddress)
         {
-            // Initialize stream class and real-time protocol
-            cameraStream = new CameraStream();
+            // Get CameraStream instance and init real-time protocol
+            cameraStream = CameraStream.Instance;
 
             // Connect to IP
             if (!cameraStream.ConnectToIP(ipAddress))

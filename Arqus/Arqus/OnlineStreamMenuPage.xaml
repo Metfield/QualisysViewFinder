@@ -1,11 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Arqus"
              x:Class="Arqus.OnlineStreamMenuPage"
              Padding="10, 40, 10, 10">
 
   <ContentPage.BindingContext>
-    <CameraStream />
+    <local:OnlineStreamMenuViewModel />
   </ContentPage.BindingContext>
   
   <StackLayout VerticalOptions="Start">
@@ -19,10 +20,15 @@
     <Label Text="{Binding QtmVersion}"          
            VerticalTextAlignment="Start"
            HorizontalTextAlignment="Center" />
+
+    <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+      <Button Text="2D Stream"                                       
+              Command="{Binding Stream2DCommand}" />
+
+      <Button Text="3D Stream" 
+              Command="{Binding Stream3DCommand}" />      
+    </StackLayout>
     
-    <Button Text="Stream"            
-            HorizontalOptions="Center"
-            Command="{Binding StreamCommand}" />
   </StackLayout>
   
 </ContentPage>

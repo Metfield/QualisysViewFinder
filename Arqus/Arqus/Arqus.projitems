@@ -18,6 +18,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Discover.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QTMServer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)QTMServerList.xaml.cs">
       <DependentUpon>QTMServerList.xaml</DependentUpon>

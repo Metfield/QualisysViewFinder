@@ -9,12 +9,10 @@ using System.Linq;
 namespace Arqus
 {
 	public partial class QTMServerList : ListView
-	{
-        
+	{        
 		public QTMServerList ()
 		{
-			InitializeComponent();
-            
+			InitializeComponent();            
 		}
 	}
 }

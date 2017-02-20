@@ -13,11 +13,20 @@ namespace Arqus
 {
     class ConnectionViewModel : ViewModel
     {
-        private string connectionIPAddress = "127.0.0.1";
-        private QTMNetworkConnection networkConnection = new QTMNetworkConnection();
-
+        private string connectionIPAddress;
+        private QTMNetworkConnection networkConnection;
+        
         // Todo: Make implement selected server so that ViewModel works independently from Xamarin.Forms
         QTMServer selectedServer;
+
+        public ConnectionViewModel()
+        {
+            connectionIPAddress = "127.0.0.1";
+            networkConnection = new QTMNetworkConnection();
+            
+            // Add button command to binding context
+            ConnectCommand = new Command(OnConnectionStarted);
+        }
 
         /// <summary>
         /// The selected server to connect to
@@ -41,7 +50,6 @@ namespace Arqus
             { SetProperty(ref qtmServers, value); }
             get
             {
-
                 return qtmServers;
             }
         }

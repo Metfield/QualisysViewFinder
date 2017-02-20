@@ -7,11 +7,13 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace Arqus
 {
     class ConnectionViewModel : ViewModel
     {
+        private string connectionIPAddress = "127.0.0.1";
         private QTMNetworkConnection networkConnection = new QTMNetworkConnection();
 
         // Todo: Make implement selected server so that ViewModel works independently from Xamarin.Forms

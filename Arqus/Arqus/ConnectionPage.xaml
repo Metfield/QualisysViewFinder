@@ -13,14 +13,14 @@
             HorizontalTextAlignment="Center"
             VerticalTextAlignment="Start" />
 
-    <Entry x:Name="ipEntryField"
+    <Entry Text="{Binding ConnectionIPAddress}"
            Placeholder="IPv4"
            HorizontalTextAlignment="Center"
            Keyboard="Telephone" />
 
     <Button Text="Connect"
             HorizontalOptions="Center"
-            Clicked="OnConnectionButtonClicked" />
+            Command="{Binding ConnectCommand}" />
 
     <StackLayout BindingContext="{Binding Source={x:Reference qtmListView}, Path=SelectedItem}">
       <Label

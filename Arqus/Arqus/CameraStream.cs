@@ -23,7 +23,7 @@ namespace Arqus
             if(success)
             {
                 // Get qtm version (because why not?)
-                rtProtocol.GetQTMVersion(out qtmVersion);                
+                qtmConnection.protocol.GetQTMVersion(out qtmVersion);                
             }
 
             return success;

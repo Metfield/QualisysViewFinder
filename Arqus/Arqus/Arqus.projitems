@@ -13,35 +13,38 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)CameraStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionPage.xaml.cs">
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ConnectionViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Discover.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)QTMServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)QTMServerList.xaml.cs">
-      <DependentUpon>QTMServerList.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml.cs">
       <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)QTMNetworkConnection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMNetworkConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMServerList.xaml.cs">
+      <DependentUpon>QTMServerList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\ViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ConnectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SDK\QTMServerList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -51,12 +54,6 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)QTMServerList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

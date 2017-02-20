@@ -4,6 +4,10 @@
              x:Class="Arqus.OnlineStreamMenuPage"
              Padding="10, 40, 10, 10">
 
+  <ContentPage.BindingContext>
+    <CameraStream />
+  </ContentPage.BindingContext>
+  
   <StackLayout VerticalOptions="Start">
     <Label Text="Connected!" 
            FontSize="Large"
@@ -12,13 +16,13 @@
            VerticalTextAlignment="Start" 
            HorizontalTextAlignment="Center" />
 
-    <Label x:Name="qtmVersion"          
+    <Label Text="{Binding QtmVersion}"          
            VerticalTextAlignment="Start"
            HorizontalTextAlignment="Center" />
     
     <Button Text="Stream"            
             HorizontalOptions="Center"
-            Clicked="OnStreamButtonClicked" />
+            Command="{Binding StreamCommand}" />
   </StackLayout>
   
 </ContentPage>

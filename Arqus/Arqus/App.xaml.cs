@@ -49,9 +49,7 @@ namespace Arqus
                 return;
             }
                         
-            // Connection was successfull
-            SharedProjects.Notification.Show("Success", "Connected to " + cameraStream.GetQTMVersion());
-
+            // Connection was successfull          
             // Begin streaming 
             MainPage = new OnlineStreamMenuPage();
         }

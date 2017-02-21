@@ -276,7 +276,10 @@ namespace QTMRealTimeSDK.Network
             {
                 foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    if (nic.OperationalStatus != OperationalStatus.Up)
+                    // Added conditional operationalStatus.Unknown.. Fixes bug for some Android devices where 
+                    // servers could not be fetched
+                    // TODO: Find nicer solution...
+                    if (!(nic.OperationalStatus == OperationalStatus.Up || nic.OperationalStatus == OperationalStatus.Unknown))
                         continue;
                     if (nic.NetworkInterfaceType != 0)
                     {

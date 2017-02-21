@@ -18,6 +18,9 @@ namespace Arqus
         
         public ConnectionViewModel()
         {
+            connectionIPAddress = "127.0.0.1";
+            networkConnection = new QTMNetworkConnection();
+
             RefreshQTMServers = new Command(
                 execute: () =>
                 {
@@ -28,8 +31,12 @@ namespace Arqus
                     return !IsRefreshing;
                 }
             );
-        }
+                       
 
+            // Add button command to binding context
+            ConnectCommand = new Command(OnConnectionStarted);
+        }
+        
         IEnumerable<QTMServer> qtmServers;
 
         /// <summary>

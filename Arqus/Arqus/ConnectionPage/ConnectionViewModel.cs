@@ -30,8 +30,7 @@ namespace Arqus
                 {
                     return !IsRefreshing;
                 }
-            );
-                       
+            );                       
 
             // Add button command to binding context
             ConnectCommand = new Command(OnConnectionStarted);

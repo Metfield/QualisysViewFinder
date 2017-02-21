@@ -305,8 +305,10 @@ namespace QTMRealTimeSDK.Network
             {
                 mErrorCode = ex.SocketErrorCode;
                 mErrorString = ex.Message;
+
                 return false;
             }
+
             return true;
         }
 

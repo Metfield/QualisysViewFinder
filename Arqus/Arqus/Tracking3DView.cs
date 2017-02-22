@@ -14,9 +14,7 @@ namespace Arqus
         Scene scene;
         Octree octree;
         Node meshNode;
-
-        Vector3 cameraOffset;
-
+        
         float meshScale,
               markerSphereScale;
 
@@ -26,19 +24,29 @@ namespace Arqus
         int markerCount;
         List<Sphere> markerSpheres;
 
-        float cameraMovementSpeed;
+        // Camera-related members
+        Vector3 cameraPositionOffset;
+        float cameraMovementSpeed,
+              cameraRotationSpeed;
 
+        float pinchZoom;
+        float pinchPrecision;
+        float zoomFactor;
+        
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
         public Tracking3DView(ApplicationOptions options) : base(options)
         {
-            cameraOffset = new Vector3(0, 0, 0);
+            cameraPositionOffset = Vector3.Zero;
             meshScale = 0.1f;
             markerSphereScale = 10.0f;
             markerSphereScaleVector = new Vector3(markerSphereScale, markerSphereScale, markerSphereScale);
             cameraMovementSpeed = 0.2f;
+            cameraRotationSpeed = 0.25f;
+            pinchPrecision = 0.1f;
+            zoomFactor = 5.0f;
         }
 
         protected override void Start()
@@ -135,9 +143,21 @@ namespace Arqus
                 markerSpheres[i].Node.Position = tempPosition;
             }
 
+            // Update camera position according to touch events
+            UpdateCameraPosition();
+        }
+
+        /// <summary>
+        /// Updates camera position using values provided by the touch callback method
+        /// </summary>
+        void UpdateCameraPosition()
+        {
             // Update camera offset and reset 
-            camera.Node.Position += cameraOffset;
-            cameraOffset = Vector3.Zero;     
+            camera.Node.Position += (camera.Node.Right * cameraPositionOffset.X) + 
+                                    (camera.Node.Up * cameraPositionOffset.Y) +
+                                    (camera.Node.Direction * cameraPositionOffset.Z);
+
+            cameraPositionOffset = Vector3.Zero;
         }
 
         /// <summary>
@@ -166,27 +186,43 @@ namespace Arqus
         /// <param name="eventArgs"></param>
         void OnTouched(TouchMoveEventArgs eventArgs)
         {
+            // Handle Rotation around mesh
             if (Input.NumTouches == 1)
             {
-                cameraOffset.X = -eventArgs.DX * cameraMovementSpeed;
-                cameraOffset.Y = eventArgs.DY * cameraMovementSpeed;
+                // Handle Rotation locally                
+                camera.Node.RotateAround(meshNode.Position, Quaternion.FromAxisAngle(camera.Node.WorldRight, eventArgs.DY * cameraRotationSpeed), TransformSpace.World);
+                camera.Node.RotateAround(meshNode.Position, new Quaternion(0, eventArgs.DX * cameraRotationSpeed, 0), TransformSpace.World);
             }
+            // Handle panning and pinching
             else if (Input.NumTouches >= 2)
             {
-                var precision = 0.1;
-                var touch1 = Input.GetTouch(0);
-                var touch2 = Input.GetTouch(1);
+                // Panning<Begin>
+                // Get Touchstates
+                TouchState fingerOne = Input.GetTouch(0);
+                TouchState fingerTwo = Input.GetTouch(1);
 
-                double oldDistance = getDistance2D(touch1.LastPosition.X, touch2.LastPosition.X, touch1.LastPosition.Y, touch2.LastPosition.Y);
-                double newDistance = getDistance2D(touch1.Position.X, touch2.Position.X, touch1.Position.Y, touch2.Position.Y);
+                // Average two fingers' delta positions IF they are both different than zero
+                float averageDx = fingerOne.Delta.X == 0 || fingerTwo.Delta.X == 0 ? 0 : (fingerOne.Delta.X + fingerTwo.Delta.X) / 2.0f;
+                float averageDy = fingerOne.Delta.Y == 0 || fingerTwo.Delta.Y == 0 ? 0 : (fingerOne.Delta.Y + fingerTwo.Delta.Y) / 2.0f;
+
+                // Add values to camera offset
+                cameraPositionOffset.X = -averageDx * cameraMovementSpeed;
+                cameraPositionOffset.Y = averageDy * cameraMovementSpeed;                
+                
+                // Pinching
+                // Get delta distance between both touches
+                double oldDistance = GetDistance2D(fingerOne.LastPosition.X, fingerTwo.LastPosition.X, fingerOne.LastPosition.Y, fingerTwo.LastPosition.Y);
+                double newDistance = GetDistance2D(fingerOne.Position.X, fingerTwo.Position.X, fingerOne.Position.Y, fingerTwo.Position.Y);
                 double deltaDistance = oldDistance - newDistance;
 
-                if (Math.Abs(deltaDistance) > precision)
+                // Precision control
+                if (Math.Abs(deltaDistance) > pinchPrecision)
                 {
                     float scale = (float)(newDistance / oldDistance);
-                    float zoom = (newDistance > oldDistance) ? scale : -scale;
+                    pinchZoom = (newDistance > oldDistance) ? scale : -scale;
 
-                    camera.Node.SetWorldPosition(new Vector3(camera.Node.Position.X, camera.Node.Position.Y, camera.Node.Position.Z + zoom));
+                    // Update camera offset
+                    cameraPositionOffset.Z += pinchZoom * zoomFactor; 
                 }
             }
         }
@@ -199,14 +235,12 @@ namespace Arqus
         /// <param name="y1">First Y value</param>
         /// <param name="y2">Second Y value</param>
         /// <returns></returns>
-        private double getDistance2D(float x1, float x2, float y1, float y2)
+        private double GetDistance2D(float x1, float x2, float y1, float y2)
         {
             float deltaX = Math.Abs(x1 - x2);
             float deltaY = Math.Abs(y1 - y2);
-            return Math.Sqrt(Math.Pow(deltaX, 2.0f) * Math.Pow(deltaY, 2));
+
+            return Math.Sqrt(Math.Pow(deltaX, 2.0f) + Math.Pow(deltaY, 2.0f));
         }
-
-
-
     }
 }

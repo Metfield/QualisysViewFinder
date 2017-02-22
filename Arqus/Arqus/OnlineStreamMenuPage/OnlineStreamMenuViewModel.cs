@@ -9,8 +9,7 @@ namespace Arqus
 {
     class OnlineStreamMenuViewModel : ViewModel
     {
-        string qtmVersion;
-        Urho.Forms.UrhoSurface uSurface;
+        string qtmVersion;        
 
         public OnlineStreamMenuViewModel()
         {

@@ -31,6 +31,8 @@ namespace Arqus
         void OnStream2DCommand()
         {            
             CameraStream.Instance.StartStream(QTMRealTimeSDK.Data.ComponentType.Component2d);
+            // Switch to Tracking2D page
+            ((App)App.Current).MainPage = new Tracking2DPage();
         }
 
         //// GUI Start 3D stream button callback
@@ -39,7 +41,7 @@ namespace Arqus
             // Initialize streaming in Component3D mode
             CameraStream.Instance.StartStream(QTMRealTimeSDK.Data.ComponentType.Component3d);
 
-            // Swith to Tracking3D page
+            // Switch to Tracking3D page
             ((App)App.Current).MainPage = new Tracking3DPage();            
         }
 

@@ -9,11 +9,12 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)2DTrackingPage\Tracking2DPage.xaml.cs">
-      <DependentUpon>Tracking2DPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)2DTrackingPage\Tracking2DViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\CameraScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\MarkerSpherePool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\MarkerSphere.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Components\Screen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -61,11 +62,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)2DTrackingPage\Tracking2DPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

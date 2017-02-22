@@ -22,11 +22,12 @@
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml.cs">
-      <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking3DView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuPage.xaml.cs">
       <SubType>Code</SubType>
+      <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
@@ -38,6 +39,7 @@
       <DependentUpon>QTMServerList.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)SDK\ViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking3DPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
@@ -48,6 +50,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)SDK\QTMServerList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -55,12 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)2DTrackingPage\Tracking2DPage.xaml">

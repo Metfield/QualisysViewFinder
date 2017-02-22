@@ -73,7 +73,15 @@ namespace Arqus
             GetStreamMarkerData();
         }
 
-        dynamic GetStreamMarkerData()
+        /// <summary>
+        /// Gets new stream marker data structure.
+        /// The returned structure depends on the way the streaming was initialized.
+        /// 
+        /// E.g. If streaming was initialized as 2DMarkerData, then this method will return 
+        /// a 2DMarkerData structure.
+        /// </summary>
+        /// <returns></returns>
+        public dynamic GetStreamMarkerData()
         {
             PacketType packetType;
             qtmConnection.protocol.ReceiveRTPacket(out packetType, false);
@@ -123,6 +131,5 @@ namespace Arqus
                 
             return null;
         }
-
     }
 }

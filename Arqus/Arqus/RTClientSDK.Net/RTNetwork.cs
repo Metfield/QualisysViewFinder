@@ -271,7 +271,6 @@ namespace QTMRealTimeSDK.Network
         {
             if (mUDPBroadcastClient == null)
                 return false;
-
             try
             {
                 foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Urho;
 using Xamarin.Forms;
 
 
@@ -9,13 +10,14 @@ namespace Arqus
     class OnlineStreamMenuViewModel : ViewModel
     {
         string qtmVersion;
+        Urho.Forms.UrhoSurface uSurface;
 
         public OnlineStreamMenuViewModel()
         {
             // Bind commands to methods
             Stream2DCommand = new Command(OnStream2DCommand);
             Stream3DCommand = new Command(OnStream3DCommand);
-
+            
             // Get QTM version
             qtmVersion = CameraStream.Instance.GetQTMVersion();
         }
@@ -25,17 +27,20 @@ namespace Arqus
         public Command Stream2DCommand { get; }
         public Command Stream3DCommand { get; }
 
-        /// GUI stream start callback
+        //// GUI Start 2D stream button callback
         void OnStream2DCommand()
-        {
-            SharedProjects.Notification.Show("YO!", "2D streaming has just begun!");
+        {            
             CameraStream.Instance.StartStream(QTMRealTimeSDK.Data.ComponentType.Component2d);
         }
 
+        //// GUI Start 3D stream button callback
         void OnStream3DCommand()
-        {
-            SharedProjects.Notification.Show("YO!", "3D streaming has just begun!");
+        {            
+            // Initialize streaming in Component3D mode
             CameraStream.Instance.StartStream(QTMRealTimeSDK.Data.ComponentType.Component3d);
+
+            // Swith to Tracking3D page
+            ((App)App.Current).MainPage = new Tracking3DPage();            
         }
 
         //// QtmVersion string binding to text label

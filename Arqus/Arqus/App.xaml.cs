@@ -48,16 +48,15 @@ namespace Arqus
                 SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP");
                 return;
             }
-                        
+
             // Connection was successfull          
             // Begin streaming 
-            MainPage = new OnlineStreamMenuPage();
+            MainPage = new OnlineStreamMenuPage();             
         }
 
         public CameraStream getCameraStream()
         {
-            return cameraStream;
+            return cameraStream;            
         }
-        
-	}
+    }
 }

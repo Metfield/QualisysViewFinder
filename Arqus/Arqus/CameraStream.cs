@@ -36,10 +36,10 @@ namespace Arqus
         public bool ConnectToIP(string ipAddress)
         {
             // Create network connection with given IP
-            qtmConnection = new QTMNetworkConnection(ipAddress);
+            qtmConnection = QTMNetworkConnection.Instance;
 
             // Attempt to connect 
-            bool success = qtmConnection.Connect();
+            bool success = qtmConnection.Connect(ipAddress);
 
             if(success)
             {

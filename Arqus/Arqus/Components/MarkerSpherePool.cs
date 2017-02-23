@@ -6,7 +6,7 @@ using Urho;
 
 namespace Arqus.Components
 {
-    class MarkerSpherePool
+    public class MarkerSpherePool
     {
         private Node root;
         private List<MarkerSphere> markerSpheres;
@@ -14,7 +14,7 @@ namespace Arqus.Components
 
         public MarkerSpherePool(int count, Node rootNode)
         {
-            root = rootNode;
+           root = rootNode;
            markerSpheres = new List<MarkerSphere>(count);
 
            for(int index = 0; index < count; index++)

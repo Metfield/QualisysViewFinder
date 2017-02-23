@@ -4,6 +4,7 @@ using Urho;
 using Urho.Actions;
 using Urho.Gui;
 using Urho.Shapes;
+using QTMRealTimeSDK.Data;
 
 namespace Arqus.Visualization
 {
@@ -12,11 +13,26 @@ namespace Arqus.Visualization
     /// </summary>
     public class MarkerSphere : Component
     {
-        Node markerNode;
+        public Node markerNode;
         Node labelNode;
         bool LabelHidden { set; get; }
         Text3D label;
         Color color;
+        public bool updated;
+        private Q2D markerData;
+
+        public Q2D MarkerData
+        {
+            set
+            {
+                updated = true;
+                markerData = value;
+            }
+            get
+            {
+                return markerData;
+            }
+        }
 
         public MarkerSphere()
         {
@@ -32,28 +48,21 @@ namespace Arqus.Visualization
             markerNode.Scale = new Vector3(1.0f, 1.0f, 1.0f);
 
             var marker = markerNode.CreateComponent<Sphere>();
-            marker.Color = color;
-
-            // Set the position of the node
-            /*labelNode = node.CreateChild();
-            labelNode.Rotate(new Quaternion(0, 180, 0), TransformSpace.World);
-            labelNode.Position = new Vector3(0, 10, 0);
-            */
-
-            // Set the label
-            /*
-            label = labelNode.CreateComponent<Text3D>();
-            label.SetFont(Application.ResourceCache.GetFont("Fonts/Anonymous Pro.ttf"), 60);
-            label.TextEffect = TextEffect.Stroke;
-            */
+            marker.SetMaterial(Material.FromColor(Color.White, true));
 
             base.OnAttachedToNode(node);
         }
+
+        
 
         public void Set2DPosition(Vector2 position)
         {
             markerNode.Position = new Vector3(position.X, position.Y, markerNode.Position.Z);
         }
-        
+
+        public void Hide()
+        {
+            markerNode.Enabled = false;
+        }
     }
 }

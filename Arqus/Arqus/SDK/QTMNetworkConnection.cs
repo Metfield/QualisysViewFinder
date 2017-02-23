@@ -2,22 +2,36 @@
 using System.Collections.Generic;
 using QTMRealTimeSDK;
 using System.Linq;
-using Arqus.Connection;
+using Arqus.Camera2D;
 using System.Diagnostics;
-using System.Threading;
+using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
-    public class QTMNetworkConnection
+    public sealed class QTMNetworkConnection
     {
-        public string IPAddress { private set; get; }
-        public RTProtocol protocol { private set; get; }
+        private static readonly QTMNetworkConnection instance = new QTMNetworkConnection();
         
-        public QTMNetworkConnection(string ipAddress = "127.0.0.1")
+        public string IPAddress { set; get; }
+        public RTProtocol protocol { private set; get; }
+
+
+        static QTMNetworkConnection() { }
+
+        private QTMNetworkConnection()
         {
+            // Default value is localhost
+            IPAddress = "127.0.0.1";
             protocol = new RTProtocol();
-            IPAddress = ipAddress;
-        }        
+        }
+
+        public static QTMNetworkConnection Instance
+        {
+            get
+            {
+                return instance;
+            }
+        }
 
         /// <summary>
         /// Connect to previously set IP
@@ -47,6 +61,7 @@ namespace Arqus
         {
             // Set IP and try to connect
             IPAddress = ipAddress;
+            Debug.WriteLine(IPAddress);
             return Connect();
         }
        
@@ -60,6 +75,23 @@ namespace Arqus
             }
 
             return null;
+        }
+
+        public List<ImageCamera> GetImageSettings()
+        {
+            var imageSettings = protocol.GetImageSettings();
+            return imageSettings ? protocol.ImageSettings.cameraList : null;
+        }
+
+        public IEnumerable<ImageResolution> GetAllCameraResolutions()
+        {
+            return GetImageSettings().Select(camera => new ImageResolution(camera.Width, camera.Height));
+        }
+
+        public ImageResolution GetCameraResolution(int cameraID)
+        {
+            ImageCamera camera = GetImageSettings().Where(c => c.CameraID == cameraID).First();
+            return new ImageResolution(camera.Width, camera.Height);
         }
     }
 }

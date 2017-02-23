@@ -6,8 +6,10 @@ using Urho.Actions;
 using Urho.Gui;
 using System;
 using Arqus.Visualization;
+using Arqus.Camera2D;
 using System.Diagnostics;
 using Arqus.Components;
+using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
@@ -16,6 +18,7 @@ namespace Arqus
         Camera camera;
         Scene scene;
         Octree octree;
+        CameraScreen screen;
         Node meshNode;
 
         Vector3 cameraOffset;
@@ -26,8 +29,9 @@ namespace Arqus
         Vector3 markerSphereScaleVector;
 
         List<QTMRealTimeSDK.Data.Camera> streamData;
+        List<Node> cameraScreens;
         int cameraCount;
-        MarkerSpherePool markerSpheres;
+        
 
         float cameraMovementSpeed;
 
@@ -68,7 +72,7 @@ namespace Arqus
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
             cameraNode.Position = new Vector3(0, 0, -10);
-            cameraNode.Rotation = new Quaternion(0f, 0f, 1f, 0f);
+            cameraNode.Rotate(new Quaternion(0, 0, 0), TransformSpace.Local);
 
             // Create light and attach to camera
             Node lightNode = cameraNode.CreateChild(name: "light");
@@ -89,18 +93,21 @@ namespace Arqus
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
 
-            // Initialize list with capacity for the total number of markers 
-            markerSpheres = new MarkerSpherePool((int)streamData[0].MarkerCount, meshNode);
+            QTMNetworkConnection connection = QTMNetworkConnection.Instance;
 
-            // Create and Initialize cameras
-            var frame = meshNode.CreateComponent<CameraScreen>();
-            frame.Init(0);
+            List<ImageCamera> cameras = connection.GetImageSettings();
 
+            foreach(ImageCamera camera in cameras)
+            {
+                Node screenNode = meshNode.CreateChild();
+
+                // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
+                screen = new CameraScreen(camera.CameraID, new ImageResolution(camera.Width, camera.Height));
+                screenNode.AddComponent(screen);
+            }
+            
             // Scale down mesh
-            meshNode.Scale = new Vector3(meshScale, meshScale, meshScale);
-
-            // Rotate it
-            meshNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+           // markerSpheresNode.Scale = new Vector3(meshScale, meshScale, meshScale);
         }
 
         
@@ -119,18 +126,20 @@ namespace Arqus
             // Create a dummy position vector 
             Vector2 tempPosition = Vector2.Zero;
 
-            
-            QTMRealTimeSDK.Data.Camera qCamera = streamData[0];
-            QTMRealTimeSDK.Data.Q2D markerData;
-            
-            for (int i = 0; i < qCamera.MarkerCount; i++)
+            Node[] cameraScreenNodes = meshNode.GetChildrenWithComponent<CameraScreen>();
+
+            int count = 0;
+           foreach(QTMRealTimeSDK.Data.Camera camera in streamData)
             {
-                markerData = qCamera.MarkerData2D[i];
 
-                tempPosition.X = markerData.X * 0.001f;
-                tempPosition.Y = markerData.Y * 0.001f;
+                // Update marker positions
+                for (int i = 0; i < camera.MarkerCount; i++)
+                {
+                    CameraScreen screen = cameraScreenNodes[count].GetComponent<CameraScreen>();
+                    screen.Pool.Get(i).MarkerData = camera.MarkerData2D[i];
+                }
 
-               markerSpheres.Get(i).Set2DPosition(tempPosition);
+                count++;
             }
 
             // Update camera offset and reset 
@@ -166,8 +175,8 @@ namespace Arqus
         {
             if (Input.NumTouches == 1)
             {
-                cameraOffset.X = eventArgs.DX * cameraMovementSpeed;
-                cameraOffset.Y = -eventArgs.DY * cameraMovementSpeed;
+                cameraOffset.X = -eventArgs.DX * cameraMovementSpeed;
+                cameraOffset.Y = eventArgs.DY * cameraMovementSpeed;
             }
             else if (Input.NumTouches >= 2)
             {

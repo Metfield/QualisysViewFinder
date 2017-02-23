@@ -8,7 +8,7 @@ namespace Arqus.Visualization
     /// </summary>
     public class Screen : Component
     {
-        protected Node frameNode;
+        
 
         public Screen()
         {
@@ -17,20 +17,10 @@ namespace Arqus.Visualization
 
         public override void OnAttachedToNode(Node node)
         {
-            base.OnAttachedToNode(node);
 
-            frameNode = node;
-            frameNode.Scale = new Vector3(10, 0, 10);
-            frameNode.Position = new Vector3(0, 0, 2);
-            frameNode.Rotation = Urho.Quaternion.FromAxisAngle(new Vector3(-1, 0, 0), 90);
-
-            var frame = frameNode.CreateComponent<Urho.Shapes.Plane>();
-            frame.Color = new Color(0.5f, 0.5f, 0.5f);
         }
 
-        protected virtual void UpdateChildren()
-        {
-        }
+        protected virtual void UpdateChildren() { }
 
     }
 }

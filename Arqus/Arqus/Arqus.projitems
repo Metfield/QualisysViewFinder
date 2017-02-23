@@ -9,10 +9,12 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\MarkerSphere.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Components\Screen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Singleton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">

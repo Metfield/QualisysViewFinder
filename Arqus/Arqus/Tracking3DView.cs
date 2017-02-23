@@ -13,11 +13,11 @@ namespace Arqus
         Camera camera;
         Scene scene;
         Octree octree;
-        Node meshNode;
+        Node meshNode;        
         
         float meshScale,
               markerSphereScale;
-
+        
         Vector3 markerSphereScaleVector;
 
         List<QTMRealTimeSDK.Data.Q3D> streamData;
@@ -41,12 +41,12 @@ namespace Arqus
         {
             cameraPositionOffset = Vector3.Zero;
             meshScale = 0.1f;
-            markerSphereScale = 10.0f;
+            markerSphereScale = 150.0f * meshScale;
             markerSphereScaleVector = new Vector3(markerSphereScale, markerSphereScale, markerSphereScale);
             cameraMovementSpeed = 0.2f;
             cameraRotationSpeed = 0.25f;
-            pinchPrecision = 0.1f;
-            zoomFactor = 5.0f;
+            pinchPrecision = 0.2f;
+            zoomFactor = 6.0f;
         }
 
         protected override void Start()
@@ -72,14 +72,19 @@ namespace Arqus
             // Create camera 
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
+
+            // Move camera to arbitrary position
             cameraNode.Position = new Vector3(50, 90, -300);            
 
             // Create light and attach to camera
-            Node lightNode = cameraNode.CreateChild(name: "light");
+            Node lightNode = cameraNode.CreateChild(name: "light");            
             Light light = lightNode.CreateComponent<Light>();
-            light.LightType = LightType.Directional;  
-            lightNode.SetDirection(new Vector3(0.6f, -1.0f, 0.8f));  
-         
+
+            light.Brightness = 1.5f;
+            light.LightType = LightType.Directional;
+
+            lightNode.SetDirection(cameraNode.Direction);
+
             // Initialize marker sphere meshes   
             InitializeMarkerSpheres();               
         }
@@ -103,18 +108,17 @@ namespace Arqus
                 node.Scale = markerSphereScaleVector;
                 
                 Sphere sphere = node.CreateComponent<Sphere>();
-                sphere.Color = Color.Cyan;                
-
+                sphere.Color = Color.White;                           
+                
                 markerSpheres.Add(sphere);                
             }
 
             // Scale down mesh
             meshNode.Scale = new Vector3(meshScale, meshScale, meshScale);
 
-            // Rotate it
+            // Rotate it to stand on Y axis instead of Z
             meshNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
         }
-
         
         // Called every frame
         protected override void OnUpdate(float timeStep)
@@ -207,24 +211,40 @@ namespace Arqus
 
                 // Add values to camera offset
                 cameraPositionOffset.X = -averageDx * cameraMovementSpeed;
-                cameraPositionOffset.Y = averageDy * cameraMovementSpeed;                
-                
+                cameraPositionOffset.Y = averageDy * cameraMovementSpeed;
+
                 // Pinching
-                // Get delta distance between both touches
-                double oldDistance = GetDistance2D(fingerOne.LastPosition.X, fingerTwo.LastPosition.X, fingerOne.LastPosition.Y, fingerTwo.LastPosition.Y);
-                double newDistance = GetDistance2D(fingerOne.Position.X, fingerTwo.Position.X, fingerOne.Position.Y, fingerTwo.Position.Y);
-                double deltaDistance = oldDistance - newDistance;
+                if (isPinching(ref fingerOne.Delta.X, ref fingerTwo.Delta.X, ref fingerOne.Delta.Y, ref fingerTwo.Delta.Y))
+                { 
+                    // Get delta distance between both touches
+                    double oldDistance = GetDistance2D(fingerOne.LastPosition.X, fingerTwo.LastPosition.X, fingerOne.LastPosition.Y, fingerTwo.LastPosition.Y);
+                    double newDistance = GetDistance2D(fingerOne.Position.X, fingerTwo.Position.X, fingerOne.Position.Y, fingerTwo.Position.Y);
+                    double deltaDistance = oldDistance - newDistance;
 
-                // Precision control
-                if (Math.Abs(deltaDistance) > pinchPrecision)
-                {
-                    float scale = (float)(newDistance / oldDistance);
-                    pinchZoom = (newDistance > oldDistance) ? scale : -scale;
+                    // Precision control
+                    if (Math.Abs(deltaDistance) > pinchPrecision)
+                    {
+                        float scale = (float)(newDistance / oldDistance);
+                        pinchZoom = (newDistance > oldDistance) ? scale : -scale;
 
-                    // Update camera offset
-                    cameraPositionOffset.Z += pinchZoom * zoomFactor; 
+                        // Update camera offset
+                        cameraPositionOffset.Z += pinchZoom * zoomFactor;
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks whether touch gesture is a pinch or not
+        /// </summary>
+        /// <param name="x1"></param>
+        /// <param name="x2"></param>
+        /// <param name="y1"></param>
+        /// <param name="y2"></param>
+        /// <returns></returns>
+        bool isPinching(ref int x1, ref int x2, ref int y1, ref int y2)
+        {
+            return (x1 * x2 < 0) || (y1 * y2 < 0) ? true : false;
         }
 
         /// <summary>

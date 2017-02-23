@@ -63,12 +63,12 @@ namespace Arqus
         /// Starts frame streaming of "type"
         /// </summary>
         /// <param name="type">Specifies the component type to stream</param>
-        public void StartStream(ComponentType type)
+        public void StartStream(int streamFrequency, ComponentType type)
         {
-            currentStreamType = type;
-            qtmConnection.protocol.StreamAllFrames(type);
-
             Console.WriteLine("Starting stream!");
+
+            currentStreamType = type;
+            qtmConnection.protocol.StreamFrames(StreamRate.RateFrequency, streamFrequency, type);
 
             GetStreamMarkerData();
         }

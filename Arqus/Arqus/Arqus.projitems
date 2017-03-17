@@ -10,11 +10,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\CameraScreen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\MarkerSpherePool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\MarkerSphere.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Components\Screen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Singleton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Carousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MessengingCenterAlert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableRangeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
@@ -25,7 +27,7 @@
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tracking3DView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\Tracking3DView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuPage.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
@@ -37,12 +39,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMNetworkConnection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMServerList.xaml.cs">
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\QTMServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\QTMServerList.xaml.cs">
       <DependentUpon>QTMServerList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\ViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tracking3DPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\Tracking3DPage.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
@@ -57,12 +58,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)SDK\QTMServerList.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)ConnectionPage\QTMServerList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Urho\" />
   </ItemGroup>
 </Project>

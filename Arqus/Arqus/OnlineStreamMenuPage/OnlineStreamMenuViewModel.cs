@@ -7,7 +7,7 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    class OnlineStreamMenuViewModel : ViewModel
+    class OnlineStreamMenuViewModel : Helpers.ObservableObject
     {
         string qtmVersion;        
 

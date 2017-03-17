@@ -11,7 +11,7 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    class ConnectionViewModel : ViewModel
+    class ConnectionViewModel : Helpers.ObservableObject
     {
         private string connectionIPAddress;
         private QTMNetworkConnection networkConnection;

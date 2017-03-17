@@ -10,6 +10,7 @@ using Arqus.Camera2D;
 using System.Diagnostics;
 using Arqus.Components;
 using QTMRealTimeSDK.Settings;
+using static Arqus.Visualization.Carousel;
 
 namespace Arqus
 {
@@ -21,6 +22,7 @@ namespace Arqus
         CameraScreen screen;
         Node meshNode;
 
+        Carousel carousel;
         Vector3 cameraOffset;
 
         float meshScale,
@@ -45,7 +47,7 @@ namespace Arqus
             meshScale = 0.1f;
             markerSphereScale = 1.0f;
             markerSphereScaleVector = new Vector3(markerSphereScale, markerSphereScale, markerSphereScale);
-            cameraMovementSpeed = 0.01f;
+            cameraMovementSpeed = 0.001f;
         }
 
         protected override void Start()
@@ -59,6 +61,9 @@ namespace Arqus
 
         private void CreateScene()
         {
+            // Create carousel
+            carousel = new Carousel(500, 8, 0, 0);
+
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
 
@@ -131,11 +136,15 @@ namespace Arqus
             int count = 0;
            foreach(QTMRealTimeSDK.Data.Camera camera in streamData)
             {
+                CameraScreen screen = cameraScreenNodes[count].GetComponent<CameraScreen>();
+
+                Position coordinates = carousel.GetCoordinates(screen.position);
+                screen.CenterX = coordinates.X;
+                screen.CenterY = coordinates.Y;
 
                 // Update marker positions
                 for (int i = 0; i < camera.MarkerCount; i++)
                 {
-                    CameraScreen screen = cameraScreenNodes[count].GetComponent<CameraScreen>();
                     screen.Pool.Get(i).MarkerData = camera.MarkerData2D[i];
                 }
 
@@ -175,8 +184,9 @@ namespace Arqus
         {
             if (Input.NumTouches == 1)
             {
-                cameraOffset.X = -eventArgs.DX * cameraMovementSpeed;
-                cameraOffset.Y = eventArgs.DY * cameraMovementSpeed;
+                //cameraOffset.X = -eventArgs.DX * cameraMovementSpeed;
+                //cameraOffset.Y = eventArgs.DY * cameraMovementSpeed;
+                Offset += eventArgs.DX * cameraMovementSpeed;
             }
             else if (Input.NumTouches >= 2)
             {

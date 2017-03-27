@@ -10,7 +10,7 @@ namespace Arqus
     class Tracking2DPage : ContentPage
     {
         UrhoSurface urhoSurface;
-        Tracking2DView surfaceApp;
+        MarkerApplication surfaceApp;
 
         public Tracking2DPage()
         {
@@ -37,7 +37,7 @@ namespace Arqus
         async void StartUrhoApp()
         {
             // Start surface "sub-app" Tracking2DView
-            surfaceApp = await urhoSurface.Show<Tracking2DView>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            surfaceApp = await urhoSurface.Show<MarkerApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
         }
     }
 }

@@ -1,62 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using Prism.Unity;
 using Xamarin.Forms;
 
 namespace Arqus
 {
-	public partial class App : Application
-	{
-        CameraStream cameraStream;        
+    public partial class  App : PrismApplication
+    {
+        public App(IPlatformInitializer initializer = null) : base(initializer) { }
 
-		public App ()
-		{
-			InitializeComponent();
-			MainPage = new Arqus.ConnectionPage();
-		}
-
-		protected override void OnStart ()
-		{
-            // Handle when your app starts
-		}
-
-		protected override void OnSleep ()
-		{
-			// Handle when your app sleeps
-		}
-
-		protected override void OnResume ()
-		{
-            // Handle when your app resumes            
-        }
-
-        /// <summary>
-        /// Starts network communication with QTM through specified IP
-        /// </summary>
-        /// <param name="ipAddress">QTM's instance address</param>
-        public void Connect(string ipAddress)
+        protected override void OnInitialized()
         {
-            // Get CameraStream instance and init real-time protocol
-            cameraStream = CameraStream.Instance;
+            InitializeComponent();
 
-            // Connect to IP
-            if (!cameraStream.ConnectToIP(ipAddress))
-            {
-                // There was an error with the connection
-                SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP");
-                return;
-            }
-
-            // Connection was successfull          
-            // Begin streaming 
-            MainPage = new OnlineStreamMenuPage();             
+            NavigationService.NavigateAsync("NavigationPage/ConnectionPage");
         }
 
-        public CameraStream getCameraStream()
+        protected override void RegisterTypes()
         {
-            return cameraStream;            
+            Container.RegisterTypeForNavigation<NavigationPage>();
+            Container.RegisterTypeForNavigation<ConnectionPage>();
+            Container.RegisterTypeForNavigation<OnlineStreamMenuPage>();
+            Container.RegisterTypeForNavigation<MarkerPage>();
         }
+
+
     }
 }

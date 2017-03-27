@@ -181,7 +181,7 @@ namespace Arqus
         /// </summary>
         private void UpdateStreamData()
         {
-            streamData = CameraStream.Instance.GetStreamMarkerData();
+            //CameraStream.Instance.GetStreamMarkerData();
             markerCount = streamData.Count;
 
             // TODO: Handle markerCount change

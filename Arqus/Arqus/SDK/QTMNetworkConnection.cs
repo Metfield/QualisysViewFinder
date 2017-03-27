@@ -15,6 +15,8 @@ namespace Arqus
         public string IPAddress { set; get; }
         public RTProtocol protocol { private set; get; }
 
+        string version;
+        public string Version { get; private set; }
 
         static QTMNetworkConnection() { }
 
@@ -37,41 +39,33 @@ namespace Arqus
         /// Connect to previously set IP
         /// </summary>
         /// <returns></returns>
-        public bool Connect()
-        {
-            // Check if we're already connected
-            if(!protocol.IsConnected())
-            {
-                // Return false if connection was not successfull
-                if(!protocol.Connect(IPAddress))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Connect to this new IP
-        /// </summary>
-        /// <param name="ipAddress">New IP to connect to</param>
-        /// <returns></returns>
         public bool Connect(string ipAddress)
         {
-            // Set IP and try to connect
             IPAddress = ipAddress;
-            Debug.WriteLine(IPAddress);
             return Connect();
+        }
+
+        public bool Connect()
+        {
+            if (!protocol.Connect(IPAddress))
+            {
+                return false;
+            }
+
+            protocol.GetQTMVersion(out version);
+            return true;
         }
        
         public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
             if (protocol.DiscoverRTServers(port))
             {
-                Debug.WriteLine("Found RT servers");
-                return protocol.DiscoveryResponses
-                    .ToList();
+                if (protocol.DiscoveryResponses.Count == 0)
+                {
+                    Debug.WriteLine("No QTM Servers were found");
+                }
+
+                return protocol.DiscoveryResponses.ToList();
             }
 
             return null;

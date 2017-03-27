@@ -11,6 +11,11 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Carousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\MarkerPage.xaml.cs">
+      <DependentUpon>MarkerPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\MarkerPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
@@ -18,7 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableRangeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DPage.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\Tracking2DView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tracking2DPage\MarkerApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -26,13 +31,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionPage.xaml.cs">
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ConnectionPage\ConnectionPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Tracking3DView.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuPage.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OnlineStreamMenuPage\OnlineStreamMenuPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
@@ -67,6 +72,13 @@
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Services\" />
     <Folder Include="$(MSBuildThisFileDirectory)Urho\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Tracking2DPage\MarkerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

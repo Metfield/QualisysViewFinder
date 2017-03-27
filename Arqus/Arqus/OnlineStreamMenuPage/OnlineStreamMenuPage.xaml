@@ -3,13 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Arqus"
              x:Class="Arqus.OnlineStreamMenuPage"
-             Padding="10, 40, 10, 10">
+             Padding="10, 40, 10, 10"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             Title="OnlineStreamMenuPage">
 
-  <ContentPage.BindingContext>
-    <local:OnlineStreamMenuViewModel />
-  </ContentPage.BindingContext>
-  
-  <StackLayout VerticalOptions="Start">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Name="Test" Order="Default" >
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource" Android="drawable-hdpi/ic_arrow_back_black_24dp.png" />
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+    
+    <StackLayout VerticalOptions="Start">
     <Label Text="Connected!" 
            FontSize="Large"
            FontAttributes="Bold"

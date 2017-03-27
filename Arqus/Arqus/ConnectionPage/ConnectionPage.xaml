@@ -2,27 +2,27 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Arqus"
-             x:Class="Arqus.ConnectionPage">
-  
-  <ContentPage.BindingContext>
-    <local:ConnectionViewModel />
-  </ContentPage.BindingContext>
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="Arqus.ConnectionPage"
+             Title="ConnectionPage"
+             NavigationPage.HasNavigationBar="True"
+             >
+    
 
-  <StackLayout VerticalOptions="Center">
-    <Label Text="Select a QTM server to connect"
+    <StackLayout VerticalOptions="Center">
+        
+        <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+            <Button Text="Discover" BackgroundColor="{StaticResource primary}"/>
+            <Button Text="Manually" BackgroundColor="{StaticResource primary}"/>
+        </StackLayout>
+        
+        <Label Text="QTM Hosts"
             HorizontalTextAlignment="Center"
             VerticalTextAlignment="Start"
             FontSize="Large"/>
-    <Frame
-      BackgroundColor="#333333"
-      OutlineColor="#101010"
-      VerticalOptions="Center"
-      HorizontalOptions="Center"
-      Margin="40, 30, 40, 10"
-      Padding="0"
-      HasShadow="true">
-      <local:QTMServerList x:Name="qtmListView" />    
-    </Frame>
+    
+        <local:QTMServerList x:Name="qtmListView" />    
 
   </StackLayout>
 

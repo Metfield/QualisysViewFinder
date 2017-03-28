@@ -55,23 +55,9 @@ namespace Arqus
             SetupViewport();
         }
         
-        protected override void Stop()
-        {
-            Debug.WriteLine("Stopping urho application");
-            scene?.Clear(true, true);
-            scene?.Remove();
-            base.Stop();
-        }
-
-        private void OnKeyDown(KeyDownEventArgs args)
-        {
-            Debug.WriteLine("Key down");
-        }
 
         private void CreateScene()
         {
-            scene?.Clear(true, true);
-            scene?.Remove();
 
             cameraOffset = new Vector3(0, 0, 0);
             meshScale = 0.1f;

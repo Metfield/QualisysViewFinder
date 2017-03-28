@@ -36,8 +36,8 @@ namespace Arqus
 
             RefreshQTMServers = new DelegateCommand(LoadQTMServers).ObservesProperty(() => IsRefreshing);
 
-            ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsManually);
-            ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsDiscovery);
+            ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
+            ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
 
             // Add button command to binding context
             ConnectCommand = new DelegateCommand(OnConnectionStarted);
@@ -88,16 +88,30 @@ namespace Arqus
                 if(value)
                 {
                     CurrentConnectionMode = ConnectionMode.DISCOVER;
+                    IsDiscoverButtonEnabled = false;
                     IsManually = false;
+                }
+                else
+                {
+                    IsDiscoverButtonEnabled = true;
                 }
 
                 SetProperty(ref isDiscovery, value);
             }
             get
             {
-                return CurrentConnectionMode == ConnectionMode.DISCOVER || CurrentConnectionMode == ConnectionMode.NONE;
+                return CurrentConnectionMode == ConnectionMode.DISCOVER;
             }
         }
+
+        private bool isDiscoverButtonEnabled = true;
+
+        public bool IsDiscoverButtonEnabled
+        {
+            get { return isDiscoverButtonEnabled; }
+            set { SetProperty(ref isDiscoverButtonEnabled, value); }
+        }
+
 
         bool isManually;
         public bool IsManually
@@ -107,15 +121,28 @@ namespace Arqus
                 if (value)
                 {
                     CurrentConnectionMode = ConnectionMode.MANUALLY;
+                    IsManualButtonEnabled = false;
                     IsDiscovery = false;
+                }
+                else
+                {
+                    IsManualButtonEnabled = true;
                 }
 
                 SetProperty(ref isManually, value);
             }
             get
             {
-                return CurrentConnectionMode == ConnectionMode.MANUALLY || CurrentConnectionMode == ConnectionMode.NONE;
+                return isManually;
             }
+        }
+
+        private bool isManualButtonEnabled = true;
+
+        public bool IsManualButtonEnabled
+        {
+            get { return isManualButtonEnabled; }
+            set { SetProperty(ref isManualButtonEnabled, value); }
         }
 
         public void SetConnectionMode(ConnectionMode mode)

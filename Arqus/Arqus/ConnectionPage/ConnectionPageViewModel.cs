@@ -16,6 +16,13 @@ namespace Arqus
 {
     class ConnectionPageViewModel : BindableBase
     {
+        public enum ConnectionMode
+        {
+            DISCOVER,
+            MANUALLY,
+            NONE
+        }
+
         private string connectionIPAddress;
         private QTMNetworkConnection networkConnection;
         private INavigationService _navigationService;
@@ -25,8 +32,12 @@ namespace Arqus
             _navigationService = navigationService;
             connectionIPAddress = "127.0.0.1";
             networkConnection = QTMNetworkConnection.Instance;
+            CurrentConnectionMode = ConnectionMode.NONE;
 
-            RefreshQTMServers = new DelegateCommand(LoadQTMServers).ObservesProperty(() => IsRefreshing);                       
+            RefreshQTMServers = new DelegateCommand(LoadQTMServers).ObservesProperty(() => IsRefreshing);
+
+            ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsManually);
+            ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsDiscovery);
 
             // Add button command to binding context
             ConnectCommand = new DelegateCommand(OnConnectionStarted);
@@ -54,9 +65,63 @@ namespace Arqus
             set{ if(SetProperty(ref selectedServer, value)) OnConnectionStarted(); }
             get { return selectedServer; }
         }
-
-
+        
         public DelegateCommand RefreshQTMServers { private set; get; }
+
+        public DelegateCommand ConnectionModeDiscoveryCommand { private set; get; }
+        public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
+
+        private ConnectionMode currentConnectionMode;
+
+        public ConnectionMode CurrentConnectionMode
+        {
+            get { return currentConnectionMode; }
+            set { Debug.WriteLine(value);  SetProperty(ref currentConnectionMode, value); }
+        }
+
+
+        bool isDiscovery;
+        public bool IsDiscovery
+        {
+            set
+            { 
+                if(value)
+                {
+                    CurrentConnectionMode = ConnectionMode.DISCOVER;
+                    IsManually = false;
+                }
+
+                SetProperty(ref isDiscovery, value);
+            }
+            get
+            {
+                return CurrentConnectionMode == ConnectionMode.DISCOVER || CurrentConnectionMode == ConnectionMode.NONE;
+            }
+        }
+
+        bool isManually;
+        public bool IsManually
+        {
+            set
+            {
+                if (value)
+                {
+                    CurrentConnectionMode = ConnectionMode.MANUALLY;
+                    IsDiscovery = false;
+                }
+
+                SetProperty(ref isManually, value);
+            }
+            get
+            {
+                return CurrentConnectionMode == ConnectionMode.MANUALLY || CurrentConnectionMode == ConnectionMode.NONE;
+            }
+        }
+
+        public void SetConnectionMode(ConnectionMode mode)
+        {
+            CurrentConnectionMode = mode;
+        }
 
         bool isRefreshing;
 
@@ -73,17 +138,28 @@ namespace Arqus
         /// </summary>
         public void LoadQTMServers()
         {
-            IsRefreshing = true;
+            try
+            {
+                IsRefreshing = true;
 
-            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
-            QTMServers = DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
-                        server.HostName,
-                        server.Port.ToString(),
-                        server.InfoText,
-                        server.CameraCount.ToString())
-                        );
+                // BUG: The application will crash upon a second refresh
+                // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
+                List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
+                QTMServers = DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
+                            server.HostName,
+                            server.Port.ToString(),
+                            server.InfoText,
+                            server.CameraCount.ToString())
+                            );
+                
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
 
             IsRefreshing = false;
+
         }
 
         

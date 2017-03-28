@@ -12,18 +12,30 @@
 
     <StackLayout VerticalOptions="Center">
         
-        <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
-            <Button Text="Discover" BackgroundColor="{StaticResource primary}"/>
-            <Button Text="Manually" BackgroundColor="{StaticResource primary}"/>
+        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Orientation="Horizontal">
+            <Button Text="Discover" BackgroundColor="{StaticResource primary}" Command="{Binding ConnectionModeDiscoveryCommand}"/>
+            <Button Text="Manually" BackgroundColor="{StaticResource primary}" Command="{Binding ConnectionModeManuallyCommand}"/>
         </StackLayout>
-        
-        <Label Text="QTM Hosts"
+
+        <StackLayout IsVisible="{Binding IsDiscovery}">
+            <Label Text="QTM Hosts"
             HorizontalTextAlignment="Center"
             VerticalTextAlignment="Start"
-            FontSize="Large"/>
-    
-        <local:QTMServerList x:Name="qtmListView" />    
+            FontSize="Large"
+            BackgroundColor="{StaticResource primary}"/>
 
-  </StackLayout>
+            <local:QTMServerList x:Name="qtmListView" />
+        </StackLayout>
+
+        <StackLayout IsVisible="{Binding IsManually}">
+            <Label Text="Manually"
+            HorizontalTextAlignment="Center"
+            VerticalTextAlignment="Start"
+            FontSize="Large"
+            BackgroundColor="{StaticResource primary}"/>
+
+        </StackLayout>
+
+    </StackLayout>
 
 </ContentPage>

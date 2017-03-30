@@ -76,6 +76,11 @@ namespace Arqus
         /// </summary>
         public void LoadQTMServers()
         {
+            // EMAN HACK!
+            OnConnectionStarted();
+            return;
+            // EMAN HACK!
+
             IsRefreshing = true;
 
             List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
@@ -105,11 +110,11 @@ namespace Arqus
         void OnConnectionStarted()
         {
             // Get ip string from field
-            string ipAddress = selectedServer.IPAddress;
+            string ipAddress = "192.168.10.168"; // EMAN HACK
 
             // Check if ip is valid
             if (!IsValidIPv4(ipAddress))
-            {
+            { 
                 SharedProjects.Notification.Show("Attention", "Please enter a valid IP address");                
                 return;
             }
@@ -117,7 +122,8 @@ namespace Arqus
             // Proceed to connect to address
             // Delegate work to application's main class (App)
             // Need to cast Current as App
-            ((App)App.Current).Connect(ipAddress);
+            //((App)App.Current).Connect(ipAddress);
+            ((App)App.Current).Connect(ipAddress); // EMAN HACK
         }
 
         /// <summary>

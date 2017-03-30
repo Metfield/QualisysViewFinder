@@ -51,7 +51,10 @@ namespace Arqus
 
             // Connection was successfull          
             // Begin streaming 
-            MainPage = new OnlineStreamMenuPage();             
+            //MainPage = new OnlineStreamMenuPage();             
+
+            // Load Grid view instead
+            MainPage = new GridPage();
         }
 
         public CameraStream getCameraStream()

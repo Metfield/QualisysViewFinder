@@ -3676,9 +3676,6 @@ namespace Arqus.Droid
 			// aapt resource value: 0x7f07002e
 			public const int abc_toolbar_collapse_description = 2131165230;
 			
-			// aapt resource value: 0x7f07003d
-			public const int app_name = 2131165245;
-			
 			// aapt resource value: 0x7f070014
 			public const int appbar_scrolling_view_behavior = 2131165204;
 			

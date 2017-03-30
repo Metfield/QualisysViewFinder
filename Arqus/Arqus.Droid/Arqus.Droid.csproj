@@ -65,10 +65,6 @@
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
-    <Reference Include="Urho.Droid.SdlBinding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\UrhoSharp.Forms.1.2.21\lib\MonoAndroid\Urho.Droid.SdlBinding.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Urho.Forms, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\UrhoSharp.Forms.1.2.21\lib\MonoAndroid\Urho.Forms.dll</HintPath>
       <Private>True</Private>

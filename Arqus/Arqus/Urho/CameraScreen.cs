@@ -24,8 +24,9 @@ namespace Arqus.Visualization
 
         public float Height { private set; get; }
         public float Width { private set; get; }
+        public Color FrameColor { set; get; }
 
-        public CameraScreen(int cameraID, ImageResolution resolution)
+        public CameraScreen(int cameraID, ImageResolution resolution, float frameHeight, float frameWidth, Color backgroundColor)
         {
             // Set position according to screenCount and increment the counter
             position = screenCount;
@@ -34,6 +35,11 @@ namespace Arqus.Visualization
             CameraID = cameraID;
             Resolution = resolution;
             ReceiveSceneUpdates = true;
+
+            FrameColor = backgroundColor;
+
+            Height = frameHeight;
+            Width = frameWidth;
         }
 
         public override void OnAttachedToNode(Node node)
@@ -42,28 +48,24 @@ namespace Arqus.Visualization
             
             screenNode = node.CreateChild();
             Pool = new MarkerSpherePool(20, node.CreateChild());
-
-            Height = 30;
-            Width = Resolution.PixelAspectRatio * Height;
-
+            
             screenNode.Scale = new Vector3(Width, 0, Height);
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
 
             var frame = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            frame.SetMaterial(Material.FromColor(new Color(0f, 0.1f, 0.1f), true));
+            frame.SetMaterial(Material.FromColor(FrameColor, true));
         }
 
         protected override void OnUpdate(float timeStep)
         {
-
-            Node[] markerSpheres = screenNode.Parent.GetChildrenWithComponent<MarkerSphere>(true);
+           /* Node[] markerSpheres = screenNode.Parent.GetChildrenWithComponent<MarkerSphere>(true);
             screenNode.Parent.Position = new Vector3((float) CenterX, 0, (float)CenterY);
 
             foreach (MarkerSphere sphere in markerSpheres[0].Components)
             {
                 sphere.markerNode.Scale = new Vector3(sphere.MarkerData.DiameterX / 64.0f * Width / Resolution.Width, sphere.MarkerData.DiameterY / 64.0f * Height / Resolution.Height, sphere.markerNode.Scale.Z);
                 sphere.markerNode.Position = new Vector3(sphere.MarkerData.X / 64.0f * Width / Resolution.Width - Width * 0.5f, -sphere.MarkerData.Y / 64.0f * Height / Resolution.Height + Height * 0.5f, sphere.markerNode.Position.Z);
-            }
+            }*/
         }
         
     }

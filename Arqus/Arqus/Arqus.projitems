@@ -11,6 +11,13 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Carousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GridPage\GridPage.xaml.cs">
+      <DependentUpon>GridPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)GridPage\GridPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GridViewComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UGridScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
@@ -67,6 +74,13 @@
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)GridPage\" />
     <Folder Include="$(MSBuildThisFileDirectory)Urho\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)GridPage\GridPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

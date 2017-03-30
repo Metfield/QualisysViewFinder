@@ -107,7 +107,8 @@ namespace Arqus
                 Node screenNode = meshNode.CreateChild();
 
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                screen = new CameraScreen(camera.CameraID, new ImageResolution(camera.Width, camera.Height));
+                ImageResolution ir = new ImageResolution(camera.Width, camera.Height);
+                screen = new CameraScreen(camera.CameraID, ir, 30, ir.PixelAspectRatio * 30, new Color(0, 1, 1));
                 screenNode.AddComponent(screen);
             }
             

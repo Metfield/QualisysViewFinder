@@ -6,15 +6,14 @@ using Urho.Actions;
 using Urho.Gui;
 using System;
 using Arqus.Visualization;
-using Arqus.Camera2D;
+using Arqus.Helpers;
 using System.Diagnostics;
 using Arqus.Components;
 using QTMRealTimeSDK.Settings;
-using static Arqus.Visualization.Carousel;
 
 namespace Arqus
 {
-    public class MarkerApplication : Application
+    public class CameraApplication : Application
     {
         Camera camera;
         Scene scene;
@@ -25,17 +24,14 @@ namespace Arqus
         Carousel carousel;
         Vector3 cameraOffset;
 
-        Application currentApplication;
-
         float meshScale,
               markerSphereScale;
 
         Vector3 markerSphereScaleVector;
 
-        List<QTMRealTimeSDK.Data.Camera> streamData;
+        List<QTMRealTimeSDK.Data.CameraImage> streamData;
         List<Node> cameraScreens;
         int cameraCount;
-        
 
         float cameraMovementSpeed;
 
@@ -43,22 +39,29 @@ namespace Arqus
         /// Constructor
         /// </summary>
         /// <param name="options"></param>
-        public MarkerApplication(ApplicationOptions options) : base(options)
-        {
+        [Preserve]
+        public CameraApplication(ApplicationOptions options) : base(options){ }
 
+        static CameraApplication()
+        {
+            UnhandledException += (s, e) =>
+            {
+                if (Debugger.IsAttached)
+                    Debugger.Break();
+                e.Handled = true;
+            };
         }
 
         protected override void Start()
         {
             base.Start();
+            UpdateStreamData();
             CreateScene();
             SetupViewport();
         }
-        
 
         private void CreateScene()
         {
-
             cameraOffset = new Vector3(0, 0, 0);
             meshScale = 0.1f;
             markerSphereScale = 1.0f;
@@ -75,8 +78,8 @@ namespace Arqus
             scene = new Scene();
 
             // Create default octree (-1000:1000)
-            octree = scene.CreateComponent<Octree>();            
-                        
+            octree = scene.CreateComponent<Octree>();
+
             // Create camera 
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
@@ -91,7 +94,7 @@ namespace Arqus
             light.Brightness = 1.3f;
 
             // Initialize marker sphere meshes   
-            InitializeCameras();               
+            InitializeCameras();
         }
 
         /// <summary>
@@ -106,7 +109,7 @@ namespace Arqus
 
             List<ImageCamera> cameras = connection.GetImageSettings();
 
-            foreach(ImageCamera camera in cameras)
+            foreach (ImageCamera camera in cameras)
             {
                 Node screenNode = meshNode.CreateChild();
 
@@ -114,12 +117,12 @@ namespace Arqus
                 screen = new CameraScreen(camera.CameraID, new ImageResolution(camera.Width, camera.Height));
                 screenNode.AddComponent(screen);
             }
-            
+
             // Scale down mesh
-           // markerSpheresNode.Scale = new Vector3(meshScale, meshScale, meshScale);
+            // markerSpheresNode.Scale = new Vector3(meshScale, meshScale, meshScale);
         }
 
-        
+
         // Called every frame
         protected override void OnUpdate(float timeStep)
         {
@@ -129,7 +132,7 @@ namespace Arqus
             UpdateStreamData();
 
             // If by some reason we don't have data yet, return!
-            if(streamData == null)
+            if (streamData == null)
                 return;
 
             // Create a dummy position vector 
@@ -138,26 +141,26 @@ namespace Arqus
             Node[] cameraScreenNodes = meshNode.GetChildrenWithComponent<CameraScreen>();
 
             int count = 0;
-           foreach(QTMRealTimeSDK.Data.Camera camera in streamData)
+            foreach (QTMRealTimeSDK.Data.CameraImage camera in streamData)
             {
                 CameraScreen screen = cameraScreenNodes[count].GetComponent<CameraScreen>();
 
                 Position coordinates = carousel.GetCoordinates(screen.position);
                 screen.CenterX = coordinates.X;
                 screen.CenterY = coordinates.Y;
-
+                
                 // Update marker positions
-                for (int i = 0; i < camera.MarkerCount; i++)
+               /* for (int i = 0; i < camera.MarkerCount; i++)
                 {
                     screen.Pool.Get(i).MarkerData = camera.MarkerData2D[i];
                 }
-
-                count++;
+                
+                count++;*/
             }
 
             // Update camera offset and reset 
             camera.Node.Position += cameraOffset;
-            cameraOffset = Vector3.Zero;     
+            cameraOffset = Vector3.Zero;
         }
 
         /// <summary>
@@ -165,8 +168,8 @@ namespace Arqus
         /// </summary>
         private void UpdateStreamData()
         {
-            streamData = CameraStream.Instance.MarkerData2D;
-            cameraCount = streamData.Count;
+           streamData = CameraStream.Instance.MarkerData2D();
+           cameraCount = streamData.Count;
 
             // TODO: Handle markerCount change
         }
@@ -190,7 +193,7 @@ namespace Arqus
             {
                 //cameraOffset.X = -eventArgs.DX * cameraMovementSpeed;
                 //cameraOffset.Y = eventArgs.DY * cameraMovementSpeed;
-                Offset += eventArgs.DX * cameraMovementSpeed;
+                carousel.Offset += eventArgs.DX * cameraMovementSpeed;
             }
             else if (Input.NumTouches >= 2)
             {

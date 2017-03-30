@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
+             Title="Camera View"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             x:Class="Arqus.MarkerPage">
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <ToolbarItem Command="{Binding SetCameraModeToVideoCommand}">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_camera_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_exposure_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+
+    <StackLayout VerticalOptions="FillAndExpand">
+        <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
+    </StackLayout>
+
+</ContentPage>

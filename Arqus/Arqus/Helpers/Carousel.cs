@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Arqus.Visualization
+namespace Arqus.Helpers
 {
-    class Carousel
+    public class Position
     {
-        public class Position
-        {
-            public double X { get; set; }
-            public double Y { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
 
-            public Position(double x, double y)
-            {
-                X = x;
-                Y = y;
-            }
+        public Position(double x, double y)
+        {
+            X = x;
+            Y = y;
         }
+    }
+
+    public class Carousel
+    {
         
         public double Radius
         {
@@ -32,7 +33,7 @@ namespace Arqus.Visualization
         }
 
         public int ItemCount { get; set; }
-        public static float Offset { get; set; }
+        public float Offset { get; set; }
         public int PivotX { get; set; }
         public int PivotY { get; set; }
 

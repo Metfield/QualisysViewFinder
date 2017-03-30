@@ -49,15 +49,10 @@ namespace Arqus
             return Streaming;
         }
 
-        private List<Camera> markerData2D;
-
-        public List<Camera> MarkerData2D
+        public List<QTMRealTimeSDK.Data.CameraImage> MarkerData2D()
         {
-            get
-            {
-                QTMNetworkConnection.Instance.protocol.ReceiveRTPacket(out packetType);
-                return QTMNetworkConnection.Instance.protocol.GetRTPacket().Get2DMarkerData();
-            }
+            QTMNetworkConnection.Instance.protocol.ReceiveRTPacket(out packetType);
+            return QTMNetworkConnection.Instance.protocol.GetRTPacket().GetImageData();
         }
     }
 }

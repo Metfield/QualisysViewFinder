@@ -1,4 +1,6 @@
 ﻿using Arqus.Connection;
+using Arqus.Services;
+using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -26,16 +28,19 @@ namespace Arqus
         private string connectionIPAddress;
         private QTMNetworkConnection networkConnection;
         private INavigationService _navigationService;
+        private IUnityContainer _container;
 
-        public ConnectionPageViewModel(INavigationService navigationService)
+        public ConnectionPageViewModel(INavigationService navigationService, IUnityContainer container)
         {
+            _container = container;
             _navigationService = navigationService;
             connectionIPAddress = "127.0.0.1";
             networkConnection = QTMNetworkConnection.Instance;
             CurrentConnectionMode = ConnectionMode.NONE;
 
-            RefreshQTMServers = new DelegateCommand(LoadQTMServers).ObservesProperty(() => IsRefreshing);
-
+            RefreshQTMServers = new DelegateCommand(LoadQTMServers);
+            
+            //ConnectionModeDiscoveryCommand = new DelegateCommand(() => { Task.Run(() => service.GetSettings()); });
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
 
@@ -50,7 +55,13 @@ namespace Arqus
         /// </summary>
         public IEnumerable<QTMServer> QTMServers
         {
-            private set { SetProperty(ref qtmServers, value); }
+            private set
+            {
+                if (SetProperty(ref qtmServers, value))
+                {
+                    IsRefreshing = false;
+                };
+            }
             get { return qtmServers;}
         }
 
@@ -67,7 +78,6 @@ namespace Arqus
         }
         
         public DelegateCommand RefreshQTMServers { private set; get; }
-
         public DelegateCommand ConnectionModeDiscoveryCommand { private set; get; }
         public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
 
@@ -154,8 +164,7 @@ namespace Arqus
 
         public bool IsRefreshing
         {
-            set
-            { SetProperty(ref isRefreshing, value); }
+            set{ SetProperty(ref isRefreshing, value); }
             get{ return isRefreshing; }
         }
 
@@ -163,33 +172,28 @@ namespace Arqus
         /// Makes a discovery of nearby QTM Servers and updates the known locations accordingly
         /// During the discovery the list will be in a refresh state
         /// </summary>
-        public void LoadQTMServers()
+        public async Task<IEnumerable<QTMServer>> LoadQTMServersAsync()
         {
-            try
-            {
-                IsRefreshing = true;
+            // BUG: The application will crash upon a second refresh
+            // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
+            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = await Task.Run( () => networkConnection.DiscoverQTMServers());
 
-                // BUG: The application will crash upon a second refresh
-                // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-                List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
-                QTMServers = DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
-                            server.HostName,
-                            server.Port.ToString(),
-                            server.InfoText,
-                            server.CameraCount.ToString())
-                            );
-                
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-
-            IsRefreshing = false;
-
+            return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
+                        server.HostName,
+                        server.Port.ToString(),
+                        server.InfoText,
+                        server.CameraCount.ToString())
+                        );
         }
 
-        
+        public async void LoadQTMServers()
+        {
+            IsRefreshing = true;
+            IEnumerable<QTMServer> servers = await LoadQTMServersAsync();
+            QTMServers = servers;
+        }
+
+
         // Command button binding        
         public DelegateCommand ConnectCommand { get; }     
 
@@ -233,7 +237,8 @@ namespace Arqus
                 SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP");
                 return;
             }
-
+            
+            _container.RegisterType<IRESTfulQTMService, RESTfulQTMService> (new InjectionConstructor(ipAddress));
             // Connection was successfull          
             // Begin streaming 
             await _navigationService.NavigateAsync("OnlineStreamMenuPage");

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using QTMRealTimeSDK;
 using System.Linq;
-using Arqus.Camera2D;
+using Arqus.Helpers;
 using System.Diagnostics;
 using QTMRealTimeSDK.Settings;
 

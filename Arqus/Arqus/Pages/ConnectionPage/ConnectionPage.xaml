@@ -5,10 +5,9 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="Arqus.ConnectionPage"
-             Title="ConnectionPage"
+             Title="Home Page"
              NavigationPage.HasNavigationBar="True"
              >
-    
 
     <StackLayout VerticalOptions="Center">
         

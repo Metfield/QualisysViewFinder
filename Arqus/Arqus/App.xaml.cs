@@ -1,5 +1,7 @@
-﻿using Prism.Unity;
+﻿using Arqus.Services;
+using Prism.Unity;
 using Xamarin.Forms;
+using Microsoft.Practices.Unity;
 
 namespace Arqus
 {
@@ -16,10 +18,12 @@ namespace Arqus
 
         protected override void RegisterTypes()
         {
+            // Register types for navigation
             Container.RegisterTypeForNavigation<NavigationPage>();
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<OnlineStreamMenuPage>();
             Container.RegisterTypeForNavigation<MarkerPage>();
+            
         }
 
 

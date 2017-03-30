@@ -35,7 +35,7 @@ namespace Arqus
         void OnStream2DCommand()
         {
 
-            if (CameraStream.Instance.StartStream(70, QTMRealTimeSDK.Data.ComponentType.Component2d))
+            if (CameraStream.Instance.StartStream(70, QTMRealTimeSDK.Data.ComponentType.ComponentImage))
             {
                 // Switch to Tracking2D page
                 _navigationService.NavigateAsync("MarkerPage");

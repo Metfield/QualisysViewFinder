@@ -11,9 +11,7 @@
             IsRefreshing="{Binding IsRefreshing}"
             HasUnevenRows="true"
           >
-  <ListView.SelectedItem>
-    
-  </ListView.SelectedItem>
+
   <ListView.ItemTemplate>
     <DataTemplate>
       <ViewCell>

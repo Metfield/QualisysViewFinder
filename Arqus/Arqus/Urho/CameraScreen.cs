@@ -1,7 +1,5 @@
-﻿using Arqus.Camera2D;
+﻿using Arqus.Helpers;
 using Arqus.Components;
-using Arqus.Visualization;
-using System.Diagnostics;
 using Urho;
 
 namespace Arqus.Visualization

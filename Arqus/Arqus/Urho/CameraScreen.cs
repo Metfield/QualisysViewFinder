@@ -1,6 +1,7 @@
 ﻿using Arqus.Camera2D;
 using Arqus.Components;
 using Arqus.Visualization;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Urho;
 
@@ -12,6 +13,8 @@ namespace Arqus.Visualization
     public class CameraScreen : Component
     {
         public MarkerSpherePool Pool { set; get; }
+        Node markersRootNode;
+
         static int screenCount;
         public int position;
 
@@ -26,6 +29,11 @@ namespace Arqus.Visualization
         public float Width { private set; get; }
         public Color FrameColor { set; get; }
 
+        QTMRealTimeSDK.Data.Camera cameraData;
+
+        /// <summary>
+        /// Grid element, contains a frame and the marker spheres to be displayed
+        /// </summary>        
         public CameraScreen(int cameraID, ImageResolution resolution, float frameHeight, float frameWidth, Color backgroundColor)
         {
             // Set position according to screenCount and increment the counter
@@ -46,27 +54,57 @@ namespace Arqus.Visualization
         {
             base.OnAttachedToNode(node);
             
-            screenNode = node.CreateChild();
-            Pool = new MarkerSpherePool(20, node.CreateChild());
-            
+            // Create screen node, its plane shape and transform it
+            screenNode = node.CreateChild("screenNode");
             screenNode.Scale = new Vector3(Width, 0, Height);
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
 
-            var frame = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            Urho.Shapes.Plane frame = screenNode.CreateComponent<Urho.Shapes.Plane>();
             frame.SetMaterial(Material.FromColor(FrameColor, true));
-        }
 
+            // Create markers pool and initialize with arbitrary size
+            Pool = new MarkerSpherePool(20, screenNode);
+
+            // Update stream data
+            CameraStream.Instance.UpdateStreamData();
+        }
+                
         protected override void OnUpdate(float timeStep)
         {
-           /* Node[] markerSpheres = screenNode.Parent.GetChildrenWithComponent<MarkerSphere>(true);
-            screenNode.Parent.Position = new Vector3((float) CenterX, 0, (float)CenterY);
+            base.OnUpdate(timeStep);
 
-            foreach (MarkerSphere sphere in markerSpheres[0].Components)
+            // Get camera information
+            cameraData = CameraStream.Instance.GetCamera2D(CameraID);
+
+            // Get necessary frame information to position markers
+            // Horizontal bounds
+            float leftBound = screenNode.WorldPosition.X - (Width * 0.5f);
+            float rightBound = leftBound + Width;
+
+            // Vertical bounds
+            float upperBound = screenNode.WorldPosition.Y + (Height * 0.5f);
+            float lowerBound = upperBound - Height;
+
+            // This index will be used as an array pointer to help identify and disable
+            // markers which are not being currently used
+            int lastUsedInArray = 0;
+
+            // Iterate through the marker array, transform and draw spheres
+            for (int i = 0; i < cameraData.MarkerCount; i++)
             {
-                sphere.markerNode.Scale = new Vector3(sphere.MarkerData.DiameterX / 64.0f * Width / Resolution.Width, sphere.MarkerData.DiameterY / 64.0f * Height / Resolution.Height, sphere.markerNode.Scale.Z);
-                sphere.markerNode.Position = new Vector3(sphere.MarkerData.X / 64.0f * Width / Resolution.Width - Width * 0.5f, -sphere.MarkerData.Y / 64.0f * Height / Resolution.Height + Height * 0.5f, sphere.markerNode.Position.Z);
-            }*/
+                // Transform from camera coordinates to frame coordinates
+                float adjustedX = Helpers.DataOperations.ConvertRange(0, Resolution.Width, leftBound, rightBound, cameraData.MarkerData2D[i].X / 64);
+                float adjustedY = Helpers.DataOperations.ConvertRange(0, Resolution.Height, upperBound, lowerBound, cameraData.MarkerData2D[i].Y / 64);
+
+                // Set world position with new frame coordinates            
+                Pool.Get(i).SetWorldPosition(new Vector3(adjustedX, adjustedY, screenNode.WorldPosition.Z - 1));
+
+                // Last element will set this variable
+                lastUsedInArray = i;
+            }
+
+            // Hide the markers which were not used on this frame
+            Pool.HideUnused(lastUsedInArray);
         }
-        
     }
 }

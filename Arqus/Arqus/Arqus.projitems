@@ -17,6 +17,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)GridPage\GridPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GridViewComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UGridScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />

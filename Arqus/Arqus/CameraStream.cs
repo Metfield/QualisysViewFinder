@@ -15,6 +15,9 @@ namespace Arqus
         string qtmVersion;
         ComponentType currentStreamType;
 
+        // Holds camera2dData when available
+        List<Camera> markerData2D;
+
         private static CameraStream instance;
 
         private CameraStream() { }
@@ -71,6 +74,35 @@ namespace Arqus
             qtmConnection.protocol.StreamFrames(StreamRate.RateFrequency, streamFrequency, type);
 
             GetStreamMarkerData();
+        }
+
+        /// <summary>
+        /// Updates currently used structures without returning them
+        /// </summary>
+        public void UpdateStreamData()
+        {
+            PacketType packetType;
+            qtmConnection.protocol.ReceiveRTPacket(out packetType, false);
+
+            if (packetType == PacketType.PacketData)
+            {
+                if (currentStreamType == ComponentType.Component2d)
+                {
+                    markerData2D = qtmConnection.protocol.GetRTPacket().Get2DMarkerData();
+                }
+            }
+        }
+
+        // Get 2D Camera marker data for a specific camera
+        public Camera GetCamera2D(int i)
+        {
+            return markerData2D[i - 1];
+        }
+
+        // Returns current camera count
+        public int GetCameraCount()
+        {
+            return markerData2D.Count;
         }
 
         /// <summary>

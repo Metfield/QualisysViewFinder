@@ -13,6 +13,7 @@ namespace Arqus
         QTMNetworkConnection qtmConnection;
         int cameraCount;
         List<ImageCamera> cameras;
+        Node gridNode;
 
         // Implement dynamic changes hier
         public int Columns { get; set; }
@@ -51,8 +52,30 @@ namespace Arqus
             FillGrid(node);
         }
 
-        private void FillGrid(Node gridNode)
+        protected override void OnUpdate(float timeStep)
         {
+            base.OnUpdate(timeStep);                        
+
+            // If there is a change in the amount of connected cameras, re-create the grid
+            if (cameraCount != CameraStream.Instance.GetStreamMarkerData().Count)
+            {
+                // Clear the node from any children
+                gridNode.RemoveAllChildren();
+
+                // Re-fill it
+                FillGrid(gridNode);
+            }                
+        }
+
+        /// <summary>
+        /// Creates the grid structure along with all its elements (camera screens)
+        /// </summary>
+        /// <param name="node"></param>
+        private void FillGrid(Node node)
+        {
+            // Set Gridnode reference
+            gridNode = node;
+
             // Get list of cameras
             cameras = qtmConnection.GetImageSettings();
             Node gridElementNode;
@@ -82,13 +105,11 @@ namespace Arqus
         
                 // Calculate position offset and add it 
                 Vector3 offset = Vector3.Multiply(new Vector3(currColumn, currRow, 0), new Vector3(FrameWidth + Padding, -FrameHeight - Padding, 0));
-                gridElementNode.Position += offset;
+                gridElementNode.Position += offset;                                
             }
 
             // Fix gridView to position (upper-left corner)
             gridNode.Position = Origin;
-
-            // Add mode to camera stream
         }
     }
 }

@@ -146,7 +146,7 @@ namespace Arqus
                 // Update marker positions
                 for (int i = 0; i < camera.MarkerCount; i++)
                 {
-                    screen.Pool.Get(i).MarkerData = camera.MarkerData2D[i];
+                    //screen.Pool.Get(i).MarkerData = camera.MarkerData2D[i];
                 }
 
                 count++;

@@ -9,14 +9,18 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\IImageProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Image.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PacketConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PacketObjects.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
       <DependentUpon>CameraPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RGBA_888.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RESTfulQTMService\IRESTfulQTMService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RESTfulQTMService\RESTfulQTMService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RESTfulQTMService\Settings.cs" />
@@ -82,5 +86,8 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Helpers\XMLFile1.xml" />
   </ItemGroup>
 </Project>

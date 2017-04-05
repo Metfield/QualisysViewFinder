@@ -1148,15 +1148,16 @@ namespace QTMRealTimeSDK
             {
                 PacketType packetType;
 
-                if (ReceiveRTPacket(out packetType) > 0)
+                while (ReceiveRTPacket(out packetType, true) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
                         return true;
                     }
-                    else
+                    if (packetType == PacketType.PacketError)
                     {
                         mErrorString = mPacket.GetErrorString();
+                        return false;
                     }
                 }
             }

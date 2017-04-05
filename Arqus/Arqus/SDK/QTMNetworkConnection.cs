@@ -52,7 +52,16 @@ namespace Arqus
                 return false;
             }
 
-            protocol.GetQTMVersion(out version);
+            string ver;
+            protocol.GetQTMVersion(out ver);
+
+            protocol.TakeControl();
+            if(protocol.GetErrorString() == "Wrong or missing password")
+            {
+                protocol.TakeControl("test");
+            }
+
+            Version = ver;
             return true;
         }
        

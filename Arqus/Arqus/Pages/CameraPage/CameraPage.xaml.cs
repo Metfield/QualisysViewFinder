@@ -33,6 +33,7 @@ namespace Arqus
         {
             // Start surface "sub-app" Tracking2DView
             CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            Task.Run(() => markerApplication.UpdateStreamData());
             return markerApplication;
         }
 

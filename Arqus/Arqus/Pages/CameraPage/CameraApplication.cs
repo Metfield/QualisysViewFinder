@@ -18,7 +18,6 @@ namespace Arqus
         Camera camera;
         Scene scene;
         Octree octree;
-        CameraScreen screen;
         Node meshNode;
 
         Carousel carousel;
@@ -29,11 +28,16 @@ namespace Arqus
 
         Vector3 markerSphereScaleVector;
 
-        List<QTMRealTimeSDK.Data.CameraImage> streamData;
+        List<ImageSharp.Color[]> streamData;
         List<Node> cameraScreens;
         int cameraCount;
+        bool updateScreens;
+
+        int currentFrame = 0;
 
         float cameraMovementSpeed;
+
+        public static IImageProcessor ImageProcessor { get; set; }
 
         /// <summary>
         /// Constructor
@@ -55,7 +59,6 @@ namespace Arqus
         protected override void Start()
         {
             base.Start();
-            UpdateStreamData();
             CreateScene();
             SetupViewport();
         }
@@ -84,7 +87,7 @@ namespace Arqus
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
             cameraNode.Position = new Vector3(0, 0, -10);
-            cameraNode.Rotate(new Quaternion(0, 0, 0), TransformSpace.Local);
+            //cameraNode.Rotate(new Quaternion(0, 0, 0), TransformSpace.Local);
 
             // Create light and attach to camera
             Node lightNode = cameraNode.CreateChild(name: "light");
@@ -97,11 +100,14 @@ namespace Arqus
             InitializeCameras();
         }
 
+
+        List<CameraScreen> screenList;
         /// <summary>
         /// Creates the cameras and attaches markersphers to them
         /// </summary>
         private void InitializeCameras()
         {
+            screenList = new List<CameraScreen>();
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
 
@@ -112,14 +118,13 @@ namespace Arqus
             foreach (ImageCamera camera in cameras)
             {
                 Node screenNode = meshNode.CreateChild();
-
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                screen = new CameraScreen(camera.CameraID, new ImageResolution(camera.Width, camera.Height));
-                screenNode.AddComponent(screen);
-            }
+                CameraScreen screen = new CameraScreen(camera.CameraID, new ImageResolution(camera.Width, camera.Height));
 
-            // Scale down mesh
-            // markerSpheresNode.Scale = new Vector3(meshScale, meshScale, meshScale);
+                screenNode.AddComponent(screen);
+                screenList.Add(screen);
+            }
+            
         }
 
 
@@ -129,48 +134,64 @@ namespace Arqus
             base.OnUpdate(timeStep);
 
             // Update stream data before rendering
-            UpdateStreamData();
+            //UpdateStreamData();
+
+
+
+            // Create a dummy position vector 
+            Vector2 tempPosition = Vector2.Zero;
+            // Update camera offset and reset 
+            camera.Node.Position += cameraOffset;
+            cameraOffset = Vector3.Zero;
 
             // If by some reason we don't have data yet, return!
             if (streamData == null)
                 return;
+            
+        }
 
-            // Create a dummy position vector 
-            Vector2 tempPosition = Vector2.Zero;
-
-            Node[] cameraScreenNodes = meshNode.GetChildrenWithComponent<CameraScreen>();
-
+        int FPS = 1;
+        
+        private void SetStreamData(List<ImageSharp.Color[]> data)
+        {
+            streamData = data;
+            updateScreens = true;
             int count = 0;
-            foreach (QTMRealTimeSDK.Data.CameraImage camera in streamData)
+        
+            foreach (ImageSharp.Color[] image in streamData)
             {
-                CameraScreen screen = cameraScreenNodes[count].GetComponent<CameraScreen>();
-
-                Position coordinates = carousel.GetCoordinates(screen.position);
-                screen.CenterX = coordinates.X;
-                screen.CenterY = coordinates.Y;
+                if (image == null)
+                    break;
                 
-                // Update marker positions
-               /* for (int i = 0; i < camera.MarkerCount; i++)
-                {
-                    screen.Pool.Get(i).MarkerData = camera.MarkerData2D[i];
-                }
-                
-                count++;*/
+                screenList[count].UpdateMaterialTexture(image);
+                count++;
             }
-
-            // Update camera offset and reset 
-            camera.Node.Position += cameraOffset;
-            cameraOffset = Vector3.Zero;
         }
 
         /// <summary>
         /// Fetches new stream data and updates the local structure
         /// </summary>
-        private void UpdateStreamData()
+        public async void UpdateStreamData()
         {
-           streamData = CameraStream.Instance.MarkerData2D();
-           cameraCount = streamData.Count;
+            while (!Engine.Exiting && !IsDeleted)
+            {
 
+                DateTime time = DateTime.UtcNow;
+                var streamData = await CameraStream.Instance.GetImageData();
+                
+                InvokeOnMain(() => SetStreamData(streamData));
+                if (FPS > 0)
+                {
+                    var elapsedMs = (DateTime.UtcNow - time).TotalMilliseconds;
+                    var timeToWait = 1000d / FPS - elapsedMs;
+                    
+                    if(timeToWait >= 0)
+                    {
+                        await Task.Delay(TimeSpan.FromMilliseconds(timeToWait));
+                    }
+                }
+            }
+           
             // TODO: Handle markerCount change
         }
 

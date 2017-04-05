@@ -2,6 +2,7 @@
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
+using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,9 +22,9 @@ namespace Arqus
         {
             _navigationService = navigationService;
 
-            SetCameraModeToMarkerCommand = new DelegateCommand(() => { Task.Run(() => service.SetCameraMode(CameraMode.MARKER)); });
-            SetCameraModeToVideoCommand = new DelegateCommand(() => { Task.Run(() => service.SetCameraMode(CameraMode.VIDEO)); });
-            SetCameraModeToIntensityCommand = new DelegateCommand(() => { Task.Run(() => service.SetCameraMode(CameraMode.INTENSITY)); });
+            SetCameraModeToMarkerCommand = new DelegateCommand(() => { Task.Run(() => service.SetCameraMode(20400, CameraMode.ModeMarker)); });
+            SetCameraModeToVideoCommand = new DelegateCommand(() => { Task.Run(() => service.SetCameraMode(20400, CameraMode.ModeVideo)); });
+            SetCameraModeToIntensityCommand = new DelegateCommand(() => { Task.Run(() => service.SetCameraMode(20400, CameraMode.ModeMarkerIntensity)); });
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)

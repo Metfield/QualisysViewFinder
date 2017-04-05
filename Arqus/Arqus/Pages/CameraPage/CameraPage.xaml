@@ -20,7 +20,7 @@
                                 Android="drawable-hdpi/ic_camera_black_24dp.png"/>
             </ToolbarItem.Icon>
         </ToolbarItem>
-        <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}">
+        <ToolbarItem Command="{Binding SetCameraModeToIntensityCommand}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
                                 Android="drawable-hdpi/ic_exposure_black_24dp.png"/>

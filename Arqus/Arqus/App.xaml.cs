@@ -1,6 +1,7 @@
 ﻿using Arqus.Services;
 using Prism.Unity;
 using Xamarin.Forms;
+using Arqus.Helpers;
 using Microsoft.Practices.Unity;
 
 namespace Arqus
@@ -23,7 +24,8 @@ namespace Arqus
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<OnlineStreamMenuPage>();
             Container.RegisterTypeForNavigation<MarkerPage>();
-            
+
+            //Container.RegisterType<IImageProcessor, ImageProcessor>();
         }
 
 

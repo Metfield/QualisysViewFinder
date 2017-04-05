@@ -178,6 +178,7 @@ namespace Arqus
             // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
             List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = await Task.Run( () => networkConnection.DiscoverQTMServers());
 
+
             return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
                         server.HostName,
                         server.Port.ToString(),
@@ -190,6 +191,7 @@ namespace Arqus
         {
             IsRefreshing = true;
             IEnumerable<QTMServer> servers = await LoadQTMServersAsync();
+            //await Task.Delay(1000);
             QTMServers = servers;
         }
 

@@ -21,6 +21,8 @@ namespace Arqus.Droid
 
             base.OnCreate (bundle);
 
+            CameraApplication.ImageProcessor = new ImageProcessor(this);
+
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 			LoadApplication (new Arqus.App ());
         } 

@@ -27,5 +27,13 @@ namespace Arqus.Helpers
                 return (float) Width / (float) Height;
             }
         }
+
+        public int PixelCount
+        {
+            get
+            {
+                return Width * Height;
+            }
+        }
     }
 }

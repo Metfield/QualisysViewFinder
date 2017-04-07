@@ -20,8 +20,7 @@ namespace Arqus.Droid
             global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity.TabLayoutResource = Resource.Layout.tabs;
 
             base.OnCreate (bundle);
-
-            CameraApplication.ImageProcessor = new ImageProcessor(this);
+            
 
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 			LoadApplication (new Arqus.App ());

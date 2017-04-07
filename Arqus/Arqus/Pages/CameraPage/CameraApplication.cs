@@ -10,10 +10,13 @@ using Arqus.Helpers;
 using System.Diagnostics;
 using Arqus.Components;
 using QTMRealTimeSDK.Settings;
+using Xamarin.Forms;
+using QTMRealTimeSDK;
+using Arqus.Services;
 
 namespace Arqus
 {
-    public class CameraApplication : Application
+    public class CameraApplication : Urho.Application
     {
         Camera camera;
         Scene scene;
@@ -27,8 +30,7 @@ namespace Arqus
               markerSphereScale;
 
         Vector3 markerSphereScaleVector;
-
-        List<ImageSharp.Color[]> streamData;
+        
         List<Node> cameraScreens;
         int cameraCount;
         bool updateScreens;
@@ -36,9 +38,7 @@ namespace Arqus
         int currentFrame = 0;
 
         float cameraMovementSpeed;
-
-        public static IImageProcessor ImageProcessor { get; set; }
-
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -55,22 +55,51 @@ namespace Arqus
                 e.Handled = true;
             };
         }
+        
 
         protected override void Start()
         {
             base.Start();
+            
+            // Setup messaging wíth the view model to retrieve data
+
+            // TODO: Do we need to handle this when multiple modes are avaible?
+           /* MessagingCenter.Subscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), (sender, mode) =>
+            {
+                SetMode(0, mode);
+            });
+            */
+
+            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
+            MessagingCenter.Subscribe<CameraPageViewModel, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
+            {
+                SetImageData(imageData);
+            });
+
+            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
+            MessagingCenter.Subscribe<CameraPageViewModel, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
+            {
+                SetMarkerData(cameras);
+            });
+
+            // Make sure that the stream update loop runs in its own thread to keep interactions responsive
+            Task.Run(() => UpdateDataTask(1, () => InvokeOnMain(() => MessagingCenter.Send(this, MessageSubject.FETCH_IMAGE_DATA.ToString()) ) ) );
+            Task.Run(() => UpdateDataTask(30, () => InvokeOnMain(() => MessagingCenter.Send(this, MessageSubject.FETCH_MARKER_DATA.ToString()) ) ) );
+
             CreateScene();
             SetupViewport();
+            
+        }
+
+        private void SetMode(int id, CameraMode mode)
+        {
+            if(screenList.Count > id)
+                screenList[id].SetMode(mode);
         }
 
         private void CreateScene()
         {
-            cameraOffset = new Vector3(0, 0, 0);
-            meshScale = 0.1f;
-            markerSphereScale = 1.0f;
-            markerSphereScaleVector = new Vector3(markerSphereScale, markerSphereScale, markerSphereScale);
             cameraMovementSpeed = 0.001f;
-
             // Create carousel
             carousel = new Carousel(500, 8, 0, 0);
 
@@ -87,14 +116,6 @@ namespace Arqus
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
             cameraNode.Position = new Vector3(0, 0, -10);
-            //cameraNode.Rotate(new Quaternion(0, 0, 0), TransformSpace.Local);
-
-            // Create light and attach to camera
-            Node lightNode = cameraNode.CreateChild(name: "light");
-            Light light = lightNode.CreateComponent<Light>();
-            light.LightType = LightType.Point;
-            light.Range = 100;
-            light.Brightness = 1.3f;
 
             // Initialize marker sphere meshes   
             InitializeCameras();
@@ -111,15 +132,21 @@ namespace Arqus
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
 
-            QTMNetworkConnection connection = QTMNetworkConnection.Instance;
+            QTMNetworkConnection connection = new QTMNetworkConnection();
 
             List<ImageCamera> cameras = connection.GetImageSettings();
 
             foreach (ImageCamera camera in cameras)
             {
                 Node screenNode = meshNode.CreateChild();
+
+                // TODO: Handle Camera settings individually
+                ImageResolution resolution = new ImageResolution(camera.Width, camera.Height);
+                float frameHeight = 10;
+                float frameWidth = frameHeight * resolution.PixelAspectRatio;
+
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                CameraScreen screen = new CameraScreen(camera.CameraID, new ImageResolution(camera.Width, camera.Height));
+                CameraScreen screen = new CameraScreen(camera.CameraID, resolution, frameHeight, frameWidth, Urho.Color.Cyan);
 
                 screenNode.AddComponent(screen);
                 screenList.Add(screen);
@@ -133,67 +160,68 @@ namespace Arqus
         {
             base.OnUpdate(timeStep);
 
-            // Update stream data before rendering
-            //UpdateStreamData();
-
-
-
             // Create a dummy position vector 
-            Vector2 tempPosition = Vector2.Zero;
+            //Vector2 tempPosition = Vector2.Zero;
             // Update camera offset and reset 
             camera.Node.Position += cameraOffset;
             cameraOffset = Vector3.Zero;
-
-            // If by some reason we don't have data yet, return!
-            if (streamData == null)
-                return;
+            
             
         }
 
-        int FPS = 1;
-        
-        private void SetStreamData(List<ImageSharp.Color[]> data)
+        private void SetImageData(List<ImageSharp.Color[]> data)
         {
-            streamData = data;
-            updateScreens = true;
             int count = 0;
         
-            foreach (ImageSharp.Color[] image in streamData)
+            foreach (ImageSharp.Color[] image in data)
             {
                 if (image == null)
                     break;
-                
-                screenList[count].UpdateMaterialTexture(image);
+
+                // TODO: Handle video as well
+                if (screenList.Count > count && screenList[count].CurrentCameraMode == CameraMode.ModeMarkerIntensity)
+                    screenList[count].ImageData = image;
                 count++;
             }
         }
 
+        private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
+        {
+            int count = 0;
+
+            foreach (QTMRealTimeSDK.Data.Camera camera in data)
+            {
+                if(screenList.Count > count && screenList[count].CurrentCameraMode == CameraMode.ModeMarker)
+                    screenList[count].MarkerData = camera;
+                count++;
+            }
+        }
+
+
+
         /// <summary>
         /// Fetches new stream data and updates the local structure
         /// </summary>
-        public async void UpdateStreamData()
+        public async void UpdateDataTask(int frequency, Action onUpdate)
         {
             while (!Engine.Exiting && !IsDeleted)
             {
-
                 DateTime time = DateTime.UtcNow;
-                var streamData = await CameraStream.Instance.GetImageData();
+                onUpdate();
                 
-                InvokeOnMain(() => SetStreamData(streamData));
-                if (FPS > 0)
+                if (frequency > 0)
                 {
-                    var elapsedMs = (DateTime.UtcNow - time).TotalMilliseconds;
-                    var timeToWait = 1000d / FPS - elapsedMs;
-                    
-                    if(timeToWait >= 0)
+                    var deltaTime = (DateTime.UtcNow - time).TotalMilliseconds;
+                    var timeToWait = 1000d / frequency - deltaTime;
+
+                    if (timeToWait >= 0)
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(timeToWait));
                     }
                 }
             }
-           
-            // TODO: Handle markerCount change
         }
+
 
         /// <summary>
         /// Sets up viewport

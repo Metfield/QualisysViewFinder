@@ -7,15 +7,17 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using QTMRealTimeSDK;
+using Arqus.Helpers;
 
-namespace Arqus.Services
+namespace Arqus
 {
-    class RESTfulQTMService : IRESTfulQTMService
+    class SettingsService : ISettingsService
     {
         HttpClient client;
         private string port = "7979";
         private string baseUrl = "http://{0}:{1}/api/experimental/{2}";
         public string Ip { get; set; }
+        
 
         // We need to convert the CameraMode enum to a string that matches the API's
         Dictionary<CameraMode, string> CameraModeString = new Dictionary<CameraMode, string>()
@@ -25,13 +27,14 @@ namespace Arqus.Services
             { CameraMode.ModeVideo, "Video" }
         };
 
-        public RESTfulQTMService(string ip)
+        public SettingsService(string ip)
         {
             client = new HttpClient();
             Ip = ip;
             
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.MaxResponseContentBufferSize = 256000;
+            
         }
 
         
@@ -58,13 +61,12 @@ namespace Arqus.Services
             }
         }
 
-        public async void SetCameraMode(uint id, CameraMode mode)
+        public async Task<bool> SetCameraMode(uint id, CameraMode mode)
         {
             try
             {
                 var uri = new Uri(string.Format(baseUrl, Ip, port, "settings"));
                 Debug.WriteLine(uri);
-                
 
                 string rawRequest = "{\"Cameras\":[{\"Id\":" + id + ",\"Mode\":\"" + CameraModeString[mode] + "\"}]}";
                 var request = rawRequest;
@@ -74,17 +76,25 @@ namespace Arqus.Services
                 var response = await client.PostAsync(uri, content);
 
                 if (response.IsSuccessStatusCode)
-                {
-                    var res = await response.Content.ReadAsStringAsync();
-                    Debug.WriteLine(res.ToString());
-                    CameraStream.Instance.SwitchStreamingMode(id, mode);
-                }
-
+                    return EnableImageStreamingForCamera(id, mode);
+                else
+                    return false;
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
+                return false;
             }
         }
+
+
+        private bool EnableImageStreamingForCamera(uint id, CameraMode mode)
+        {
+            bool isImageMode = mode == CameraMode.ModeMarkerIntensity || mode == CameraMode.ModeVideo;
+
+            string packetString = PacketConverter.ImageModeEnabledPacket(id, isImageMode);
+            return QTMNetworkConnection.Instance.protocol.SendXML(packetString);
+        }
+        
     }
 }

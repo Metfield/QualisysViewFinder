@@ -540,7 +540,7 @@ namespace QTMRealTimeSDK
             byte[] msg = b.ToArray();
 
             //if we don't have a udp broadcast socket, create one
-            if (mBroadcastSocketCreated || mNetwork.CreateUDPSocket(ref replyPort, true))
+            if (mNetwork.CreateUDPSocket(ref replyPort, true))
             {
                 mBroadcastSocketCreated = true;
                 var status = mNetwork.SendUDPBroadcast(msg, 10);

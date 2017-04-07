@@ -23,9 +23,9 @@ namespace Arqus
             Container.RegisterTypeForNavigation<NavigationPage>();
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<OnlineStreamMenuPage>();
-            Container.RegisterTypeForNavigation<MarkerPage>();
-
-            //Container.RegisterType<IImageProcessor, ImageProcessor>();
+            Container.RegisterTypeForNavigation<CameraPage>();
+            Container.RegisterTypeForNavigation<GridPage>();
+            
         }
 
 

@@ -9,60 +9,26 @@ using QTMRealTimeSDK.Data;
 namespace Arqus.Visualization
 {
     /// <summary>
-    /// A dot component with an attached label
+    /// Marker node with an attached sphere component
     /// </summary>
-    public class MarkerSphere : Component
+    public class MarkerSphere : Node
     {
-        public Node markerNode;
-        Node labelNode;
-        bool LabelHidden { set; get; }
-        Text3D label;
-        Color color;
-        public bool updated;
-        private Q2D markerData;
-
-        public Q2D MarkerData
-        {
-            set
-            {
-                updated = true;
-                markerData = value;
-            }
-            get
-            {
-                return markerData;
-            }
-        }
+        public Color SphereColor { get; set; }
 
         public MarkerSphere()
         {
-            this.color = Color.Magenta;
-            LabelHidden = false;
-            ReceiveSceneUpdates = true;
-        }
+            // Set default color to white
+            SphereColor = Color.White;
 
-        public override void OnAttachedToNode(Node node)
-        {
-            markerNode = node.CreateChild();
-            markerNode.Position = Vector3.Zero;
-            markerNode.Scale = new Vector3(1.0f, 1.0f, 1.0f);
+            // Initialize disabled
+            Enabled = false;
 
-            var marker = markerNode.CreateComponent<Sphere>();
-            marker.SetMaterial(Material.FromColor(Color.White, true));
+            // HACK: Arbitrary number of 0.1 makes sense right now
+            SetScale(0.1f);
 
-            base.OnAttachedToNode(node);
-        }
-
-        
-
-        public void Set2DPosition(Vector2 position)
-        {
-            markerNode.Position = new Vector3(position.X, position.Y, markerNode.Position.Z);
-        }
-
-        public void Hide()
-        {
-            markerNode.Enabled = false;
+            // Create sphere component and attach it 
+            Sphere sphereComponent = CreateComponent<Sphere>();
+            sphereComponent.SetMaterial(Material.FromColor(SphereColor, true));
         }
     }
 }

@@ -2,7 +2,15 @@
 
 namespace Arqus.Helpers
 {
-	public class MessagingCenterAlert
+    public enum MessageSubject
+    {
+        STREAM_MODE_CHANGED,
+        STREAM_DATA_SUCCESS,
+        FETCH_IMAGE_DATA,
+        FETCH_MARKER_DATA
+    }
+
+    public class MessagingCenterAlert
 	{
 		/// <summary>
 		/// Init this instance.
@@ -35,5 +43,10 @@ namespace Arqus.Helpers
 		/// </summary>
 		/// <value>The OnCompleted Action.</value>
 		public Action OnCompleted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subject of the message
+        /// </summary>
+        public MessageSubject Subject { get; set; }
 	}
 }

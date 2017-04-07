@@ -9,7 +9,20 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\IImageProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml.cs">
+      <DependentUpon>GridPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\IntensityStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\GridViewComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\UGridScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Image.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
@@ -20,10 +33,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RGBA_888.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\RESTfulQTMService\IRESTfulQTMService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\RESTfulQTMService\RESTfulQTMService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\RESTfulQTMService\Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
@@ -77,17 +89,18 @@
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Pages\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Pages\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Urho\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Pages\GridPage\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Helpers\XMLFile1.xml" />
   </ItemGroup>
 </Project>

@@ -8,31 +8,42 @@ using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
-    public sealed class QTMNetworkConnection
+    public class QTMNetworkConnection
     {
-        private static readonly QTMNetworkConnection instance = new QTMNetworkConnection();
         
-        public string IPAddress { set; get; }
-        public RTProtocol protocol { private set; get; }
+        static string version;
+        public static string Version { get; private set; }
 
-        string version;
-        public string Version { get; private set; }
+        private static string ipAddress;
 
-        static QTMNetworkConnection() { }
-
-        private QTMNetworkConnection()
+        public static string IpAddress
         {
-            // Default value is localhost
-            IPAddress = "127.0.0.1";
-            protocol = new RTProtocol();
+            get { return ipAddress; }
+            private set { ipAddress = value; }
         }
 
-        public static QTMNetworkConnection Instance
+
+        private RTProtocol protocol;
+        public RTProtocol Protocol
         {
-            get
+            get { return protocol; }
+            set { protocol = value; }
+        }
+        
+        public QTMNetworkConnection()
+        {
+            Protocol = new RTProtocol();
+
+            if(IpAddress != null)
             {
-                return instance;
+                Connect(ipAddress);
             }
+        }
+
+        public QTMNetworkConnection(string ipAddress)
+        {
+            Protocol = new RTProtocol();
+            Connect(ipAddress);
         }
 
         /// <summary>
@@ -41,13 +52,13 @@ namespace Arqus
         /// <returns></returns>
         public bool Connect(string ipAddress)
         {
-            IPAddress = ipAddress;
+            IpAddress = ipAddress;
             return Connect();
         }
 
         public bool Connect()
         {
-            if (!protocol.Connect(IPAddress))
+            if (!protocol.Connect(IpAddress))
             {
                 return false;
             }
@@ -65,19 +76,21 @@ namespace Arqus
             return true;
         }
        
-        public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
+        public static List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
-            if (protocol.DiscoverRTServers(port))
+            try
             {
-                if (protocol.DiscoveryResponses.Count == 0)
+                if (protocol.DiscoverRTServers(port))
                 {
-                    Debug.WriteLine("No QTM Servers were found");
+                    Debug.WriteLine(string.Format("QTM Servers: {0}", protocol.DiscoveryResponses.Count));
                 }
-
-                return protocol.DiscoveryResponses.ToList();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
 
-            return null;
+            return protocol.DiscoveryResponses.ToList();
         }
 
         public List<ImageCamera> GetImageSettings()

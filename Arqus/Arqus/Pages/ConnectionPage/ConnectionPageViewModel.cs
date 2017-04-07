@@ -6,6 +6,7 @@ using Prism.Mvvm;
 using Prism.Navigation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -24,56 +25,41 @@ namespace Arqus
             MANUALLY,
             NONE
         }
-
-        private string connectionIPAddress;
+        
         private QTMNetworkConnection networkConnection;
-        private INavigationService _navigationService;
-        private IUnityContainer _container;
+        private INavigationService navigationService;
+        private IUnityContainer container;
 
         public ConnectionPageViewModel(INavigationService navigationService, IUnityContainer container)
         {
-            _container = container;
-            _navigationService = navigationService;
-            connectionIPAddress = "127.0.0.1";
-            networkConnection = QTMNetworkConnection.Instance;
+            this.container = container;
+            this.navigationService = navigationService;
+
+            networkConnection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;
 
-            RefreshQTMServers = new DelegateCommand(LoadQTMServers);
+            RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
             
-            //ConnectionModeDiscoveryCommand = new DelegateCommand(() => { Task.Run(() => service.GetSettings()); });
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
-
-            // Add button command to binding context
-            ConnectCommand = new DelegateCommand(OnConnectionStarted);
+            ConnectCommand = new DelegateCommand(() => OnConnectionStarted());
         }
         
-        IEnumerable<QTMServer> qtmServers;
 
-        /// <summary>
-        /// The list of running QTMServers on the network
-        /// </summary>
-        public IEnumerable<QTMServer> QTMServers
-        {
-            private set
-            {
-                if (SetProperty(ref qtmServers, value))
-                {
-                    IsRefreshing = false;
-                };
-            }
-            get { return qtmServers;}
-        }
-
-        // Todo: Make implement selected server so that ViewModel works independently from Xamarin.Forms
-        QTMServer selectedServer = null;
+       QTMServer selectedServer = null;
 
         /// <summary>
         /// The selected server to connect to
         /// </summary>
         public QTMServer SelectedServer
         {
-            set{ if(SetProperty(ref selectedServer, value)) OnConnectionStarted(); }
+            set{
+                if (SetProperty(ref selectedServer, value))
+                {
+                    IPAddress = selectedServer.IPAddress;
+                    OnConnectionStarted();
+                }
+            }
             get { return selectedServer; }
         }
         
@@ -168,15 +154,22 @@ namespace Arqus
             get{ return isRefreshing; }
         }
 
+        ObservableCollection<QTMServer> qtmServers;
+
+        /// <summary>
+        /// The list of running QTMServers on the network
+        /// </summary>
+        public ObservableCollection<QTMServer> QTMServers{ private set; get; }
+
         /// <summary>
         /// Makes a discovery of nearby QTM Servers and updates the known locations accordingly
         /// During the discovery the list will be in a refresh state
         /// </summary>
-        public async Task<IEnumerable<QTMServer>> LoadQTMServersAsync()
+        public IEnumerable<QTMServer> LoadQTMServersAsync()
         {
             // BUG: The application will crash upon a second refresh
             // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = await Task.Run( () => networkConnection.DiscoverQTMServers());
+            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
 
 
             return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
@@ -184,46 +177,53 @@ namespace Arqus
                         server.Port.ToString(),
                         server.InfoText,
                         server.CameraCount.ToString())
-                        );
+                        ); ;
         }
 
         public async void LoadQTMServers()
         {
             IsRefreshing = true;
-            IEnumerable<QTMServer> servers = await LoadQTMServersAsync();
-            //await Task.Delay(1000);
-            QTMServers = servers;
+            IEnumerable<QTMServer> servers = LoadQTMServersAsync();
+            
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                foreach (var server in servers)
+                {
+                    QTMServers.Add(server);
+                }
+            });
+
+            IsRefreshing = false;
         }
 
 
         // Command button binding        
-        public DelegateCommand ConnectCommand { get; }     
+        public DelegateCommand ConnectCommand { private set;  get; }
 
-        // IP address text field binding 
-        public string ConnectionIPAddress
-        {            
-            set { connectionIPAddress = value; }
+
+        private string ipAddress = "192.168.10.170";
+
+        public string IPAddress
+        {
+            get { return ipAddress; }
+            set { ipAddress = value; }
         }
+        
         
         /// <summary>
         /// Callback method for starting connection
         /// </summary>
         void OnConnectionStarted()
         {
-            // Get ip string from field
-            string ipAddress = selectedServer.IPAddress;
-
             // Check if ip is valid
-            if (!IsValidIPv4(ipAddress))
+            if (!IsValidIPv4(IPAddress))
             {
                 SharedProjects.Notification.Show("Attention", "Please enter a valid IP address");                
                 return;
             }
 
             // Proceed to connect to address
-            // Delegate work to application's main class (App)
-            // Need to cast Current as App
-            ConnectAsync(ipAddress);
+            ConnectAsync(IPAddress);
         }
 
         /// <summary>
@@ -233,17 +233,17 @@ namespace Arqus
         public async void ConnectAsync(string ipAddress)
         {
             // Connect to IP
-            if (!QTMNetworkConnection.Instance.Connect(ipAddress))
+            if (!networkConnection.Connect(ipAddress))
             {
                 // There was an error with the connection
                 SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP");
                 return;
             }
             
-            _container.RegisterType<IRESTfulQTMService, RESTfulQTMService> (new InjectionConstructor(ipAddress));
+            container.RegisterType<ISettingsService, SettingsService> (new InjectionConstructor(ipAddress));
             // Connection was successfull          
             // Begin streaming 
-            await _navigationService.NavigateAsync("OnlineStreamMenuPage");
+            await navigationService.NavigateAsync("OnlineStreamMenuPage");
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace Arqus
             IPAddress address;
 
             // Check if this is a valid IP address
-            if (IPAddress.TryParse(ipString, out address))
+            if (System.Net.IPAddress.TryParse(ipString, out address))
             {
                 // Make sure it's an ipv4 (although it should)
                 if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)

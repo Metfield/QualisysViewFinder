@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Arqus.Services;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Urho;
@@ -7,11 +8,12 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    public partial class MarkerPage : ContentPage
+    public partial class CameraPage : ContentPage
     {
         CameraApplication currentApplication;
 
-        public MarkerPage()
+
+        public CameraPage()
         {
             InitializeComponent();
         }
@@ -20,6 +22,7 @@ namespace Arqus
         {
             base.OnAppearing();
             currentApplication = await StartUrhoApp();
+            
         }
 
         protected override void OnDisappearing()
@@ -33,7 +36,6 @@ namespace Arqus
         {
             // Start surface "sub-app" Tracking2DView
             CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
-            Task.Run(() => markerApplication.UpdateStreamData());
             return markerApplication;
         }
 

@@ -6,8 +6,7 @@
              prism:ViewModelLocator.AutowireViewModel="True"
              x:Class="Arqus.ConnectionPage"
              Title="Home Page"
-             NavigationPage.HasNavigationBar="True"
-             >
+             NavigationPage.HasNavigationBar="True" >
 
     <StackLayout VerticalOptions="Center">
         
@@ -17,7 +16,7 @@
         </StackLayout>
 
         <StackLayout IsVisible="{Binding IsDiscovery}">
-            <Label Text="QTM Hosts"
+            <Label Text="Hosts"
             HorizontalTextAlignment="Center"
             VerticalTextAlignment="Start"
             FontSize="Large"
@@ -26,13 +25,17 @@
             <local:QTMServerList x:Name="qtmListView" />
         </StackLayout>
 
-        <StackLayout IsVisible="{Binding IsManually}">
-            <Label Text="Manually"
+        <StackLayout IsVisible="{Binding IsManually}" VerticalOptions="FillAndExpand">
+            <Label Text="Manually test"
             HorizontalTextAlignment="Center"
             VerticalTextAlignment="Start"
             FontSize="Large"
             BackgroundColor="{StaticResource primary}"/>
 
+            <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
+            
+            <Button Text="Connect" Command="{Binding ConnectCommand}" />
+            
         </StackLayout>
 
     </StackLayout>

@@ -12,7 +12,7 @@ namespace Arqus
 	{
         public OnlineStreamMenuPage ()
 		{
-			InitializeComponent ();            
+			InitializeComponent (); 
         }
     }
 }

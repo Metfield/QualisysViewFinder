@@ -5,10 +5,11 @@
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              Title="Camera View"
              prism:ViewModelLocator.AutowireViewModel="True"
-             x:Class="Arqus.MarkerPage">
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             x:Class="Arqus.CameraPage">
     
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}">
+        <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}" >
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
                                 Android="drawable-hdpi/ic_grain_black_24dp.png"/>

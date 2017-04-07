@@ -23,7 +23,7 @@ namespace Arqus
             Stream2DCommand = new DelegateCommand(OnStream2DCommand);
             
             // Get QTM version
-            qtmVersion = QTMNetworkConnection.Instance.Version;
+            qtmVersion = QTMNetworkConnection.Version;
         }
 
         // OnlineStreamMenuPage.xaml bindings         
@@ -38,7 +38,7 @@ namespace Arqus
             if (CameraStream.Instance.StartStream(1, QTMRealTimeSDK.Data.ComponentType.ComponentImage))
             {
                 // Switch to Tracking2D page
-                _navigationService.NavigateAsync("MarkerPage");
+                _navigationService.NavigateAsync("CameraPage");
             }
         }
 

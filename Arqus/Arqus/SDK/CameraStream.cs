@@ -14,16 +14,15 @@ using ImageSharp;
 
 namespace Arqus
 {
+
     public class CameraStream
     {
 
         private static readonly CameraStream instance = new CameraStream();
-        private static int bufferSize = 1823 * 1087;
-        private static byte[] buffer = new byte[bufferSize];
+
         private static JpegDecoder decoder = new JpegDecoder();
         List<ImageSharp.Color[]> imageData = new List<ImageSharp.Color[]>();
         private List<QTMRealTimeSDK.Data.CameraImage> cameras;
-        Image<ImageSharp.Color> image;
 
         public bool Streaming { private set; get; }
 
@@ -63,24 +62,6 @@ namespace Arqus
 
             return Streaming;
         }
-        public void SwitchStreamingMode(uint id, CameraMode mode)
-        {
-            string packetString = ImageModeEnabledPacket(id, IsImageMode(mode));
-            //QTMNetworkConnection.Instance.protocol.TakeControl();
-            if (QTMNetworkConnection.Instance.protocol.SendXML(packetString))
-            {
-              
-                Debug.WriteLine("Successfully update streaming type");
-            };
-        }
-
-
-        CameraMode[] ImageModes = new CameraMode[]{ CameraMode.ModeMarkerIntensity, CameraMode.ModeVideo };
-
-        public bool IsImageMode(CameraMode mode)
-        {
-            return ImageModes.Contains(mode);
-        }
 
         public async Task<List<QTMRealTimeSDK.Data.CameraImage>> GetMarkerData2D()
         {
@@ -101,12 +82,18 @@ namespace Arqus
 
             foreach(QTMRealTimeSDK.Data.CameraImage camera in cameras)
             {
-                image = await Task.Run(() => Image.Load(camera.ImageData));
-                imageData.Add(image.Pixels);
+                using (Image image = await Task.Run(() => Image.Load(camera.ImageData)))
+                {
+                    imageData.Add(image.Pixels);
+                }
             }
 
             return imageData;
         }
 
+        public void UpdateStream(RTPacket framePacket)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

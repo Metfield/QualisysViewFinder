@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using QTMRealTimeSDK.Settings;
 using QTMRealTimeSDK;
 
-namespace Arqus.Services
+namespace Arqus
 {
-    public interface IRESTfulQTMService
+    public interface ISettingsService
     {
         void GetSettings();
-        void SetCameraMode(uint id, CameraMode mode);
+        Task<bool> SetCameraMode(uint id, CameraMode mode);
     }
 }

@@ -5,7 +5,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Arqus;
-using static Arqus.Helpers.PacketObjects;
 
 namespace Arqus.Helpers
 {
@@ -22,6 +21,8 @@ namespace Arqus.Helpers
                         <ID>1</ID>
                         <Enabled>{0}</Enabled>
                         <Format>JPG</Format>
+                        <Width>1824</Width>
+                        <Height>1088</Height>
                     </Camera>
                 </Image>
             </QTM_Settings>";

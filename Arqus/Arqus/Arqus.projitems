@@ -16,6 +16,8 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\CameraService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ICameraService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />

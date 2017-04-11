@@ -29,23 +29,9 @@ namespace Arqus
             markerStream = new MarkerStream();
             markerStream.StartStream();
 
-                        // Make sure that the stream update loop runs in its own thread to keep interactions responsive
-            Task.Run(() => UpdateDataTask(1, () =>   ) );
-            Task.Run(() => UpdateDataTask(30, () =>  ) );
-
-
-            // Set up messaging system for stream handling.
-            // This is not optimal since it demands a lot
-            // of messaging do render an image sequence
-            // but for now it is to my knowledge the more
-            // portable way of doing it.
-            MessagingCenter.Subscribe<Urho.Application>(this,
-                MessageSubject.FETCH_IMAGE_DATA.ToString(),
-                OnFetchImageData);
-
-            MessagingCenter.Subscribe<Urho.Application>(this,
-                MessageSubject.FETCH_MARKER_DATA.ToString(),
-                OnFetchMarkerData);
+            // Make sure that the stream update loop runs in its own thread to keep interactions responsive
+            Task.Run(() => UpdateDataTask(1, SendImageData) );
+            Task.Run(() => UpdateDataTask(30, SendMarkerData) );
         }
 
         ~CameraService()
@@ -87,9 +73,7 @@ namespace Arqus
             }
         }
 
-
-
-        private async void OnFetchImageData(Object sender)
+        private async void SendImageData()
         {
             List<ImageSharp.Color[]> imageData = await Task.Run(() => imageStream.GetImageData());
 
@@ -99,7 +83,7 @@ namespace Arqus
             }
         }
 
-        private async void OnFetchMarkerData(Object sender)
+        private async void SendMarkerData()
         {
             List<QTMRealTimeSDK.Data.Camera> markerData = await Task.Run(() => markerStream.GetMarkerData());
 

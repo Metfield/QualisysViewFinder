@@ -32,10 +32,7 @@ namespace Arqus
         private ICameraService cameraService;
         private ISettingsService settingsService;
         private INavigationService navigationService;
-
-        private MarkerStream markerStream;
-        private ImageStream intensityStream;
-
+        
         private CameraState cameraState;
 
         public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService, ICameraService cameraService)
@@ -48,19 +45,6 @@ namespace Arqus
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
-            // Set up messaging system for stream handling.
-            // This is not optimal since it demands a lot
-            // of messaging do render an image sequence
-            // but for now it is to my knowledge the more
-            // portable way of doing it.
-            
-            MessagingCenter.Subscribe<CameraApplication>(this, 
-                MessageSubject.FETCH_IMAGE_DATA.ToString(), 
-                OnFetchImageData);
-
-            MessagingCenter.Subscribe<CameraApplication>(this,
-                MessageSubject.FETCH_MARKER_DATA.ToString(),
-                OnFetchMarkerData);
             
             // NOTE: This couples the ViewModel to the Urho View
             // maybe it's a better idea to create a service which
@@ -117,7 +101,7 @@ namespace Arqus
         private async void SetCameraMode()
         {
             await settingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
-            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), cameraState);
+            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState);
         }
     }
 }

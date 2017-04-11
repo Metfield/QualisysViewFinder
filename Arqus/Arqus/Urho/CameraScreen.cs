@@ -4,6 +4,7 @@ using Urho;
 using ImageSharp.Formats;
 using Urho.Urho2D;
 using QTMRealTimeSDK;
+using Xamarin.Forms;
 
 namespace Arqus.Visualization
 {
@@ -87,12 +88,15 @@ namespace Arqus.Visualization
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;
 
-            backgroundMaterial = Material.FromColor(backgroundColor);
-
             // Set position in relation to the number of cameras that are already initialized
             // so the screens can be positioned accordingly
             position = screenCount;
             screenCount++;
+
+            MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraID, (sender, state) =>
+            {
+                SetMode(state.Mode);
+            });
         }
         
 
@@ -124,7 +128,7 @@ namespace Arqus.Visualization
             intesityScreen.SetMaterial(Material);
             
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(new Color(0.1f, 0.1f, 0.1f)));
+            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.1f, 0.1f, 0.1f)));
 
             OnUpdateHandler += OnMarkerUpdate;
         }

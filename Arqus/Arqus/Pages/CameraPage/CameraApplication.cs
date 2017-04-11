@@ -66,32 +66,25 @@ namespace Arqus
             
             // Setup messaging wíth the view model to retrieve data
 
-            // TODO: Do we need to handle this when multiple modes are avaible?
-            MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), (sender, state) =>
-            {
-                Debug.WriteLine("Update mode to " + state.Mode.ToString());
-                screenList[(int)state.ID - 1].SetMode(state.Mode);
-            });
+            
+            
+
+            CreateScene();
+            SetupViewport();
+
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraPageViewModel, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
-            {
-                SetImageData(imageData);
-            });
-
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraPageViewModel, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
+            MessagingCenter.Subscribe<CameraService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
             {
                 SetMarkerData(cameras);
             });
 
-            // Make sure that the stream update loop runs in its own thread to keep interactions responsive
-            Task.Run(() => UpdateDataTask(1, () => InvokeOnMain(() => MessagingCenter.Send(this, MessageSubject.FETCH_IMAGE_DATA.ToString()) ) ) );
-            Task.Run(() => UpdateDataTask(30, () => InvokeOnMain(() => MessagingCenter.Send(this, MessageSubject.FETCH_MARKER_DATA.ToString()) ) ) );
+            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
+            MessagingCenter.Subscribe<CameraService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
+            {
+                SetImageData(imageData);
+            });
 
-            CreateScene();
-            SetupViewport();
-            
         }
 
         private void SetMode(int id, CameraMode mode)
@@ -160,7 +153,7 @@ namespace Arqus
                 float frameWidth = frameHeight * resolution.PixelAspectRatio;
 
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                CameraScreen screen = new CameraScreen(camera.CameraID, resolution, frameHeight, frameWidth, Urho.Color.Cyan, carousel.Min);
+                CameraScreen screen = new CameraScreen(camera.CameraID, resolution, frameHeight, frameWidth, carousel.Min);
                 
                 screenNode.AddComponent(screen);
                 screenList.Add(screen);
@@ -212,6 +205,8 @@ namespace Arqus
             }
         }
 
+        private bool updatingMarkerData;
+
         private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
         {
             int count = 0;
@@ -222,31 +217,7 @@ namespace Arqus
                     screenList[count].MarkerData = camera;
                 count++;
             }
-        }
-
-
-
-        /// <summary>
-        /// Fetches new stream data and updates the local structure
-        /// </summary>
-        public async void UpdateDataTask(int frequency, Action onUpdate)
-        {
-            while (!Engine.Exiting && !IsDeleted)
-            {
-                DateTime time = DateTime.UtcNow;
-                onUpdate();
-                
-                if (frequency > 0)
-                {
-                    var deltaTime = (DateTime.UtcNow - time).TotalMilliseconds;
-                    var timeToWait = 1000d / frequency - deltaTime;
-
-                    if (timeToWait >= 0)
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(timeToWait));
-                    }
-                }
-            }
+            
         }
 
 
@@ -280,8 +251,6 @@ namespace Arqus
                 // what a full screen actually is...
                 camera.PinchAndZoom(fingerOne, fingerTwo, carousel.Min, carousel.Min - 30);
             }
-            
-            
 
         }
 

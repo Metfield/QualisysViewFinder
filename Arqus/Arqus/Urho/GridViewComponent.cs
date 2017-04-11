@@ -91,7 +91,7 @@ namespace Arqus
 
                 // Create screen component and node. Add it to parent node (scene)
                 // TODO: handle 
-                Visualization.CameraScreen screen = new Visualization.CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, frameColor, 0);
+                Visualization.CameraScreen screen = new Visualization.CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, 0);
                 gridElementNode = gridNode.CreateChild("Camera" + camera.CameraID.ToString());                
                 gridElementNode.AddComponent(screen);
 

@@ -27,9 +27,12 @@ namespace Arqus.Visualization
         // General properties
         public int CameraID { private set; get; }
         public int position;
+        private float min;
         
         private Node screenNode;
-        private StaticModel frame;
+        private Urho.Shapes.Plane intesityScreen;
+        private Urho.Shapes.Plane markerScreen;
+
         public ImageResolution Resolution { private set; get; }
 
         public float Width { private set; get; }
@@ -72,10 +75,11 @@ namespace Arqus.Visualization
         }
         
 
-        public CameraScreen(int cameraID, ImageResolution resolution, float frameHeight, float frameWidth, Urho.Color backgroundColor)
+        public CameraScreen(int cameraID, ImageResolution resolution, float frameHeight, float frameWidth, float min)
         {
             CameraID = cameraID;
             Resolution = resolution;
+            this.min = min;
 
             Height = frameHeight;
             Width = frameWidth;
@@ -90,13 +94,14 @@ namespace Arqus.Visualization
             position = screenCount;
             screenCount++;
         }
+        
 
         public override void OnAttachedToNode(Node node)
         {
             base.OnAttachedToNode(node);
             
             screenNode = node.CreateChild();
-            screenNode.Scale = new Vector3(Height, 0, Width);
+            screenNode.Scale = new Vector3(Height, 1, Width);
 
             Pool = new MarkerSpherePool(20, screenNode);
             
@@ -107,7 +112,7 @@ namespace Arqus.Visualization
             screenNode.Rotate(new Quaternion(0, 90, 0), TransformSpace.Local);
 
             // Full namespace to avoid ambiquity
-            frame = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            intesityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
             texture = new Texture2D();
             texture.SetNumLevels(1);
 
@@ -116,7 +121,12 @@ namespace Arqus.Visualization
             Material = new Material();
             Material.SetTexture(TextureUnit.Diffuse, texture);
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
-            frame.SetMaterial(Material);
+            intesityScreen.SetMaterial(Material);
+            
+            markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            markerScreen.SetMaterial(Material.FromColor(new Color(0.1f, 0.1f, 0.1f)));
+
+            OnUpdateHandler += OnMarkerUpdate;
         }
         
         private void CleanCamera()
@@ -127,6 +137,7 @@ namespace Arqus.Visualization
                     CleanMarker();
                     break;
                 case CameraMode.ModeMarkerIntensity:
+                case CameraMode.ModeVideo:
                     CleanIntensity();
                     break;
                 default:
@@ -136,7 +147,7 @@ namespace Arqus.Visualization
 
         private void CleanMarker()
         {
-            //Pool.Hide();
+            Pool.Hide();
         }
 
         private void CleanIntensity()
@@ -146,12 +157,16 @@ namespace Arqus.Visualization
 
         private void SetIntensityMode()
         {
+            markerScreen.Enabled = false;
+            intesityScreen.Enabled = true;
             CurrentCameraMode = CameraMode.ModeMarkerIntensity;
-            OnUpdateHandler = OnIntensityUpdate;
+            OnUpdateHandler = OnImageUpdate;
         }
 
         private void SetMarkerMode()
         {
+            intesityScreen.Enabled = false;
+            markerScreen.Enabled = true;
             CurrentCameraMode = CameraMode.ModeMarker;
             OnUpdateHandler = OnMarkerUpdate;
         }
@@ -177,6 +192,7 @@ namespace Arqus.Visualization
                     SetMarkerMode();
                     break;
                 case CameraMode.ModeMarkerIntensity:
+                case CameraMode.ModeVideo:
                     SetIntensityMode();
                     break;
                 default:
@@ -198,50 +214,75 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
-            OnUpdateHandler?.Invoke();
+            if (screenNode.WorldPosition.Z >= min - 20 && screenNode.WorldPosition.Z <= min + 20)
+            {
+                screenNode.Enabled = true;
+            }
+            else if (screenNode.Enabled)
+            {
+                screenNode.Enabled = false;
+                Pool.Hide();
+            }
 
+
+            if (dirty && screenNode.Enabled)
+            {
+                OnUpdateHandler?.Invoke();
+                dirty = false;
+            }
         }
 
         
         private void OnMarkerUpdate()
         {
-            if(dirty)
+            // This index will be used as an array pointer to help identify and disable
+            // markers which are not being currently used
+            int lastUsedInArray = 0;
+                
+            // Iterate through the marker array, transform and draw spheres
+            for (int i = 0; i < markerData.MarkerCount; i++)
             {
-                // This index will be used as an array pointer to help identify and disable
-                // markers which are not being currently used
-                int lastUsedInArray = 0;
+                // Transform from camera coordinates to frame coordinates
+                float adjustedX = DataOperations.ConvertRange(0, Resolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X / 64);
+                float adjustedY = DataOperations.ConvertRange(0, Resolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y / 64);
+                float adjustedScaleX = DataOperations.ConvertRange(0, Resolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX / 64);
+                float adjustedScaleY = DataOperations.ConvertRange(0, Resolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY / 64);
 
-                // Iterate through the marker array, transform and draw spheres
-                for (int i = 0; i < markerData.MarkerCount; i++)
-                {
-                    // Transform from camera coordinates to frame coordinates
-                    float adjustedX = DataOperations.ConvertRange(0, Resolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X / 64);
-                    float adjustedY = DataOperations.ConvertRange(0, Resolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y / 64);
-                    float adjustedScaleX = DataOperations.ConvertRange(0, Resolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX / 64);
-                    float adjustedScaleY = DataOperations.ConvertRange(0, Resolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY / 64);
+                MarkerSphere sphere = Pool.Get(i);
+                // Set world position with new frame coordinates            
+                sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
+                sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
 
-                    MarkerSphere sphere = Pool.Get(i);
-                    // Set world position with new frame coordinates            
-                    sphere.Position = new Vector3(adjustedY, 100, adjustedX);
-                    sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
-
-                    // Last element will set this variable
-                    //lastUsedInArray = i;
-                }
-
-                // Hide the markers which were not used on this frame
-                //Pool.HideUnused(lastUsedInArray);
+                // Last element will set this variable
+                lastUsedInArray = i;
             }
 
+            // Hide the markers which were not used on this frame
+            Pool.HideUnused(lastUsedInArray);
         }
 
-        private void OnIntensityUpdate()
+        private void OnImageUpdate()
         {
-            if(dirty)
+            UpdateMaterialTexture(imageData);
+        }
+        
+
+        /// <summary>
+        /// Creates a solid backdrop texture
+        /// </summary>
+        /// <param name="color">Color of the backdrop</param>
+        private void LoadBackdropTexture(ImageSharp.Color color)
+        {
+            int size = Resolution.PixelCount;
+            ImageSharp.Color[] backdrop = new ImageSharp.Color[size];
+
+            for(int position = 0; position < size; position++)
             {
-                dirty = false;
-                UpdateMaterialTexture(imageData);
+                backdrop[position] = color;
             }
+
+            imageData = backdrop;
+            UpdateMaterialTexture(imageData);
         }
 
     }

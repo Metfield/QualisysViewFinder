@@ -26,17 +26,18 @@ namespace Arqus.Services
         private int frequency;
 
         // Variables to handle packets
-        private PacketType packetType;
         protected RTPacket currentPacket;
 
         // We need a lock object to prevent a packet from getting overwritten
         // during retrieval
         private Object thisLock;
+        protected QTMNetworkConnection networkConnection;
 
         protected Stream(ComponentType type, int frequency)
         {
             this.type = type;
             this.frequency = frequency;
+            networkConnection = new QTMNetworkConnection();
         }
 
         public void StartStream()
@@ -46,7 +47,7 @@ namespace Arqus.Services
                 streaming = true;
 
                 // NOTE: We might have to initatiate a unique network instance for each stream
-                bool success = QTMNetworkConnection.Instance.protocol.StreamFrames(StreamRate.RateFrequency, frequency, type);
+                bool success = networkConnection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type);
 
                 if (!success)
                     return;
@@ -81,9 +82,9 @@ namespace Arqus.Services
             while (streaming)
             {
                 DateTime time = DateTime.UtcNow;
-                QTMNetworkConnection.Instance.protocol.ReceiveRTPacket(out packetType);
-            
-                currentPacket = QTMNetworkConnection.Instance.protocol.GetRTPacket();
+                PacketType packetType = new PacketType();
+                networkConnection.Protocol.ReceiveRTPacket(out packetType);
+                currentPacket = networkConnection.Protocol.GetRTPacket();
 
                 if (frequency > 0)
                 {
@@ -95,6 +96,7 @@ namespace Arqus.Services
                         await Task.Delay(TimeSpan.FromMilliseconds(timeToWait));
                     }
                 }
+                
             }
         }
 

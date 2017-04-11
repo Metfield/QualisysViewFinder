@@ -15,22 +15,35 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-	public class CameraPageViewModel : BindableBase, INavigatedAware
+    public class CameraState
+    {
+        public uint ID { get; set; }
+        public CameraMode Mode { get; set; }
+
+        public CameraState(uint id, CameraMode mode)
+        {
+            ID = id;
+            Mode = mode;
+        }
+    }
+
+    public class CameraPageViewModel : BindableBase, INavigatedAware
 	{
+        private ICameraService cameraService;
+        private ISettingsService settingsService;
         private INavigationService navigationService;
-        private ISettingsService service;
 
         private MarkerStream markerStream;
-        private IntensityStream intensityStream;
+        private ImageStream intensityStream;
 
-        public CameraPageViewModel(INavigationService navigationService, ISettingsService service)
+        private CameraState cameraState;
+
+        public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService, ICameraService cameraService)
         {
+            this.cameraService = cameraService;
+            this.settingsService = settingsService;
             this.navigationService = navigationService;
-            this.service = service;
-
-            intensityStream = new IntensityStream();
-            markerStream = new MarkerStream();
-
+            
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
@@ -40,7 +53,7 @@ namespace Arqus
             // of messaging do render an image sequence
             // but for now it is to my knowledge the more
             // portable way of doing it.
-
+            
             MessagingCenter.Subscribe<CameraApplication>(this, 
                 MessageSubject.FETCH_IMAGE_DATA.ToString(), 
                 OnFetchImageData);
@@ -48,31 +61,27 @@ namespace Arqus
             MessagingCenter.Subscribe<CameraApplication>(this,
                 MessageSubject.FETCH_MARKER_DATA.ToString(),
                 OnFetchMarkerData);
+            
+            // NOTE: This couples the ViewModel to the Urho View
+            // maybe it's a better idea to create a service which
+            // handles selection. If there is a good way to inject
+            // the settings service into the Urho view that might
+            // be a better way to go about it..
+            MessagingCenter.Subscribe<CameraApplication, int>(this,
+                MessageSubject.SET_CAMERA_SELECTION.ToString(),
+                OnCameraSelection);
+
+            cameraState = new CameraState(id: 1, mode: CameraMode.ModeMarker);
+            cameraState.ID = 1;
+            cameraState.Mode = CameraMode.ModeMarker;
 
             // Default to marker mode
-            SetCameraMode(CameraMode.ModeMarker);
+            SetCameraMode();
         }
 
-        
-
-        private async void OnFetchImageData(Object sender)
+        private void OnCameraSelection(Object sender, int cameraID)
         {
-            List<ImageSharp.Color[]> imageData = await Task.Run(() => intensityStream.GetImageData());
-
-            if(imageData != null)
-            {
-                MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), imageData);
-            }
-        }
-
-        private async void OnFetchMarkerData(Object sender)
-        {
-            List<QTMRealTimeSDK.Data.Camera> markerData = await Task.Run(() => markerStream.GetMarkerData());
-
-            if (markerData != null)
-            {
-                MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), markerData);
-            }
+            cameraState.ID = (uint)cameraID;
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -99,28 +108,16 @@ namespace Arqus
             set { SetProperty(ref currentMode, value); }
         }
 
-        private async void SetCameraMode(CameraMode mode)
+        private void SetCameraMode(CameraMode mode)
         {
-            bool success = await service.SetCameraMode(20400, mode);
+            cameraState.Mode = mode;
+            SetCameraMode();
+        }
 
-            if (success)
-            {
-                CurrentMode = mode;
-                switch (mode)
-                {
-                    case CameraMode.ModeMarkerIntensity:
-                        intensityStream.StartStream();
-                        break;
-                    case CameraMode.ModeMarker:
-                        markerStream.StartStream();
-                        break;
-                    default:
-                        throw new Exception("Stream mode no yet implemented");
-                }
-
-
-                MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), mode);
-            }
+        private async void SetCameraMode()
+        {
+            await settingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
+            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), cameraState);
         }
     }
 }

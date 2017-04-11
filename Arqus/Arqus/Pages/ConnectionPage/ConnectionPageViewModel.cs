@@ -1,9 +1,11 @@
 ﻿using Arqus.Connection;
+using Arqus.Helpers;
 using Arqus.Services;
 using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
+using Prism.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,11 +31,13 @@ namespace Arqus
         private QTMNetworkConnection networkConnection;
         private INavigationService navigationService;
         private IUnityContainer container;
+        private IPageDialogService pageDialogService;
 
-        public ConnectionPageViewModel(INavigationService navigationService, IUnityContainer container)
+        public ConnectionPageViewModel(INavigationService navigationService, IUnityContainer container, IPageDialogService pageDialogService)
         {
             this.container = container;
             this.navigationService = navigationService;
+            this.pageDialogService = pageDialogService;
 
             networkConnection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;
@@ -43,6 +47,12 @@ namespace Arqus
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
             ConnectCommand = new DelegateCommand(() => OnConnectionStarted());
+
+
+            MessagingCenter.Subscribe<QTMNetworkConnection>(this, MessageSubject.ENTER_PASSWORD.ToString(), async (sender) =>
+            {
+                await pageDialogService.DisplayAlertAsync("Incorrect Password", "The entered password was incorrect please enter a valid one.", "Ok");
+            });
         }
         
 
@@ -201,81 +211,47 @@ namespace Arqus
         public DelegateCommand ConnectCommand { private set;  get; }
 
 
-        private string ipAddress = "192.168.10.170";
+        private string ipAddress = "192.168.10.161";
 
         public string IPAddress
         {
             get { return ipAddress; }
             set { ipAddress = value; }
         }
-        
-        
+
+
+        private string password = "test";
+
+        public string Password
+        {
+            get { return password; }
+            set { SetProperty(ref password, value); }
+        }
+
+
         /// <summary>
         /// Callback method for starting connection
         /// </summary>
-        void OnConnectionStarted()
-        {
-            // Check if ip is valid
-            if (!IsValidIPv4(IPAddress))
-            {
-                SharedProjects.Notification.Show("Attention", "Please enter a valid IP address");                
-                return;
-            }
-
-            // Proceed to connect to address
-            ConnectAsync(IPAddress);
-        }
-
-        /// <summary>
-        /// Starts network communication with QTM through specified IP
-        /// </summary>
-        /// <param name="ipAddress">QTM's instance address</param>
-        public async void ConnectAsync(string ipAddress)
+        async void OnConnectionStarted()
         {
             // Connect to IP
-            if (!networkConnection.Connect(ipAddress))
+            bool success = networkConnection.Connect(IPAddress, Password);
+
+            if (!success)
             {
                 // There was an error with the connection
-                SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP");
+                SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
                 return;
             }
+
+            container.RegisterType<ICameraService, CameraService>();
+            container.RegisterType<ISettingsService, SettingsService>(new InjectionConstructor(ipAddress));
             
-            container.RegisterType<ISettingsService, SettingsService> (new InjectionConstructor(ipAddress));
             // Connection was successfull          
             // Begin streaming 
             await navigationService.NavigateAsync("OnlineStreamMenuPage");
         }
 
-        /// <summary>
-        /// Makes sure ipAddress string is a valid IPv4
-        /// </summary>
-        /// <param name="ipString">Holds QTM instance IP address</param>
-        /// <returns></returns>
-        public bool IsValidIPv4(string ipString)
-        {
-            // Check for null string
-            if (ipString == null)
-                return false;
-
-            // Check if it's made of four elements
-            if (ipString.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Length != 4)
-                return false;
-
-            IPAddress address;
-
-            // Check if this is a valid IP address
-            if (System.Net.IPAddress.TryParse(ipString, out address))
-            {
-                // Make sure it's an ipv4 (although it should)
-                if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                {
-                    return true;
-                }
-            }
-
-            // TODO: Check if address is in LAN and in a valid range!
-
-            return false;
-        }
+      
     }
 }

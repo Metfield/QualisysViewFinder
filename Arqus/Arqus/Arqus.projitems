@@ -18,15 +18,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)RTStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\IntensityStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\GridViewComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\UGridScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Image.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PacketConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\PacketObjects.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
       <DependentUpon>CameraPage.xaml</DependentUpon>

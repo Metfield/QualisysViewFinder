@@ -10,7 +10,7 @@ namespace Arqus
 {
     class GridViewComponent : Component
     {
-        QTMNetworkConnection qtmConnection;
+        QTMNetworkConnection networkConnection;
         int cameraCount;
         List<ImageCamera> cameras;
         Node gridNode;
@@ -27,7 +27,7 @@ namespace Arqus
         public GridViewComponent(Vector3 origin, float frameHeight, int columns, Color _frameColor)
         {
             // Get network connection reference
-            qtmConnection = QTMNetworkConnection.Instance;
+            networkConnection = new QTMNetworkConnection();
 
             // Get camera count from stream class
             //cameraCount = CameraStream.Instance.GetStreamMarkerData().Count;
@@ -78,7 +78,7 @@ namespace Arqus
             gridNode = node;
 
             // Get list of cameras
-            cameras = qtmConnection.GetImageSettings();
+            cameras = networkConnection.GetImageSettings();
             Node gridElementNode;
             int currColumn = -1, currRow = 1;
              
@@ -90,7 +90,8 @@ namespace Arqus
                 FrameWidth = imageResolution.PixelAspectRatio * FrameHeight;
 
                 // Create screen component and node. Add it to parent node (scene)
-                Visualization.CameraScreen screen = new Visualization.CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, frameColor);
+                // TODO: handle 
+                Visualization.CameraScreen screen = new Visualization.CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, frameColor, 0);
                 gridElementNode = gridNode.CreateChild("Camera" + camera.CameraID.ToString());                
                 gridElementNode.AddComponent(screen);
 

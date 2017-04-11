@@ -5,7 +5,7 @@ using QTMRealTimeSDK.Data;
 using System.Linq;
 using System.Diagnostics;
 using Arqus.Helpers;
-using static Arqus.Helpers.PacketConverter;
+using static Arqus.Helpers.Packet;
 using System.Threading;
 using System.Threading.Tasks;
 using ImageSharp.Formats;
@@ -28,7 +28,8 @@ namespace Arqus
 
         PacketType packetType;
         ComponentType currentStreamType;
-        
+        private QTMNetworkConnection networkConnection = new QTMNetworkConnection();
+
 
         static CameraStream() { }
         private CameraStream() { }
@@ -47,14 +48,14 @@ namespace Arqus
         /// <param name="type">Specifies the component type to stream</param>
         public bool StartStream(int streamFrequency, ComponentType type)
         {
-            if (!Streaming && QTMNetworkConnection.Instance.protocol.IsConnected())
+            if (!Streaming && networkConnection.Connect())
             {
                 Console.WriteLine("Starting stream!");
                 currentStreamType = type;
-                QTMNetworkConnection.Instance.protocol.StreamFrames(StreamRate.RateFrequency, streamFrequency, type); 
+                networkConnection.Protocol.StreamFrames(StreamRate.RateFrequency, streamFrequency, type); 
                 Streaming = true;
             }
-            else if (!QTMNetworkConnection.Instance.protocol.IsConnected())
+            else if (!networkConnection.Protocol.IsConnected())
             {
                 Console.WriteLine("Unable to start stream: Not Connected");
                 Streaming = false;
@@ -65,14 +66,14 @@ namespace Arqus
 
         public async Task<List<QTMRealTimeSDK.Data.CameraImage>> GetMarkerData2D()
         {
-            QTMNetworkConnection.Instance.protocol.ReceiveRTPacket(out packetType);
-            return await Task.Run(() => (QTMNetworkConnection.Instance.protocol.GetRTPacket().GetImageData()));
+            networkConnection.Protocol.ReceiveRTPacket(out packetType);
+            return await Task.Run(() => (networkConnection.Protocol.GetRTPacket().GetImageData()));
         }
 
         public async Task<int> GetCurrentFrame()
         {
-            QTMNetworkConnection.Instance.protocol.ReceiveRTPacket(out packetType);
-            return await Task.Run(() => (QTMNetworkConnection.Instance.protocol.GetRTPacket().GetFrameNumber()));
+            networkConnection.Protocol.ReceiveRTPacket(out packetType);
+            return await Task.Run(() => (networkConnection.Protocol.GetRTPacket().GetFrameNumber()));
         }
         
         public async Task<List<ImageSharp.Color[]>> GetImageData()

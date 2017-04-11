@@ -8,10 +8,11 @@ using System.Text;
 
 namespace Arqus.Services
 {
-    class IntensityStream : Stream
+    class ImageStream : Stream
     {
-        public IntensityStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency){ }
 
+        public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency){ }
+        
         /// <summary>
         /// Name: GetImageData
         /// 
@@ -38,6 +39,17 @@ namespace Arqus.Services
                 return null;
             }
 
+        }
+
+        public Color[] GetImageData(int id)
+        {
+            if (currentPacket != null)
+            {
+                byte[] imageData = currentPacket.GetImageData(id).ImageData;
+                return ImageProcessor.DecodeJPG(imageData);
+            }
+
+            return null;
         }
 
     }

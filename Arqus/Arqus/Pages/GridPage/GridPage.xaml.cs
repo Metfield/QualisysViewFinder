@@ -12,7 +12,7 @@ namespace Arqus
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GridPage : ContentPage
 	{
-        UGridScene gridScene;
+        GridApplication gridScene;
 
 		public GridPage()
 		{
@@ -33,7 +33,7 @@ namespace Arqus
         private async void CreateUrhoSurface()
         {
             // Create and initialize urhoSharp scene
-            gridScene = await urhoSurface.Show<UGridScene>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            gridScene = await urhoSurface.Show<GridApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
         }
     }
 }

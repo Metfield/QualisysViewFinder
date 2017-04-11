@@ -1,30 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Urho;
-using Urho.Shapes;
-using Urho.Actions;
-using Urho.Gui;
-using System;
-using Arqus.Visualization;
-using Arqus.Helpers;
+﻿using System;
+using System.Linq;
 using System.Diagnostics;
-using Arqus.Components;
-using QTMRealTimeSDK.Settings;
-using Xamarin.Forms;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using Urho;
+using Arqus.Helpers;
+using Arqus.Visualization;
+
 using QTMRealTimeSDK;
-using Arqus.Services;
+using QTMRealTimeSDK.Settings;
+
+using Xamarin.Forms;
 
 namespace Arqus
 {
     public class CameraApplication : Urho.Application
     {
-        Camera camera;
-        Scene scene;
-        Octree octree;
-        Node meshNode;
+        private Camera camera;
+        private Scene scene;
+        private Octree octree;
+        private Node meshNode;
 
-        Carousel carousel;
-        Vector3 cameraOffset;
+        private Carousel carousel;
+        private Vector3 cameraOffset;
+        private Position cameraMinPosition;
 
         float meshScale,
               markerSphereScale;
@@ -38,7 +38,7 @@ namespace Arqus
         int currentFrame = 0;
 
         float cameraMovementSpeed;
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -51,7 +51,10 @@ namespace Arqus
             UnhandledException += (s, e) =>
             {
                 if (Debugger.IsAttached)
-                    Debugger.Break();
+                {
+                    // NOTE: This will always activate when switching mode
+                    //Debugger.Break();
+                }
                 e.Handled = true;
             };
         }
@@ -64,11 +67,11 @@ namespace Arqus
             // Setup messaging wíth the view model to retrieve data
 
             // TODO: Do we need to handle this when multiple modes are avaible?
-           /* MessagingCenter.Subscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), (sender, mode) =>
+            MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), (sender, state) =>
             {
-                SetMode(0, mode);
+                Debug.WriteLine("Update mode to " + state.Mode.ToString());
+                screenList[(int)state.ID - 1].SetMode(state.Mode);
             });
-            */
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
             MessagingCenter.Subscribe<CameraPageViewModel, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
@@ -101,10 +104,12 @@ namespace Arqus
         {
             cameraMovementSpeed = 0.001f;
             // Create carousel
-            carousel = new Carousel(500, 8, 0, 0);
+            carousel = new Carousel(300, 8, 0, 0);
 
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
+            Input.SubscribeToTouchEnd(OnTouchReleased);
+
 
             // Create new scene
             scene = new Scene();
@@ -115,7 +120,16 @@ namespace Arqus
             // Create camera 
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
-            cameraNode.Position = new Vector3(0, 0, -10);
+            // TODO: Change this to max when that has been implemented
+            cameraNode.Position = new Vector3(0, 0, carousel.Min);
+
+            // Create light and attach to camera
+            Node lightNode = cameraNode.CreateChild(name: "light");
+            Light light = lightNode.CreateComponent<Light>();
+            light.LightType = LightType.Point;
+            light.Range = 10000;
+            light.Brightness = 1.3f;
+
 
             // Initialize marker sphere meshes   
             InitializeCameras();
@@ -146,8 +160,8 @@ namespace Arqus
                 float frameWidth = frameHeight * resolution.PixelAspectRatio;
 
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                CameraScreen screen = new CameraScreen(camera.CameraID, resolution, frameHeight, frameWidth, Urho.Color.Cyan);
-
+                CameraScreen screen = new CameraScreen(camera.CameraID, resolution, frameHeight, frameWidth, Urho.Color.Cyan, carousel.Min);
+                
                 screenNode.AddComponent(screen);
                 screenList.Add(screen);
             }
@@ -159,14 +173,26 @@ namespace Arqus
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
-
-            // Create a dummy position vector 
-            //Vector2 tempPosition = Vector2.Zero;
+            
+            foreach(var screen in screenList)
+            {
+                Position coordinates = carousel.GetCoordinatesForPosition(screen.position);
+                screen.Node.SetWorldPosition(new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y));
+            }
+            
             // Update camera offset and reset 
-            camera.Node.Position += cameraOffset;
+            //UpdateCameraPosition();
+            
+        }
+
+        void UpdateCameraPosition()
+        {
+            // Update camera offset and reset 
+            camera.Node.Position += (camera.Node.Right * cameraOffset.X) +
+                                    (camera.Node.Up * cameraOffset.Y) +
+                                    (camera.Node.Direction * cameraOffset.Z);
+
             cameraOffset = Vector3.Zero;
-            
-            
         }
 
         private void SetImageData(List<ImageSharp.Color[]> data)
@@ -179,8 +205,9 @@ namespace Arqus
                     break;
 
                 // TODO: Handle video as well
-                if (screenList.Count > count && screenList[count].CurrentCameraMode == CameraMode.ModeMarkerIntensity)
+                if (screenList.Count > count && screenList[count].CurrentCameraMode != CameraMode.ModeMarker)
                     screenList[count].ImageData = image;
+
                 count++;
             }
         }
@@ -240,29 +267,34 @@ namespace Arqus
         {
             if (Input.NumTouches == 1)
             {
-                //cameraOffset.X = -eventArgs.DX * cameraMovementSpeed;
-                //cameraOffset.Y = eventArgs.DY * cameraMovementSpeed;
                 carousel.Offset += eventArgs.DX * cameraMovementSpeed;
             }
-            else if (Input.NumTouches >= 2)
+
+            if (Input.NumTouches >= 2)
             {
-                var precision = 0.1;
-                var touch1 = Input.GetTouch(0);
-                var touch2 = Input.GetTouch(1);
-
-                double oldDistance = getDistance2D(touch1.LastPosition.X, touch2.LastPosition.X, touch1.LastPosition.Y, touch2.LastPosition.Y);
-                double newDistance = getDistance2D(touch1.Position.X, touch2.Position.X, touch1.Position.Y, touch2.Position.Y);
-                double deltaDistance = oldDistance - newDistance;
-
-                if (Math.Abs(deltaDistance) > precision)
-                {
-                    float scale = (float)(newDistance / oldDistance);
-                    float zoom = (newDistance > oldDistance) ? scale : -scale;
-
-                    camera.Node.SetWorldPosition(new Vector3(camera.Node.Position.X, camera.Node.Position.Y, camera.Node.Position.Z + zoom));
-                }
+                // Get Touchstates
+                TouchState fingerOne = Input.GetTouch(0);
+                TouchState fingerTwo = Input.GetTouch(1);
+                
+                // HACK: Current max is not calculated, this should be fixed to more closesly corelate to
+                // what a full screen actually is...
+                camera.PinchAndZoom(fingerOne, fingerTwo, carousel.Min, carousel.Min - 30);
             }
+            
+            
+
         }
+
+        void OnTouchReleased(TouchEndEventArgs eventArgs)
+        {
+            List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
+            CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
+            Debug.WriteLine(focus.CameraID);
+            carousel.SetFocus(focus.position);
+
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.CameraID);
+        }
+        
 
         /// <summary>
         /// Returns the distance between two 2D-points

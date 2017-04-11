@@ -8,7 +8,7 @@ using Urho.Shapes;
 
 namespace Arqus
 {
-    public class UGridScene : Application
+    public class GridApplication : Application
     {
         Camera camera;
         Scene scene;
@@ -40,7 +40,7 @@ namespace Arqus
         // Holds gridView (and all its children)
         Node gridViewNode;
 
-        public UGridScene(ApplicationOptions options) : base(options)
+        public GridApplication(ApplicationOptions options) : base(options)
         {
             cameraCount = 0;
             cameraMovementSpeed = 0.05f;

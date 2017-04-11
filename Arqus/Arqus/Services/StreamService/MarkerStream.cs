@@ -1,4 +1,5 @@
-﻿using QTMRealTimeSDK.Data;
+﻿using QTMRealTimeSDK;
+using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,9 @@ namespace Arqus.Services
             return currentPacket?.Get2DMarkerData();   
         }
 
-        public Camera GetMarkerData(int id) { return currentPacket.Get2DMarkerData(id);}
+        public Camera? GetMarkerData(int id)
+        {
+            return currentPacket?.Get2DMarkerData(id);
+        }
     }
 }

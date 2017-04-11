@@ -7,7 +7,9 @@ namespace Arqus.Helpers
         STREAM_MODE_CHANGED,
         STREAM_DATA_SUCCESS,
         FETCH_IMAGE_DATA,
-        FETCH_MARKER_DATA
+        FETCH_MARKER_DATA,
+        ENTER_PASSWORD,
+        SET_CAMERA_SELECTION
     }
 
     public class MessagingCenterAlert

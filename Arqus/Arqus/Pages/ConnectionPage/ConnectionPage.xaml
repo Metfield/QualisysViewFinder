@@ -33,7 +33,8 @@
             BackgroundColor="{StaticResource primary}"/>
 
             <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
-            
+            <Entry Placeholder="Password" Text="{Binding Password}" />
+
             <Button Text="Connect" Command="{Binding ConnectCommand}" />
             
         </StackLayout>

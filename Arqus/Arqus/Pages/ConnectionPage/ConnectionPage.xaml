@@ -9,7 +9,10 @@
              NavigationPage.HasNavigationBar="True" >
 
     <StackLayout VerticalOptions="Center">
-        
+
+        <!-- <Image Source="Drawable/arqus_logo.png" WidthRequest="500" HeightRequest="500" /> -->
+
+
         <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Orientation="Horizontal">
             <Button Text="Discover" BackgroundColor="{StaticResource primary}" Command="{Binding ConnectionModeDiscoveryCommand}"/>
             <Button Text="Manually" BackgroundColor="{StaticResource primary}" Command="{Binding ConnectionModeManuallyCommand}"/>

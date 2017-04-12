@@ -26,14 +26,20 @@ namespace Arqus
                 {
                     float scale = (float)(newDistance / oldDistance);
                     float zoom = (newDistance > oldDistance) ? scale : -scale;
+                    // TODO: transform the precision depending on distance from screen to camera so
+                    // that the user can zoom in really closely with great precision
 
+                    float z = 0;
                     // Update camera offset
-                    if(camera.Node.Position.Z <= min && camera.Node.Position.Z >= max)
-                        camera.Node.SetWorldPosition(new Vector3(camera.Node.Position.X, camera.Node.Position.Y, camera.Node.Position.Z + zoom));
-                    else if(camera.Node.Position.Z > min)
-                        camera.Node.SetWorldPosition(new Vector3(camera.Node.Position.X, camera.Node.Position.Y, min));
+                    if (camera.Node.Position.Z <= min && camera.Node.Position.Z >= max)
+                        z = camera.Node.Position.Z + zoom;
+                    else if (camera.Node.Position.Z > min)
+                        z = min;
                     else
-                        camera.Node.SetWorldPosition(new Vector3(camera.Node.Position.X, camera.Node.Position.Y, max));
+                        z = max;
+
+                    // NOTE: Is this marked as dirty and only updated in the update loop
+                    camera.Node.SetWorldPosition(new Vector3(camera.Node.Position.X, camera.Node.Position.Y, z));
                 }
             }
         }

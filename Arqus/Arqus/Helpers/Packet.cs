@@ -14,7 +14,6 @@ namespace Arqus.Helpers
 
         public static string CameraImage(uint id, bool enabled, string width, string height, string format = "JPG")
         {
-            XmlDocument document = new XmlDocument();
             string packet = @"<QTM_Settings>
                 <Image>
                     <Camera>
@@ -26,15 +25,12 @@ namespace Arqus.Helpers
                     </Camera>
                 </Image>
             </QTM_Settings>";
-
-            document.LoadXml(string.Format(packet, id, enabled, format, width, height));
-
-            return document.OuterXml;
+            
+            return FormatStringToXML(string.Format(packet, id, enabled, format, width, height));
         }
 
         public static string Camera(uint id, string mode)
         {
-            XmlDocument document = new XmlDocument();
             string packet = @"<QTM_Settings>
                 <General>
                     <Camera>
@@ -44,7 +40,13 @@ namespace Arqus.Helpers
                 </General>
             </QTM_Settings>";
 
-            document.LoadXml(string.Format(packet, id, mode));
+            return FormatStringToXML(string.Format(packet, id, mode));
+        }
+
+        private static string FormatStringToXML(string value)
+        {
+            XmlDocument document = new XmlDocument();
+            document.LoadXml(value);
 
             return document.OuterXml;
         }

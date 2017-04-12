@@ -65,10 +65,6 @@ namespace Arqus
             base.Start();
             
             // Setup messaging wíth the view model to retrieve data
-
-            
-            
-
             CreateScene();
             SetupViewport();
 

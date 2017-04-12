@@ -1,17 +1,14 @@
-﻿using Arqus.Helpers;
-using QTMRealTimeSDK;
-using QTMRealTimeSDK.Settings;
+﻿using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 using Urho;
 using Urho.Shapes;
-using Xamarin.Forms;
 
 namespace Arqus
 {
-    public class GridApplication : Urho.Application
+    public class UGridScene : Application
     {
         Camera camera;
         Scene scene;
@@ -34,7 +31,6 @@ namespace Arqus
         Vector3 gridPosition;
         float gridMovementSpeed;
         Vector3 gridViewOrigin;
-        private GridViewComponent gridView;
 
         int gridFrameHeight;
         int gridNumColumns;
@@ -44,7 +40,7 @@ namespace Arqus
         // Holds gridView (and all its children)
         Node gridViewNode;
 
-        public GridApplication(ApplicationOptions options) : base(options)
+        public UGridScene(ApplicationOptions options) : base(options)
         {
             cameraCount = 0;
             cameraMovementSpeed = 0.05f;
@@ -70,21 +66,7 @@ namespace Arqus
             CreateScene();
             InitializeGrid();
             SetupViewport();
-
-
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
-            {
-                SetMarkerData(cameras);
-            });
-
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
-            {
-                SetImageData(imageData);
-            });
-
-        }
+        }        
 
         // Sets up scene elements 
         private void CreateScene()
@@ -108,7 +90,7 @@ namespace Arqus
             // Create background plane
             Node backPlaneNode = scene.CreateChild("backPlane");
             backPlane = backPlaneNode.CreateComponent<Urho.Shapes.Plane>();
-            backPlane.SetMaterial(Material.FromColor(new Urho.Color(0.1f, 0.1f, 0.1f), true));
+            backPlane.SetMaterial(Material.FromColor(new Color(0.1f, 0.1f, 0.1f), true));
 
             // Rotate plane
             backPlaneNode.SetScale(500);
@@ -133,25 +115,38 @@ namespace Arqus
             camera.Node.Position = new Vector3(0, 0, -173);
 
             // Create gridView.. HACKed height, column number 
-            gridView = new GridViewComponent(gridViewOrigin, gridFrameHeight, gridNumColumns, new Urho.Color(0.215f, 0.301f, 0.337f));
+            GridViewComponent gridView = new GridViewComponent(gridViewOrigin, gridFrameHeight, gridNumColumns, new Color(0.215f, 0.301f, 0.337f));
             gridView.Padding = gridFramePadding;
 
             // Add node to scene, along with gridview component
             gridViewNode = scene.CreateChild("gridView");
             gridViewNode.AddComponent(gridView);
-          
 
-            gridViewBottom = gridViewOrigin.Y + ((gridFramePadding + gridFrameHeight) * gridView.screens.Count);
+            // Update stream data before using the camera count variable
+            UpdateStreamData();                
+            gridViewBottom = gridViewOrigin.Y + ((gridFramePadding + gridFrameHeight) * cameraCount);
         }
 
         // Called on every tick
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
-           
+            
+            // Update camera stream
+            UpdateStreamData();
 
             // Update Camera position
             UpdateCameraPosition();
+        }
+                
+        /// <summary>
+        /// Fills streamDataCameraList with new frame information
+        /// </summary>
+        private void UpdateStreamData()
+        {
+            // Update stream data and camera count            
+            //CameraStream.Instance.UpdateStreamData();
+            //cameraCount = CameraStream.Instance.GetCameraCount();
         }
 
         // Updates camera position using values provided by the touch callback method        
@@ -221,40 +216,6 @@ namespace Arqus
             }
         }
 
-
-        private void SetImageData(List<ImageSharp.Color[]> data)
-        {
-            int count = 0;
-
-            foreach (ImageSharp.Color[] image in data)
-            {
-                if (image == null)
-                    break;
-
-                // TODO: Handle video as well
-                if (gridView.screens.Count > count && gridView.screens[count].CurrentCameraMode != CameraMode.ModeMarker)
-                    gridView.screens[count].ImageData = image;
-
-                count++;
-            }
-        }
-
-        private bool updatingMarkerData;
-
-        private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
-        {
-            int count = 0;
-
-            foreach (QTMRealTimeSDK.Data.Camera camera in data)
-            {
-                if (gridView.screens.Count > count && gridView.screens[count].CurrentCameraMode == CameraMode.ModeMarker)
-                    gridView.screens[count].MarkerData = camera;
-                count++;
-            }
-
-        }
-
-
         bool isPinching(ref int x1, ref int x2, ref int y1, ref int y2)
         {
             return (x1 * x2 < 0) || (y1 * y2 < 0) ? true : false;
@@ -274,7 +235,7 @@ namespace Arqus
         private int id;
         Urho.Shapes.Plane backgroundPlane;        
 
-        public GridElement(int _id, Vector3 position, int width, int height, Urho.Color color)
+        public GridElement(int _id, Vector3 position, int width, int height, Color color)
         {
             Position = position;
             Width = width;

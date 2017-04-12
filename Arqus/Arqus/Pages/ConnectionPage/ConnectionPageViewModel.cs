@@ -249,7 +249,7 @@ namespace Arqus
             
             // Connection was successfull          
             // Begin streaming 
-            await navigationService.NavigateAsync("OnlineStreamMenuPage");
+            await navigationService.NavigateAsync("GridPage");
         }
 
       

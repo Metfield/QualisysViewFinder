@@ -5,6 +5,7 @@ using System.Text;
 
 using Urho;
 using Arqus.Helpers;
+using Arqus.Visualization;
 
 namespace Arqus
 {
@@ -12,6 +13,7 @@ namespace Arqus
     {
         QTMNetworkConnection networkConnection;
         int cameraCount;
+        public List<CameraScreen> screens;
         List<ImageCamera> cameras;
         Node gridNode;
 
@@ -81,9 +83,11 @@ namespace Arqus
             cameras = networkConnection.GetImageSettings();
             Node gridElementNode;
             int currColumn = -1, currRow = 1;
-             
+
+            screens = new List<CameraScreen>();
+
             // Create a grid element (cameraScreen) for each one
-            foreach(ImageCamera camera in cameras)
+            foreach (ImageCamera camera in cameras)
             {
                 // Create resolution object and calculate frame size
                 ImageResolution imageResolution = new ImageResolution(camera.Width, camera.Height);
@@ -91,9 +95,10 @@ namespace Arqus
 
                 // Create screen component and node. Add it to parent node (scene)
                 // TODO: handle 
-                Visualization.CameraScreen screen = new Visualization.CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, 0);
+                CameraScreen screen = new CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, 1);
                 gridElementNode = gridNode.CreateChild("Camera" + camera.CameraID.ToString());                
                 gridElementNode.AddComponent(screen);
+                screens.Add(screen);
 
                 // Determine element's position in grid
                 if (++currColumn == Columns)

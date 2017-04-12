@@ -10,6 +10,7 @@
 
         <!--Urho Surface for actual grid view-->
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand"/>
+        
     </StackLayout>
 
 </ContentPage>

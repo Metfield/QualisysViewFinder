@@ -68,7 +68,7 @@
       <HintPath>..\..\packages\Glide.Xamarin.3.7.0\lib\Glide.dll</HintPath>
     </Reference>
     <Reference Include="ImageSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageSharp.1.0.0-alpha5-00046\lib\netstandard1.3\ImageSharp.dll</HintPath>
+      <HintPath>..\..\packages\ImageSharp.1.0.0-alpha5-00059\lib\netstandard1.3\ImageSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

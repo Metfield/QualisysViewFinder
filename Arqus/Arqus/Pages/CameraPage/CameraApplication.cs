@@ -258,25 +258,7 @@ namespace Arqus
             carousel.SetFocus(focus.position);
 
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.CameraID);
-        }
-        
-
-        /// <summary>
-        /// Returns the distance between two 2D-points
-        /// </summary>
-        /// <param name="x1">First X value</param>
-        /// <param name="x2">Second X value</param>
-        /// <param name="y1">First Y value</param>
-        /// <param name="y2">Second Y value</param>
-        /// <returns></returns>
-        private double getDistance2D(float x1, float x2, float y1, float y2)
-        {
-            float deltaX = Math.Abs(x1 - x2);
-            float deltaY = Math.Abs(y1 - y2);
-            return Math.Sqrt(Math.Pow(deltaX, 2.0f) * Math.Pow(deltaY, 2));
-        }
-
-
+        }    
 
     }
 }

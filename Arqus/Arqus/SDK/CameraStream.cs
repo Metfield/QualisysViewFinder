@@ -15,6 +15,7 @@ using ImageSharp;
 namespace Arqus
 {
 
+    // REMOVE WHEN GRIDVIEW IS INTEGRATED
     public class CameraStream
     {
 

@@ -26,11 +26,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Image.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Packet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PacketObjects.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
       <DependentUpon>CameraPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -44,7 +43,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\MessengingCenterAlert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableRangeCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

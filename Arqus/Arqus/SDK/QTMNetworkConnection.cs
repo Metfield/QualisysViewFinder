@@ -237,6 +237,8 @@ namespace Arqus
         {
             if(!hasControl)
                 hasControl = TakeControl();
+
+            // TODO: This should not be hardcoded, get the image setting and pass the resolution as a parameter instead
             string packetString = Packet.CameraImage(id, enabled, "1823", "1087");
             bool response = Protocol.SendXML(packetString);
             hasControl = !ReleaseControl();

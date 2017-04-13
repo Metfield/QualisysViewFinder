@@ -1,16 +1,10 @@
 ﻿using Arqus.Helpers;
-using Arqus.Services;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
 using QTMRealTimeSDK;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Urho;
-using Urho.Forms;
+
 using Xamarin.Forms;
 
 namespace Arqus
@@ -37,6 +31,7 @@ namespace Arqus
 
         public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService, ICameraService cameraService)
         {
+            // NOTE: WE DO NOT REALLY NEED TO INJECT THIS HERE BUT WE NEED TO BE RUNNING IN THE BACKGROUND...
             this.cameraService = cameraService;
             this.settingsService = settingsService;
             this.navigationService = navigationService;

@@ -128,11 +128,40 @@ namespace Arqus.Visualization
             intesityScreen.SetMaterial(Material);
             
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.1f, 0.1f, 0.1f)));
+            markerScreen.SetMaterial(Material.FromColor(Urho.Color.Blue));
 
-            OnUpdateHandler += OnMarkerUpdate;
+            SetMode(CameraMode.ModeMarker);
         }
-        
+
+        public void SetMode(CameraMode mode)
+        {
+            // If camera is already running in the 
+            if (CurrentCameraMode == mode)
+                return;
+
+            // Clean camera before setting new camera mode
+            CleanCamera();
+
+            // Clear the update handler to more predictibly determine which
+            // methods will be called during update
+            OnUpdateHandler = null;
+
+            CurrentCameraMode = mode;
+
+            switch (mode)
+            {
+                case CameraMode.ModeMarker:
+                    SetMarkerMode();
+                    break;
+                case CameraMode.ModeMarkerIntensity:
+                case CameraMode.ModeVideo:
+                    SetIntensityMode();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void CleanCamera()
         {
             switch(CurrentCameraMode)
@@ -174,37 +203,7 @@ namespace Arqus.Visualization
             CurrentCameraMode = CameraMode.ModeMarker;
             OnUpdateHandler = OnMarkerUpdate;
         }
-
-        public void SetMode(CameraMode mode)
-        {
-            // If camera is already running in the 
-            if (CurrentCameraMode == mode)
-                return;
-
-            // Clean camera before setting new camera mode
-            CleanCamera();
-            
-            // Clear the update handler to more predictibly determine which
-            // methods will be called during update
-            OnUpdateHandler = null;
-
-            CurrentCameraMode = mode;
-
-            switch (mode)
-            {
-                case CameraMode.ModeMarker:
-                    SetMarkerMode();
-                    break;
-                case CameraMode.ModeMarkerIntensity:
-                case CameraMode.ModeVideo:
-                    SetIntensityMode();
-                    break;
-                default:
-                    break;
-            }
-        }
         
-
         public unsafe bool UpdateMaterialTexture(ImageSharp.Color[] imageData)
         {
             fixed (ImageSharp.Color* bptr = imageData)

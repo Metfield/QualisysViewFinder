@@ -27,7 +27,5 @@ namespace Arqus
             Container.RegisterTypeForNavigation<GridPage>();
             
         }
-
-
     }
 }

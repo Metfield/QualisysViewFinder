@@ -117,14 +117,16 @@ namespace Arqus.Visualization
 
             // Full namespace to avoid ambiquity
             intesityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            texture = new Texture2D();
-            texture.SetNumLevels(1);
+
+            //texture = new Texture2D();
+            /*texture.SetNumLevels(1);
 
             texture.SetSize(Resolution.Width, Resolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            */
 
             Material = new Material();
-            Material.SetTexture(TextureUnit.Diffuse, texture);
-            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
+          //  Material.SetTexture(TextureUnit.Diffuse, texture);
+            //Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             intesityScreen.SetMaterial(Material);
             
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();

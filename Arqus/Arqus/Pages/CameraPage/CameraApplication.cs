@@ -12,6 +12,7 @@ using QTMRealTimeSDK;
 using QTMRealTimeSDK.Settings;
 
 using Xamarin.Forms;
+using Urho.Actions;
 
 namespace Arqus
 {
@@ -82,6 +83,40 @@ namespace Arqus
             });
 
         }
+
+
+        private void SetImageData(List<ImageSharp.Color[]> data)
+        {
+            int count = 0;
+
+            foreach (ImageSharp.Color[] image in data)
+            {
+                if (image == null)
+                    break;
+
+                // TODO: Handle video as well
+                if (screenList.Count > count && screenList[count].CurrentCameraMode != CameraMode.ModeMarker)
+                    screenList[count].ImageData = image;
+
+                count++;
+            }
+        }
+
+        private bool updatingMarkerData;
+
+        private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
+        {
+            int count = 0;
+
+            foreach (QTMRealTimeSDK.Data.Camera camera in data)
+            {
+                if (screenList.Count > count && screenList[count].CurrentCameraMode == CameraMode.ModeMarker)
+                    screenList[count].MarkerData = camera;
+                count++;
+            }
+
+        }
+
 
         private void SetMode(int id, CameraMode mode)
         {
@@ -162,16 +197,16 @@ namespace Arqus
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
+
+            // Update camera offset and reset 
+            //UpdateCameraPosition();
             
-            foreach(var screen in screenList)
+            foreach (var screen in screenList)
             {
                 Position coordinates = carousel.GetCoordinatesForPosition(screen.position);
                 screen.Node.SetWorldPosition(new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y));
             }
-            
-            // Update camera offset and reset 
-            //UpdateCameraPosition();
-            
+
         }
 
         void UpdateCameraPosition()
@@ -182,38 +217,6 @@ namespace Arqus
                                     (camera.Node.Direction * cameraOffset.Z);
 
             cameraOffset = Vector3.Zero;
-        }
-
-        private void SetImageData(List<ImageSharp.Color[]> data)
-        {
-            int count = 0;
-        
-            foreach (ImageSharp.Color[] image in data)
-            {
-                if (image == null)
-                    break;
-
-                // TODO: Handle video as well
-                if (screenList.Count > count && screenList[count].CurrentCameraMode != CameraMode.ModeMarker)
-                    screenList[count].ImageData = image;
-
-                count++;
-            }
-        }
-
-        private bool updatingMarkerData;
-
-        private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
-        {
-            int count = 0;
-
-            foreach (QTMRealTimeSDK.Data.Camera camera in data)
-            {
-                if(screenList.Count > count && screenList[count].CurrentCameraMode == CameraMode.ModeMarker)
-                    screenList[count].MarkerData = camera;
-                count++;
-            }
-            
         }
 
 
@@ -256,6 +259,14 @@ namespace Arqus
             CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
             Debug.WriteLine(focus.CameraID);
             carousel.SetFocus(focus.position);
+
+            // Make an ease in during snapping
+            /*foreach (var screen in screenList)
+            {
+                Position coordinates = carousel.GetCoordinatesForPosition(screen.position);
+                screen.Node.RunActionsAsync(new EaseElasticIn( new MoveTo( 1000, new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y))));
+            }
+            */
 
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.CameraID);
         }    

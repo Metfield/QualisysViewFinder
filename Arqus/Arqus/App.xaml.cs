@@ -3,16 +3,31 @@ using Prism.Unity;
 using Xamarin.Forms;
 using Arqus.Helpers;
 using Microsoft.Practices.Unity;
+using System.Diagnostics;
 
 namespace Arqus
 {
     public partial class  App : PrismApplication
     {
+        CameraService cameraService;
+
         public App(IPlatformInitializer initializer = null) : base(initializer) { }
 
         protected override void OnInitialized()
         {
             InitializeComponent();
+
+            cameraService = new CameraService();
+
+            MessagingCenter.Subscribe<Application>(this, MessageSubject.CONNECTED.ToString(), (sender) =>
+            {
+                OnConnected();
+            });
+
+            MessagingCenter.Subscribe<Application>(this, MessageSubject.DISCONNECTED.ToString(), (sender) =>
+            {
+                OnDisconnected();
+            });
 
             NavigationService.NavigateAsync("NavigationPage/ConnectionPage");
         }
@@ -26,6 +41,16 @@ namespace Arqus
             Container.RegisterTypeForNavigation<CameraPage>();
             Container.RegisterTypeForNavigation<GridPage>();
             
+        }
+
+        protected void OnConnected()
+        {
+            cameraService.Start();
+        }
+
+        protected void OnDisconnected()
+        {
+            cameraService.Dispose();
         }
     }
 }

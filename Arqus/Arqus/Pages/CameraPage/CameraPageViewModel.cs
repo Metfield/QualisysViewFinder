@@ -4,7 +4,7 @@ using Prism.Mvvm;
 using Prism.Navigation;
 using QTMRealTimeSDK;
 using System;
-
+using System.Diagnostics;
 using Xamarin.Forms;
 
 namespace Arqus
@@ -23,16 +23,22 @@ namespace Arqus
 
     public class CameraPageViewModel : BindableBase, INavigatedAware
 	{
-        private ICameraService cameraService;
         private ISettingsService settingsService;
         private INavigationService navigationService;
         
         private CameraState cameraState;
 
-        public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService, ICameraService cameraService)
+        private bool isDetailed = false;
+
+        public bool IsDetailed
         {
-            // NOTE: WE DO NOT REALLY NEED TO INJECT THIS HERE BUT WE NEED TO BE RUNNING IN THE BACKGROUND...
-            this.cameraService = cameraService;
+            get { return isDetailed; }
+            set { SetProperty(ref isDetailed, value); }
+        }
+
+
+        public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
+        {
             this.settingsService = settingsService;
             this.navigationService = navigationService;
             
@@ -69,7 +75,6 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-
         }
 
         public DelegateCommand GetStreamDataCommand { get; set; }

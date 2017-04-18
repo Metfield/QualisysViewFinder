@@ -1,7 +1,5 @@
 ﻿using QTMRealTimeSDK.Settings;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 using Urho;
 using Arqus.Helpers;
@@ -54,12 +52,13 @@ namespace Arqus
             FillGrid(node);
         }
 
-        protected override void OnUpdate(float timeStep)
+        // TODO: Handle change in number of cameras!!
+        /*protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);                        
 
             // If there is a change in the amount of connected cameras, re-create the grid
-            /*if (cameraCount != CameraStream.Instance.GetStreamMarkerData().Count)
+            if (cameraCount != CameraStream.Instance.GetStreamMarkerData().Count)
             {
                 // Clear the node from any children
                 gridNode.RemoveAllChildren();
@@ -67,8 +66,8 @@ namespace Arqus
                 // Re-fill it
                 FillGrid(gridNode);
             } 
-            */
-        }
+            
+        }*/
 
         /// <summary>
         /// Creates the grid structure along with all its elements (camera screens)
@@ -84,12 +83,16 @@ namespace Arqus
             Node gridElementNode;
             int currColumn = -1, currRow = 1;
 
-            screens = new List<CameraScreen>();
+            // Used as origin for lower collision bound
+            float lowerCollisionBound = 0;
 
+            screens = new List<CameraScreen>();
+            
             // Create a grid element (cameraScreen) for each one
             foreach (ImageCamera camera in cameras)
             {
                 // Create resolution object and calculate frame size
+                // TODO: Discuss whether we want different sizes for screens..                    
                 ImageResolution imageResolution = new ImageResolution(camera.Width, camera.Height);
                 FrameWidth = imageResolution.PixelAspectRatio * FrameHeight;
 
@@ -112,11 +115,28 @@ namespace Arqus
         
                 // Calculate position offset and add it 
                 Vector3 offset = Vector3.Multiply(new Vector3(currColumn, currRow, 0), new Vector3(FrameWidth + Padding, -FrameHeight - Padding, 0));
-                gridElementNode.Position += offset;                                
+                gridElementNode.Position += offset;
+
+                // Set lower collision bound
+                lowerCollisionBound = gridElementNode.Position.Y;
             }
 
             // Fix gridView to position (upper-left corner)
             gridNode.Position = Origin;
+
+            // Add another offset to place collision plane below last element
+            lowerCollisionBound -= (FrameHeight - Padding) * 2.5f;
+
+            // Create collision plane and its node
+            Node collisionPlaneNode = gridNode.CreateChild("lowerBounds");
+            collisionPlaneNode.Scale = new Vector3(100, 0, 100);
+            collisionPlaneNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            collisionPlaneNode.Position = new Vector3(gridNode.Position.X + FrameWidth, lowerCollisionBound, gridNode.Position.Z);
+
+            Urho.Shapes.Plane collisionPlane = collisionPlaneNode.CreateComponent<Urho.Shapes.Plane>();
+
+            // Make it invisible
+            collisionPlane.Color = Color.Transparent;
         }
     }
 }

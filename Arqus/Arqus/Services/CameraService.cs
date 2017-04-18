@@ -16,30 +16,28 @@ namespace Arqus
     /// for retrieving data in a in a camera centric way
     /// 
     /// </summary>
-    public class CameraService : ICameraService
+    public class CameraService : IDisposable
     {
+        private bool running;
         private ImageStream imageStream;
         private MarkerStream markerStream;
 
-        public CameraService()
-        {
-            imageStream = new ImageStream();
-            imageStream.StartStream();
+        public CameraService() { }
 
+        public void Start()
+        {
+            running = true;
+            imageStream = new ImageStream();
             markerStream = new MarkerStream();
+
+            imageStream.StartStream();
             markerStream.StartStream();
 
             // Make sure that the stream update loop runs in its own thread to keep interactions responsive
-            Task.Run(() => UpdateDataTask(1, SendImageData) );
-            Task.Run(() => UpdateDataTask(30, SendMarkerData) );
+            Task.Run(() => UpdateDataTask(1, SendImageData));
+            Task.Run(() => UpdateDataTask(30, SendMarkerData));
         }
 
-        ~CameraService()
-        {
-            imageStream.StopStream();
-            markerStream.StopStream();
-        }
-        
         public Camera? GetMarkerData(int id)
         {
             return markerStream.GetMarkerData(id);
@@ -55,7 +53,7 @@ namespace Arqus
         /// </summary>
         public async void UpdateDataTask(int frequency, Action onUpdate)
         {
-            while (true)
+            while (running)
             {
                 DateTime time = DateTime.UtcNow;
                 onUpdate();
@@ -93,6 +91,11 @@ namespace Arqus
             }
         }
 
-
+        public void Dispose()
+        {
+            running = false;
+            imageStream.StopStream();
+            markerStream.StopStream();
+        }
     }
 }

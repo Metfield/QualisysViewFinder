@@ -39,7 +39,8 @@ namespace Arqus
         int gridFrameHeight;
         int gridNumColumns;
         float gridFramePadding;
-        float gridViewBottom;
+
+        Ray lowerViewportRay;
 
         // Holds gridView (and all its children)
         Node gridViewNode;
@@ -71,7 +72,6 @@ namespace Arqus
             InitializeGrid();
             SetupViewport();
 
-
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
             MessagingCenter.Subscribe<CameraService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
             {
@@ -83,14 +83,15 @@ namespace Arqus
             {
                 SetImageData(imageData);
             });
-
         }
 
         // Sets up scene elements 
         private void CreateScene()
         {
-            // Subscribe to touch event
-            Input.SubscribeToTouchMove(OnTouched);
+            // Subscribe to touch events
+            Input.SubscribeToTouchMove(OnTouchesMoved);
+            Input.SubscribeToTouchBegin(OnTouchesBegan);
+            Input.SubscribeToTouchEnd(OnTouchesEnded);
 
             // Createnew scene
             scene = new Scene();
@@ -139,9 +140,6 @@ namespace Arqus
             // Add node to scene, along with gridview component
             gridViewNode = scene.CreateChild("gridView");
             gridViewNode.AddComponent(gridView);
-          
-
-            gridViewBottom = gridViewOrigin.Y + ((gridFramePadding + gridFrameHeight) * gridView.screens.Count);
         }
 
         // Called on every tick
@@ -165,26 +163,105 @@ namespace Arqus
             cameraPositionOffset = Vector3.Zero;
         }
 
+        /// <summary>
+        /// Handles grid "scrolling" 
+        /// </summary>
+        /// <param name="offset">Amount to drag</param>
         private void DragGrid(Vector3 offset)
         {
+            float d = gridViewOrigin.Y - 140;
+            float rayDistance = Vector3.Distance(camera.Node.Position, gridViewNode.Position);
+
             // Clamp upper bounds
-            if((gridViewNode.Position.Y + offset.Y) < gridViewOrigin.Y)
-            {
-                offset = Vector3.Zero;
+            if ((gridViewNode.Position.Y + offset.Y) < gridViewOrigin.Y)
                 return;
-            }
-            
-            // Lower one... TODO!!!!
-            //else if((gridViewNode.Position.Y + offset.Y + gridViewBottom - 140) < gridViewOrigin.Y + gridViewBottom - 140)
+
+            // Clamp lower bounds through ray casting and querying for the lower bounds collision plane
+            // Test only if user wants to draw grid view up
+            if (offset.Y > 0)
             {
-                //offset = Vector3.Zero;
-               // return;
+                // Get ray at bottom-middle screen and cast it
+                lowerViewportRay = camera.GetScreenRay(0.5f, 1.0f);
+                RayQueryResult? rayResult = sceneOctree.RaycastSingle(lowerViewportRay, RayQueryLevel.Triangle, rayDistance, DrawableFlags.Geometry, uint.MaxValue);
+
+                if (rayResult.HasValue)
+                {
+                    if (rayResult.Value.Node.Name == "lowerBounds")
+                    {
+                        return;
+                    }
+                }
             }
-            
+
             gridViewNode.Position += offset;
         }
 
-        void OnTouched(TouchMoveEventArgs eventArgs)
+        /// <summary>
+        /// Casts camera ray from the viewport's coordinates
+        /// </summary>
+        /// <param name="x">Touch X Coordinate - raw (not normalized)</param>
+        /// <param name="y">Touch Y Coordinate - raw (not normalized)</param>
+        void CastTouchRay(int x, int y)
+        {
+            // Shoot from camera to grid view
+            float rayDistance = Vector3.Distance(camera.Node.Position, gridViewNode.Position);
+
+            // Create ray with normalized screen coordinates
+            Ray camRay = camera.GetScreenRay((float)x / Graphics.Width, (float)y / Graphics.Height);
+
+            // Cast the ray looking for 3D geometry (our grid screen planes) and store result in variable
+            RayQueryResult? rayResult = sceneOctree.RaycastSingle(camRay, RayQueryLevel.Triangle, rayDistance, DrawableFlags.Geometry, uint.MaxValue);
+
+            // Check if there was a hit
+            if (rayResult.HasValue)
+            {
+                // Get node
+                Node screenNode = rayResult.Value.Node;
+
+                // Check if it's a screen node
+                // TODO: Add a public dictionary or query class for name?
+                if (screenNode.Name == "screenNode")
+                {
+                    // Get selected camera ID 
+                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().CameraID;
+
+                    // Start Camera view.
+                    MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);
+                    //this.Stop();
+                }
+            }
+        }
+
+        int tapTouchID;
+        float tapTimeStamp;
+
+        // TODO: Get paper or something to justify this time
+        float tapTimeMargin = 0.1f;
+
+        public void OnTouchesBegan(TouchBeginEventArgs eventArgs)
+        {
+            // Fill out variables for tap gesture
+            tapTouchID = eventArgs.TouchID;
+            tapTimeStamp = Time.ElapsedTime;
+        }
+
+        public void OnTouchesEnded(TouchEndEventArgs eventArgs)
+        {
+            // Return if this is not our original tap finger
+            if (eventArgs.TouchID != tapTouchID)
+                return;
+
+            // Get delta time
+            float dt = Time.ElapsedTime - tapTimeStamp;
+
+            // If it is lesser than our tap margin, it is a tap
+            if (dt < tapTimeMargin)
+            {
+                CastTouchRay(eventArgs.X, eventArgs.Y);
+            }
+        }
+
+        void OnTouchesMoved(TouchMoveEventArgs eventArgs)
         {
             // Handle GridView scrolling
             if (Input.NumTouches == 1)
@@ -231,7 +308,6 @@ namespace Arqus
                 if (image == null)
                     break;
 
-                // TODO: Handle video as well
                 if (gridView.screens.Count > count && gridView.screens[count].CurrentCameraMode != CameraMode.ModeMarker)
                     gridView.screens[count].ImageData = image;
 
@@ -251,9 +327,7 @@ namespace Arqus
                     gridView.screens[count].MarkerData = camera;
                 count++;
             }
-
         }
-
 
         bool isPinching(ref int x1, ref int x2, ref int y1, ref int y2)
         {
@@ -267,35 +341,5 @@ namespace Arqus
 
             return Math.Sqrt(Math.Pow(deltaX, 2.0f) + Math.Pow(deltaY, 2.0f));
         }
-    }
-
-    public class GridElement : Node
-    {
-        private int id;
-        Urho.Shapes.Plane backgroundPlane;        
-
-        public GridElement(int _id, Vector3 position, int width, int height, Urho.Color color)
-        {
-            Position = position;
-            Width = width;
-            Height = height;
-            id = _id;
-
-            // Create plane node and attach a plane shape to it
-            Node planeNode = CreateChild("plane");
-            backgroundPlane = planeNode.CreateComponent<Urho.Shapes.Plane>();
-
-            // Set unlit color
-            backgroundPlane.SetMaterial(Material.FromColor(color, true));
-
-            // Set scale
-            planeNode.SetScale(20);
-
-            // Rotate plane
-            planeNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-        }
-
-        public int Width { get; set; }
-        public int Height { get; set; }
-    }
+    }   
 }

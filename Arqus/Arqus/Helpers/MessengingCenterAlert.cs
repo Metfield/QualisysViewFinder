@@ -9,7 +9,9 @@ namespace Arqus.Helpers
         FETCH_IMAGE_DATA,
         FETCH_MARKER_DATA,
         ENTER_PASSWORD,
-        SET_CAMERA_SELECTION
+        SET_CAMERA_SELECTION,
+        CONNECTED,
+        DISCONNECTED
     }
 
     public class MessagingCenterAlert

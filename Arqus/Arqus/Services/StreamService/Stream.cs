@@ -67,6 +67,7 @@ namespace Arqus.Services
         {
             streaming = false;
             currentPacket = null;
+            networkConnection.Protocol.StreamFramesStop();
         }
 
         /// <summary>

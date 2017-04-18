@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
-             Title="Camera View"
+             Title="Camera Page"
              prism:ViewModelLocator.AutowireViewModel="True"
              xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
              x:Class="Arqus.CameraPage">
@@ -30,7 +30,31 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout VerticalOptions="FillAndExpand">
-        <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
+        <Label Text="CAMERA PAGE" />
+        <!-- <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" /> -->
     </StackLayout>
+
+    <!--
+    <StackLayout VerticalOptions="End" IsVisible="{Binding isDetailed}">
+        <Image Command="{Binding SetCameraModeToMarkerCommand}" >
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </Image>
+        <ToolbarItem Command="{Binding SetCameraModeToVideoCommand}">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_camera_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+        <ToolbarItem Command="{Binding SetCameraModeToIntensityCommand}">
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_exposure_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
+    </StackLayout>
+    -->
 
 </ContentPage>

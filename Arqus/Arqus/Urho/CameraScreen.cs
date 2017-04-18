@@ -1,14 +1,12 @@
 ﻿using Arqus.Helpers;
 using Arqus.Components;
 using Urho;
-using ImageSharp.Formats;
 using Urho.Urho2D;
 using QTMRealTimeSDK;
 using Xamarin.Forms;
 
 namespace Arqus.Visualization
 {
-
     public enum CameraScreenMode
     {
         Marker,
@@ -31,7 +29,7 @@ namespace Arqus.Visualization
         private float min;
         
         private Node screenNode;
-        private Urho.Shapes.Plane intesityScreen;
+        private Urho.Shapes.Plane intensityScreen;
         private Urho.Shapes.Plane markerScreen;
 
         public ImageResolution Resolution { private set; get; }
@@ -73,8 +71,7 @@ namespace Arqus.Visualization
                 dirty = true;
                 imageData = value;
             }
-        }
-        
+        }        
 
         public CameraScreen(int cameraID, ImageResolution resolution, float frameHeight, float frameWidth, float min)
         {
@@ -104,34 +101,31 @@ namespace Arqus.Visualization
         {
             base.OnAttachedToNode(node);
             
-            screenNode = node.CreateChild();
-            screenNode.Scale = new Vector3(Height, 1, Width);
-
-            Pool = new MarkerSpherePool(20, screenNode);
-            
-            // Rotate the plane to look at the camera
-            // TODO: Try to multiply
+            // Create screen Node, scale it accordingly and rotate it so it faces camera
+            screenNode = node.CreateChild("screenNode");
+            screenNode.Scale = new Vector3(Width, 0, Height);
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            // Rotate the camera in the clockwise direction with 90 degrees
-            screenNode.Rotate(new Quaternion(0, 90, 0), TransformSpace.Local);
-
-            // Full namespace to avoid ambiquity
-            intesityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-
-            //texture = new Texture2D();
-            /*texture.SetNumLevels(1);
-
-            texture.SetSize(Resolution.Width, Resolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
-            */
-
-            Material = new Material();
-          //  Material.SetTexture(TextureUnit.Diffuse, texture);
-            //Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
-            intesityScreen.SetMaterial(Material);
             
+            // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(Urho.Color.Blue));
+            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
 
+            // Create back frame with this width
+            float backFrameWidth = node.Parent.GetComponent<GridViewComponent>().Padding / 5;
+            CreateFrame(node, new Urho.Color(0.305f, 0.388f, 0.415f), backFrameWidth);
+
+            // Initialize marker sphere pool with arbitrary number of spheres
+            Pool = new MarkerSpherePool(20, screenNode);
+
+            // Create intensity plane, its material and assign it
+            intensityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            Material = new Material();
+            intensityScreen.SetMaterial(Material);
+
+            // Disable this plane right away since we always start with marker mode
+            intensityScreen.Enabled = false;
+
+            // Start marker mode
             SetMode(CameraMode.ModeMarker);
         }
 
@@ -193,14 +187,14 @@ namespace Arqus.Visualization
         private void SetIntensityMode()
         {
             markerScreen.Enabled = false;
-            intesityScreen.Enabled = true;
+            intensityScreen.Enabled = true;
             CurrentCameraMode = CameraMode.ModeMarkerIntensity;
             OnUpdateHandler = OnImageUpdate;
         }
 
         private void SetMarkerMode()
         {
-            intesityScreen.Enabled = false;
+            intensityScreen.Enabled = false;
             markerScreen.Enabled = true;
             CurrentCameraMode = CameraMode.ModeMarker;
             OnUpdateHandler = OnMarkerUpdate;
@@ -214,7 +208,6 @@ namespace Arqus.Visualization
             }
         }
         
-
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
@@ -229,34 +222,42 @@ namespace Arqus.Visualization
                 Pool.Hide();
             }
 
-
             if (dirty && screenNode.Enabled)
             {
                 OnUpdateHandler?.Invoke();
                 dirty = false;
             }
         }
-
-        
+                
         private void OnMarkerUpdate()
         {
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used
             int lastUsedInArray = 0;
-                
+
+            // Get necessary frame information to position markers
+            // Horizontal bounds
+            float leftBound = screenNode.WorldPosition.X - (Width * 0.5f);
+            float rightBound = leftBound + Width;
+
+            // Vertical bounds
+            float upperBound = screenNode.WorldPosition.Y + (Height * 0.5f);
+            float lowerBound = upperBound - Height;
+
             // Iterate through the marker array, transform and draw spheres
             for (int i = 0; i < markerData.MarkerCount; i++)
             {
                 // Transform from camera coordinates to frame coordinates
-                float adjustedX = DataOperations.ConvertRange(0, Resolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X / 64);
-                float adjustedY = DataOperations.ConvertRange(0, Resolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y / 64);
+                float adjustedX = Helpers.DataOperations.ConvertRange(0, Resolution.Width, leftBound, rightBound, markerData.MarkerData2D[i].X / 64);
+                float adjustedY = Helpers.DataOperations.ConvertRange(0, Resolution.Height, upperBound, lowerBound, markerData.MarkerData2D[i].Y / 64);
                 float adjustedScaleX = DataOperations.ConvertRange(0, Resolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX / 64);
                 float adjustedScaleY = DataOperations.ConvertRange(0, Resolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY / 64);
 
-                MarkerSphere sphere = Pool.Get(i);
                 // Set world position with new frame coordinates            
-                sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
-                sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
+                Pool.Get(i).SetWorldPosition(new Vector3(adjustedX, adjustedY, screenNode.WorldPosition.Z - 1));
+
+                // Maybe unnecessary to do this every time?
+                Pool.Get(i).Scale = new Vector3(adjustedScaleX, 0, adjustedScaleY);
 
                 // Last element will set this variable
                 lastUsedInArray = i;
@@ -269,8 +270,7 @@ namespace Arqus.Visualization
         private void OnImageUpdate()
         {
             UpdateMaterialTexture(imageData);
-        }
-        
+        }        
 
         /// <summary>
         /// Creates a solid backdrop texture
@@ -290,5 +290,64 @@ namespace Arqus.Visualization
             UpdateMaterialTexture(imageData);
         }
 
+        /// <summary>
+        /// Creates nice frame around the screen
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="color"></param>
+        /// <param name="frameWidth"></param>
+        private void CreateFrame(Node node, Urho.Color color, float frameWidth)
+        {
+            float originX = node.Position.X - Width / 2;
+            float originY = Height / 2;
+
+            // Top frame
+            Node framePieceNode = node.CreateChild("FrameTop");
+
+            framePieceNode.Scale = new Vector3(Width + frameWidth, 0, frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(node.Position.X,
+                                                 originY,
+                                                 node.Position.Z);
+
+            Urho.Shapes.Plane framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
+
+            // Right frame
+            framePieceNode = node.CreateChild("FrameRight");
+
+            framePieceNode.Scale = new Vector3(frameWidth, 0, Height + frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(originX + Width,
+                                                 node.Position.Y,
+                                                 node.Position.Z);
+
+            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
+
+            // Bottom frame
+            framePieceNode = node.CreateChild("FrameBottom");
+
+            framePieceNode.Scale = new Vector3(Width + frameWidth, 0, frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(node.Position.X,
+                                                 -originY,
+                                                 node.Position.Z);
+
+            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
+
+            // Left frame
+            framePieceNode = node.CreateChild("FrameLeft");
+
+            framePieceNode.Scale = new Vector3(frameWidth, 0, Height + frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(originX,
+                                                 node.Position.Y,
+                                                 node.Position.Z);
+
+            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
+        }
     }
 }

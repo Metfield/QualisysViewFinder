@@ -211,7 +211,7 @@ namespace Arqus
         public DelegateCommand ConnectCommand { private set;  get; }
 
 
-        private string ipAddress = "192.168.10.161";
+        private string ipAddress = "192.168.10.168";
 
         public string IPAddress
         {
@@ -244,8 +244,8 @@ namespace Arqus
                 return;
             }
 
-            container.RegisterType<ICameraService, CameraService>();
-            container.RegisterType<ISettingsService, SettingsService>(new InjectionConstructor(ipAddress));
+            // TODO: Change to a more generalized event system
+           container.RegisterType<ISettingsService, SettingsService>(new InjectionConstructor(ipAddress));
             
             // Connection was successfull          
             // Begin streaming 

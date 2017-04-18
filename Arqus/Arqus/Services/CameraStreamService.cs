@@ -6,6 +6,7 @@ using Arqus.Services;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Arqus.Helpers;
+using Arqus.Visualization;
 
 namespace Arqus
 {
@@ -16,13 +17,14 @@ namespace Arqus
     /// for retrieving data in a in a camera centric way
     /// 
     /// </summary>
-    public class CameraService : IDisposable
+    public class CameraStreamService : IDisposable
     {
+        static List<CameraScreen> cameraScreens;
         private bool running;
         private ImageStream imageStream;
         private MarkerStream markerStream;
 
-        public CameraService() { }
+        public CameraStreamService() { }
 
         public void Start()
         {

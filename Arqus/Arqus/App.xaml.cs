@@ -9,7 +9,7 @@ namespace Arqus
 {
     public partial class  App : PrismApplication
     {
-        CameraService cameraService;
+        CameraStreamService cameraService;
 
         public App(IPlatformInitializer initializer = null) : base(initializer) { }
 
@@ -17,7 +17,7 @@ namespace Arqus
         {
             InitializeComponent();
 
-            cameraService = new CameraService();
+            cameraService = new CameraStreamService();
 
             MessagingCenter.Subscribe<Application>(this, MessageSubject.CONNECTED.ToString(), (sender) =>
             {

@@ -16,9 +16,11 @@ namespace Arqus.Visualization
     }
 
     /// <summary>
-    /// Displays and visualizes 2D streaming data on its children
+    /// Constructs and updates camera screens acording to their given resolution and curren stream mode
+    /// It is not meant to be used inside an urho application in its own but rather employ one of the
+    /// visualization techniques such as Grid or Carousel.
     /// </summary>
-    public class CameraScreen : Component
+    internal class CameraScreen : Component
     {
         // Shared between instances
         static int screenCount;
@@ -26,7 +28,7 @@ namespace Arqus.Visualization
         // General properties
         public int CameraID { private set; get; }
         public int position;
-        private float min;
+       
         
         private Node screenNode;
         private Urho.Shapes.Plane intensityScreen;
@@ -34,12 +36,24 @@ namespace Arqus.Visualization
 
         public ImageResolution Resolution { private set; get; }
 
+        private float scale;
+
+        public float Scale
+        {
+            get { return scale; }
+            set
+            {
+                scale = value;
+                Height = scale;
+                Width = Resolution.PixelAspectRatio * Height;
+            }
+        }
+
         public float Width { private set; get; }
         public float Height { private set; get; }
         
         public Material Material { get; set; }
-        private Material backgroundMaterial;
-
+        
         private delegate void UpdateDelegate();
         private UpdateDelegate OnUpdateHandler;
 
@@ -71,16 +85,13 @@ namespace Arqus.Visualization
                 dirty = true;
                 imageData = value;
             }
-        }        
+        }
 
-        public CameraScreen(int cameraID, ImageResolution resolution, float frameHeight, float frameWidth, float min)
+        // TODO: Add initialization for float frameHeight, float frameWidth, float min
+        public CameraScreen(int cameraID, ImageResolution resolution)
         {
             CameraID = cameraID;
             Resolution = resolution;
-            this.min = min;
-
-            Height = frameHeight;
-            Width = frameWidth;
 
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;
@@ -90,6 +101,7 @@ namespace Arqus.Visualization
             position = screenCount;
             screenCount++;
 
+            // Listen to the view model and change the stream mode accordingly
             MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraID, (sender, state) =>
             {
                 SetMode(state.Mode);
@@ -105,23 +117,18 @@ namespace Arqus.Visualization
             screenNode = node.CreateChild("screenNode");
             screenNode.Scale = new Vector3(Width, 0, Height);
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            
-            // Create marker screen node and its plane
-            markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
-
-            // Create back frame with this width
-            float backFrameWidth = node.Parent.GetComponent<GridViewComponent>().Padding / 5;
-            CreateFrame(node, new Urho.Color(0.305f, 0.388f, 0.415f), backFrameWidth);
 
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, screenNode);
+
+            // Create marker screen node and its plane
+            markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
 
             // Create intensity plane, its material and assign it
             intensityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
             Material = new Material();
             intensityScreen.SetMaterial(Material);
-
             // Disable this plane right away since we always start with marker mode
             intensityScreen.Enabled = false;
 
@@ -212,6 +219,7 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
+            /*
             if (screenNode.WorldPosition.Z >= min - 20 && screenNode.WorldPosition.Z <= min + 20)
             {
                 screenNode.Enabled = true;
@@ -221,6 +229,7 @@ namespace Arqus.Visualization
                 screenNode.Enabled = false;
                 Pool.Hide();
             }
+            */
 
             if (dirty && screenNode.Enabled)
             {

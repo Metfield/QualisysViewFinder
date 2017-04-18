@@ -64,24 +64,32 @@ namespace Arqus
         protected override void Start()
         {
             base.Start();
-            
+
+
             // Setup messaging wíth the view model to retrieve data
             CreateScene();
             SetupViewport();
-
+            
+            //scene.Clear(true, false);
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
+            MessagingCenter.Subscribe<CameraStreamService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
             {
                 SetMarkerData(cameras);
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
+            MessagingCenter.Subscribe<CameraStreamService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
             {
                 SetImageData(imageData);
             });
 
+            MessagingCenter.Subscribe<CameraPageViewModel, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (sender, cameraID) =>
+            {
+                carousel.SetFocus(cameraID - 1);
+
+                MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);
+            });
         }
 
 
@@ -137,6 +145,7 @@ namespace Arqus
 
             // Create new scene
             scene = new Scene();
+            scene.Clear(true, true);
 
             // Create default octree (-1000:1000)
             octree = scene.CreateComponent<Octree>();
@@ -166,28 +175,16 @@ namespace Arqus
         /// </summary>
         private void InitializeCameras()
         {
-            screenList = new List<CameraScreen>();
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
+            screenList = CameraStore.Instance.Screens.Values.ToList();
 
-            QTMNetworkConnection connection = new QTMNetworkConnection();
-
-            List<ImageCamera> cameras = connection.GetImageSettings();
-
-            foreach (ImageCamera camera in cameras)
+            foreach (CameraScreen screen in screenList)
             {
                 Node screenNode = meshNode.CreateChild();
-
-                // TODO: Handle Camera settings individually
-                ImageResolution resolution = new ImageResolution(camera.Width, camera.Height);
-                float frameHeight = 10;
-                float frameWidth = frameHeight * resolution.PixelAspectRatio;
-
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                CameraScreen screen = new CameraScreen(camera.CameraID, resolution, frameHeight, frameWidth, carousel.Min);
-                
+                screen.Scale = 10;
                 screenNode.AddComponent(screen);
-                screenList.Add(screen);
             }
             
         }
@@ -207,16 +204,6 @@ namespace Arqus
                 screen.Node.SetWorldPosition(new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y));
             }
 
-        }
-
-        void UpdateCameraPosition()
-        {
-            // Update camera offset and reset 
-            camera.Node.Position += (camera.Node.Right * cameraOffset.X) +
-                                    (camera.Node.Up * cameraOffset.Y) +
-                                    (camera.Node.Direction * cameraOffset.Z);
-
-            cameraOffset = Vector3.Zero;
         }
 
 

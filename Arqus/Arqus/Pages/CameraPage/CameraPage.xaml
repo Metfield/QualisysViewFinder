@@ -31,7 +31,7 @@
 
     <StackLayout VerticalOptions="FillAndExpand">
         <Label Text="CAMERA PAGE" />
-        <!-- <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" /> -->
+        <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
     </StackLayout>
 
     <!--

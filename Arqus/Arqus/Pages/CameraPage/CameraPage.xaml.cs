@@ -21,23 +21,21 @@ namespace Arqus
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            //currentApplication = await StartUrhoApp();
-            
+            currentApplication = await StartUrhoApp();
         }
 
         protected override void OnDisappearing()
         {
-            //UrhoSurface.OnDestroy();
+            UrhoSurface.OnDestroy();
             base.OnDisappearing();
         }
         
 
-        /*async Task<CameraApplication> StartUrhoApp()
+        async Task<CameraApplication> StartUrhoApp()
         {
-            // Start surface "sub-app" Tracking2DView
-            //CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
-            //return markerApplication;
-        }*/
+            CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            return markerApplication;
+        }
 
     }
 }

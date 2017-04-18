@@ -1,4 +1,6 @@
 ﻿using Arqus.Helpers;
+using Prism.Commands;
+using Prism.Mvvm;
 using Prism.Navigation;
 using System;
 using System.Collections.Generic;
@@ -9,30 +11,34 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    class GridPageViewModel : INavigationAware
+    class GridPageViewModel : BindableBase, INavigationAware
     {
         private INavigationService navigationService;
+        public DelegateCommand NavigateCameraViewCommand { private set; get; }
 
         public GridPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
 
-            MessagingCenter.Subscribe<GridApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
+            NavigateCameraViewCommand = new DelegateCommand(() =>
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString()));
+            
+            MessagingCenter.Subscribe<Application, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
         }
 
-        async void OnNavigateToCameraPage(GridApplication application, int cameraID)
+        void OnNavigateToCameraPage(Application application, int cameraID)
         {
-            //await navigationService.GoBackAsync();
+            NavigationParameters parameters = new NavigationParameters();
+            parameters.Add("cameraID", cameraID);
+
             //UrhoSurface.OnDestroy();
-            UrhoSurface.OnDestroy();
-            await navigationService.NavigateAsync("CameraPage");
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", parameters));
+
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            //UrhoSurface.OnDestroy();
-            Debug.WriteLine("NAVIGATING FROM");
-            //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
+           //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)

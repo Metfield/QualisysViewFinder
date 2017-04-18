@@ -5,6 +5,7 @@ using Prism.Navigation;
 using QTMRealTimeSDK;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Arqus
@@ -57,8 +58,7 @@ namespace Arqus
                 OnCameraSelection);
 
             cameraState = new CameraState(id: 1, mode: CameraMode.ModeMarker);
-            cameraState.ID = 1;
-            cameraState.Mode = CameraMode.ModeMarker;
+
 
             // Default to marker mode
             SetCameraMode();
@@ -66,15 +66,7 @@ namespace Arqus
 
         private void OnCameraSelection(Object sender, int cameraID)
         {
-            cameraState.ID = (uint)cameraID;
-        }
-
-        public void OnNavigatedFrom(NavigationParameters parameters)
-        {
-        }
-
-        public void OnNavigatedTo(NavigationParameters parameters)
-        {
+            cameraState.ID = (uint) cameraID;
         }
 
         public DelegateCommand GetStreamDataCommand { get; set; }
@@ -102,6 +94,27 @@ namespace Arqus
         {
             await settingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
             MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState);
+        }
+
+
+        public void OnNavigatedFrom(NavigationParameters parameters)
+        {
+        }
+
+        public void OnNavigatingTo(NavigationParameters parameters)
+        {
+            cameraState.ID = (uint)parameters["cameraID"];
+        }
+
+        public void OnNavigatedTo(NavigationParameters parameters)
+        {
+            //MessagingCenter.Send<CameraPageViewModel, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (int)parameters["cameraID"]);
+
+            // NOTE: It is assumed that this page will only be navigated to with a given id
+            cameraState.ID = (uint)parameters["cameraID"]; 
+
+            //Debug.WriteLine("GOT ID" + cameraID.ToString());
+
         }
     }
 }

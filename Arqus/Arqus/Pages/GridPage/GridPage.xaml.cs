@@ -16,6 +16,7 @@ namespace Arqus
 	public partial class GridPage : ContentPage
 	{
         GridApplication urhoScene;
+        private bool init = false;
 
 		public GridPage()
 		{
@@ -37,20 +38,31 @@ namespace Arqus
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            CreateUrhoSurface();
+
+            urhoScene = await CreateUrhoSurface();
+            /*
+            if (!init)
+            {
+                urhoScene = await CreateUrhoSurface();
+                init = true;
+            }
+            else
+                UrhoSurface.OnResume();
+                */
         }
 
         protected override void OnDisappearing()
         {
+            urhoScene.Exit();
+            UrhoSurface.OnDestroy();
             base.OnDisappearing();
-            //UrhoSurface.OnDestroy();
         }
 
         // Creates urho scene and assigns it to surface
-        private async void CreateUrhoSurface()
+        private async Task<GridApplication> CreateUrhoSurface()
         {
             // Create and initialize urhoSharp scene
-            urhoScene = await urhoSurface.Show<GridApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            return await urhoSurface.Show<GridApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
         }
     }
 }

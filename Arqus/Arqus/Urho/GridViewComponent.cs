@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Urho;
 using Arqus.Helpers;
 using Arqus.Visualization;
+using System.Linq;
 
 namespace Arqus
 {
@@ -18,19 +19,24 @@ namespace Arqus
         // Implement dynamic changes hier
         public int Columns { get; set; }
         public Vector3 Origin { get; set; }
-        public float FrameHeight { get; set; }
+        public float ScreenScale { get; set; }
         public float FrameWidth { get; private set; }
         public float Padding { get; set; }
 
-        Color frameColor;        
+        Color frameColor;
+        private CameraStore cameraStore;
 
+
+        /*
+         * 
+         */
         public GridViewComponent(Vector3 origin, float frameHeight, int columns, Color _frameColor)
         {
-            // Get network connection reference
-            networkConnection = new QTMNetworkConnection();
 
             // Get camera count from stream class
             //cameraCount = CameraStream.Instance.GetStreamMarkerData().Count;
+
+            screens = CameraStore.Instance.Screens.Values.ToList();
 
             // Fill column number
             Columns = columns;
@@ -42,7 +48,7 @@ namespace Arqus
             Origin = origin;
 
             // Set frame height
-            FrameHeight = frameHeight;
+            ScreenScale = frameHeight;
         }
 
         public override void OnAttachedToNode(Node node)
@@ -79,29 +85,20 @@ namespace Arqus
             gridNode = node;
 
             // Get list of cameras
-            cameras = networkConnection.GetImageSettings();
             Node gridElementNode;
             int currColumn = -1, currRow = 1;
 
             // Used as origin for lower collision bound
             float lowerCollisionBound = 0;
-
-            screens = new List<CameraScreen>();
             
             // Create a grid element (cameraScreen) for each one
-            foreach (ImageCamera camera in cameras)
+            foreach (CameraScreen screen in screens)
             {
-                // Create resolution object and calculate frame size
-                // TODO: Discuss whether we want different sizes for screens..                    
-                ImageResolution imageResolution = new ImageResolution(camera.Width, camera.Height);
-                FrameWidth = imageResolution.PixelAspectRatio * FrameHeight;
+                // TODO: get resolution from camera
+                screen.Scale = ScreenScale;
 
-                // Create screen component and node. Add it to parent node (scene)
-                // TODO: handle 
-                CameraScreen screen = new CameraScreen(camera.CameraID, imageResolution, FrameHeight, FrameWidth, 1);
-                gridElementNode = gridNode.CreateChild("Camera" + camera.CameraID.ToString());                
+                gridElementNode = gridNode.CreateChild("Camera" + screen.CameraID.ToString());                
                 gridElementNode.AddComponent(screen);
-                screens.Add(screen);
 
                 // Determine element's position in grid
                 if (++currColumn == Columns)
@@ -114,7 +111,7 @@ namespace Arqus
                 }
         
                 // Calculate position offset and add it 
-                Vector3 offset = Vector3.Multiply(new Vector3(currColumn, currRow, 0), new Vector3(FrameWidth + Padding, -FrameHeight - Padding, 0));
+                Vector3 offset = Vector3.Multiply(new Vector3(currColumn, currRow, 0), new Vector3(screen.Width + Padding, -screen.Height - Padding, 0));
                 gridElementNode.Position += offset;
 
                 // Set lower collision bound
@@ -125,7 +122,7 @@ namespace Arqus
             gridNode.Position = Origin;
 
             // Add another offset to place collision plane below last element
-            lowerCollisionBound -= (FrameHeight - Padding) * 2.5f;
+            lowerCollisionBound -= (ScreenScale - Padding) * 2.5f;
 
             // Create collision plane and its node
             Node collisionPlaneNode = gridNode.CreateChild("lowerBounds");

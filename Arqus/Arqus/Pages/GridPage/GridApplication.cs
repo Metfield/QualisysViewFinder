@@ -73,13 +73,13 @@ namespace Arqus
             SetupViewport();
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
+            MessagingCenter.Subscribe<CameraStreamService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
             {
                 SetMarkerData(cameras);
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
+            MessagingCenter.Subscribe<CameraStreamService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
             {
                 SetImageData(imageData);
             });
@@ -226,7 +226,7 @@ namespace Arqus
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().CameraID;
 
                     // Start Camera view.
-                    MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);
+                    MessagingCenter.Send(Xamarin.Forms.Application.Current, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);
                     //this.Stop();
                 }
             }
@@ -340,6 +340,12 @@ namespace Arqus
             float deltaY = Math.Abs(y1 - y2);
 
             return Math.Sqrt(Math.Pow(deltaX, 2.0f) + Math.Pow(deltaY, 2.0f));
+        }
+
+        protected override void Stop()
+        {
+            base.Stop();
+            //scene.SetEnabledRecursive(false);
         }
     }   
 }

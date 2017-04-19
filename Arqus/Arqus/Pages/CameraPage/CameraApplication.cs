@@ -157,6 +157,9 @@ namespace Arqus
             // Create camera 
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
+
+            // Arbitrary far clipping plane
+            camera.FarClip = 30.0f;
             
             // Reposition it..
             cameraNode.Position = new Vector3(0, 0, carouselInitialDistance);
@@ -167,7 +170,6 @@ namespace Arqus
             light.LightType = LightType.Point;
             light.Range = 10000;
             light.Brightness = 1.3f;
-
 
             // Initialize marker sphere meshes   
             InitializeCameras();
@@ -211,7 +213,6 @@ namespace Arqus
                 Position coordinates = carousel.GetCoordinatesForPosition(screen.position);
                 screen.Node.SetWorldPosition(new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y));
             }
-
         }
 
 

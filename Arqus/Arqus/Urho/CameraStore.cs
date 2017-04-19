@@ -1,11 +1,9 @@
-﻿using Arqus.Helpers;
+﻿using QTMRealTimeSDK;
 using Arqus.Visualization;
-using QTMRealTimeSDK;
-using QTMRealTimeSDK.Settings;
-using System;
-using System.Collections.Generic;
+
 using System.Linq;
-using System.Text;
+using System.Collections.Generic;
+using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
@@ -34,6 +32,7 @@ namespace Arqus
         // TODO: Initialize this depending on the first cameras current mode when connecting to the QTM host
         public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
         static QTMNetworkConnection connection = new QTMNetworkConnection();
+        static SettingsService settingsService = new SettingsService();
 
         /// <summary>
         /// Name: GenerateCameraScreens
@@ -45,8 +44,50 @@ namespace Arqus
         /// <returns></returns>
         public static List<CameraScreen> GenerateCameraScreens()
         {
+            List<CameraScreen> cameraScreens = new List<CameraScreen>();
             CameraScreen.ResetScreenCounter();
-            return connection.GetImageSettings().Select(camera => new CameraScreen(camera.CameraID, camera.Width, camera.Height)).ToList();
+
+            connection.Protocol.GetGeneralSettings();
+            List<SettingsGeneralCameraSystem> cameraSettings = connection.Protocol.GeneralSettings.cameraSettings;
+
+            connection.Protocol.GetImageSettings();
+            List<ImageCamera> imageSettings = connection.Protocol.ImageSettings.cameraList;
+
+            foreach (ImageCamera imageCamera in imageSettings)
+            {
+                CameraMode cameraMode = cameraSettings.Where(camera => camera.CameraId == imageCamera.CameraID).First().Mode;
+                SetCameraMode(cameraMode, imageCamera.CameraID);
+                bool isImageMode = cameraMode != CameraMode.ModeMarker;
+                CameraScreen screen = new CameraScreen(
+                    imageCamera.CameraID, 
+                    imageCamera.Width, 
+                    imageCamera.Height, 
+                    isImageMode
+                    );
+                cameraScreens.Add(screen);
+
+                // Make sure that the current settings are reflected in the state of the applicating
+                // The state of the QTM host should always have precedence unless expliciltly told to
+                // change settings
+                if (imageCamera.CameraID == State.ID)
+                    State.Mode = cameraMode;
+                
+            }
+
+            return cameraScreens;
+        }
+
+        public static async void SetCameraMode(CameraMode mode, int id)
+        {
+            await settingsService.SetCameraMode(id, mode);
+        }
+
+        public static async void SetCameraMode(CameraMode mode)
+        {
+            bool success = await settingsService.SetCameraMode(State.ID, mode);
+
+            if (success)
+                State.Mode = mode;
         }
 
         // TODO: Look over this later

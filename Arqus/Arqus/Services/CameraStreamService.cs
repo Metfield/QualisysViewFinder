@@ -19,7 +19,6 @@ namespace Arqus
     /// </summary>
     public class CameraStreamService : IDisposable
     {
-        static List<CameraScreen> cameraScreens;
         private bool running;
         private ImageStream imageStream;
         private MarkerStream markerStream;

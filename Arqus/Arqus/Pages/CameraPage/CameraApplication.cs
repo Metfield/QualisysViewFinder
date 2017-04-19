@@ -47,11 +47,7 @@ namespace Arqus
         /// </summary>
         /// <param name="options"></param>
         [Preserve]
-        public CameraApplication(ApplicationOptions options) : base(options)
-        {
-            // TODO: Hardcoded value for now...
-            carouselInitialDistance = -70;
-        }
+        public CameraApplication(ApplicationOptions options) : base(options){}
 
         static CameraApplication()
         {
@@ -93,7 +89,10 @@ namespace Arqus
                 screenList.ForEach(screen =>
                 {
                     if (screen.CameraID == state.ID)
-                        screen.SetMode(state.Mode);
+                    {
+                        screen.SetImageMode(state.Mode != CameraMode.ModeMarker);
+                    }
+                        
                 });
             });
         }
@@ -109,7 +108,7 @@ namespace Arqus
                     break;
 
                 // TODO: Handle video as well
-                if (screenList.Count > count && screenList[count].CurrentCameraMode != CameraMode.ModeMarker)
+                if (screenList.Count > count && screenList[count].IsImageMode)
                     screenList[count].ImageData = image;
 
                 count++;
@@ -124,23 +123,18 @@ namespace Arqus
 
             foreach (QTMRealTimeSDK.Data.Camera camera in data)
             {
-                if (screenList.Count > count && screenList[count].CurrentCameraMode == CameraMode.ModeMarker)
+                if (screenList.Count > count && !screenList[count].IsImageMode)
                     screenList[count].MarkerData = camera;
                 count++;
             }
         }
 
 
-        private void SetMode(int id, CameraMode mode)
-        {
-            if(screenList.Count > id)
-                screenList[id].SetMode(mode);
-        }
-
         private void CreateScene()
         {
             cameraMovementSpeed = 0.001f;
             // Create carousel
+            carouselInitialDistance = -70;
             carousel = new Carousel(300, 8, 0, 0);            
 
             // Subscribe to touch event

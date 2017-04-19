@@ -88,10 +88,10 @@ namespace Arqus.Visualization
         }
 
         // TODO: Add initialization for float frameHeight, float frameWidth, float min
-        public CameraScreen(int cameraID, ImageResolution resolution)
+        public CameraScreen(int cameraID, int cameraWidth, int cameraHeight)
         {
             CameraID = cameraID;
-            Resolution = resolution;
+            Resolution = new ImageResolution(cameraWidth, cameraHeight);
 
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;

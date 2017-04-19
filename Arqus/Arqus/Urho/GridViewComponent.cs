@@ -36,7 +36,7 @@ namespace Arqus
             // Get camera count from stream class
             //cameraCount = CameraStream.Instance.GetStreamMarkerData().Count;
 
-            screens = CameraStore.Instance.Screens.Values.ToList();
+            screens = CameraStore.GenerateCameraScreens();
 
             // Fill column number
             Columns = columns;

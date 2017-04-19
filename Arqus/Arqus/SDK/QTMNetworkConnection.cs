@@ -207,7 +207,7 @@ namespace Arqus
             return new ImageResolution(camera.Width, camera.Height);
         }
 
-        public bool SetCameraMode(uint id, string mode)
+        public bool SetCameraMode(int id, string mode)
         {
             if(!hasControl)
                 hasControl = TakeControl();
@@ -233,7 +233,7 @@ namespace Arqus
             return success;
         }
 
-        public bool SetImageStream(uint id, bool enabled)
+        public bool SetImageStream(int id, bool enabled)
         {
             if(!hasControl)
                 hasControl = TakeControl();

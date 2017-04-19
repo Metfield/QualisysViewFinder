@@ -10,33 +10,13 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    public class CameraState
+
+    public class CameraPageViewModel : BindableBase, INavigationAware
     {
-        public uint ID { get; set; }
-        public CameraMode Mode { get; set; }
-
-        public CameraState(uint id, CameraMode mode)
-        {
-            ID = id;
-            Mode = mode;
-        }
-    }
-
-    public class CameraPageViewModel : BindableBase, INavigatedAware
-	{
         private ISettingsService settingsService;
         private INavigationService navigationService;
         
         private CameraState cameraState;
-
-        private bool isDetailed = false;
-
-        public bool IsDetailed
-        {
-            get { return isDetailed; }
-            set { SetProperty(ref isDetailed, value); }
-        }
-
 
         public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
         {
@@ -57,16 +37,15 @@ namespace Arqus
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
 
-            cameraState = new CameraState(id: 1, mode: CameraMode.ModeMarker);
-
-
+            cameraState = new CameraState(1, CameraMode.ModeMarker);
+            
             // Default to marker mode
             SetCameraMode();
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
         {
-            cameraState.ID = (uint) cameraID;
+            cameraState.ID = cameraID;
         }
 
         public DelegateCommand GetStreamDataCommand { get; set; }
@@ -99,22 +78,17 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
+            //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            cameraState.ID = (uint)parameters["cameraID"];
+            //MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            //MessagingCenter.Send<CameraPageViewModel, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (int)parameters["cameraID"]);
-
-            // NOTE: It is assumed that this page will only be navigated to with a given id
-            cameraState.ID = (uint)parameters["cameraID"]; 
-
-            //Debug.WriteLine("GOT ID" + cameraID.ToString());
-
+            
         }
     }
 }

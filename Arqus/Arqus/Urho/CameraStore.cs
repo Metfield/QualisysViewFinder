@@ -1,65 +1,63 @@
 ﻿using Arqus.Helpers;
 using Arqus.Visualization;
+using QTMRealTimeSDK;
+using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Arqus
 {
-    class CameraStore
+    
+    /// <summary>
+    /// Object that holds the state of the currently selected camera
+    /// </summary>
+    public class CameraState
     {
-        
-        private static CameraStore instance = null;
-        private static readonly object padlock = new object();
+        public int ID { get; set; }
+        public CameraMode Mode { get; set; }
 
-        CameraStore()
+        public CameraState(int id, CameraMode mode)
         {
-            Init();
+            ID = id;
+            Mode = mode;
+        }
+    }
+
+    /// <summary>
+    /// Camera store that handles retreival of up-to-date cameras and the current 
+    /// state of the cameras in the application
+    /// </summary>
+    class CameraStore
+    {        
+        // TODO: Initialize this depending on the first cameras current mode when connecting to the QTM host
+        //public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
+        static QTMNetworkConnection connection = new QTMNetworkConnection();
+
+        /// <summary>
+        /// Name: GenerateCameraScreens
+        /// Created: 19-04-2017
+        /// 
+        /// Generates camera screens to use inside an Urho context based on the 
+        /// ImageCameras recieved from the QTM host.
+        /// </summary>
+        /// <returns></returns>
+        public static List<CameraScreen> GenerateCameraScreens()
+        {
+            return connection.GetImageSettings().Select(camera => new CameraScreen(camera.CameraID, camera.Width, camera.Height)).ToList();
         }
 
-        public static CameraStore Instance
+        // TODO: Look over this later
+        /*static void RefreshCameraAndScreen()
         {
-            get
-            {
-                lock(padlock)
-                {
-                    if(instance == null)
-                    {
-                        instance = new CameraStore();
-                    }
-                    return instance;
-                }
-            }
-        }
-        
-        private int currentID;
-        public Dictionary<int, CameraScreen> Screens { get; private set; }
-        QTMNetworkConnection connection = new QTMNetworkConnection();
+            connection.GetImageSettings()
+                .Where(camera => camera.CameraID == State.ID)
+                .Select(camera => new CameraScreen(camera.CameraID, camera.Width, camera.Height))
+                .ToList();
+        }*/
 
-
-        void Init()
-        {
-            Screens = new Dictionary<int, CameraScreen>();
-            var cameras = connection.GetImageSettings();
-
-            foreach(var camera in cameras)
-            {
-                // Create resolution object and calculate frame size
-                // TODO: Discuss whether we want different sizes for screens..                    
-                ImageResolution imageResolution = new ImageResolution(camera.Width, camera.Height);
-                
-                // Create screen component and node. Add it to parent node (scene)
-                // TODO: handle 
-                CameraScreen screen = new CameraScreen(camera.CameraID, imageResolution);
-                Screens.Add(camera.CameraID, screen);
-            }
-        }
-
-        public CameraScreen GetCurrentCamera()
-        {
-            return Screens[currentID];
-        }
-
-
+        //public static void SelectCamera(int id){ State.ID = id; }
+        //public static void SelectCamera(int id, CameraMode mode) { State.ID = id; State.Mode = mode; }
     }
 }

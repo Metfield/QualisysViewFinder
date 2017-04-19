@@ -177,7 +177,7 @@ namespace Arqus
         {
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
-            screenList = CameraStore.Instance.Screens.Values.ToList();
+            screenList = CameraStore.GenerateCameraScreens();
 
             foreach (CameraScreen screen in screenList)
             {

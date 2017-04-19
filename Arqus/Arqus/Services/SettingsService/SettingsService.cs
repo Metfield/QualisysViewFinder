@@ -29,7 +29,7 @@ namespace Arqus
         }
         
 
-        public async Task<bool> SetCameraMode(uint id, CameraMode mode)
+        public async Task<bool> SetCameraMode(int id, CameraMode mode)
         {
             try
             {

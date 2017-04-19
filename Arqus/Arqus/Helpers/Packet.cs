@@ -12,7 +12,7 @@ namespace Arqus.Helpers
     public static class Packet
     {
 
-        public static string CameraImage(uint id, bool enabled, string width, string height, string format = "JPG")
+        public static string CameraImage(int id, bool enabled, string width, string height, string format = "JPG")
         {
             string packet = @"<QTM_Settings>
                 <Image>
@@ -29,7 +29,7 @@ namespace Arqus.Helpers
             return FormatStringToXML(string.Format(packet, id, enabled, format, width, height));
         }
 
-        public static string Camera(uint id, string mode)
+        public static string Camera(int id, string mode)
         {
             string packet = @"<QTM_Settings>
                 <General>

@@ -21,19 +21,16 @@ namespace Arqus
             this.navigationService = navigationService;
 
             NavigateCameraViewCommand = new DelegateCommand(() =>
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString()));
-            
-            MessagingCenter.Subscribe<Application, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
+            navigationService.NavigateAsync("CameraPage"));
+            // MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString())
+            //MessagingCenter.Subscribe<Application, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
         }
 
         void OnNavigateToCameraPage(Application application, int cameraID)
         {
             NavigationParameters parameters = new NavigationParameters();
             parameters.Add("cameraID", cameraID);
-
-            //UrhoSurface.OnDestroy();
             Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", parameters));
-
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)

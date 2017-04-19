@@ -55,6 +55,7 @@ namespace Arqus
         {
             urhoScene.Exit();
             UrhoSurface.OnDestroy();
+            //urhoSurface.BindingContext = null;
             base.OnDisappearing();
         }
 

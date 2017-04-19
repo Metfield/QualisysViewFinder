@@ -65,12 +65,9 @@ namespace Arqus
         {
             base.Start();
 
-
             // Setup messaging wíth the view model to retrieve data
             CreateScene();
             SetupViewport();
-            
-            //scene.Clear(true, false);
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
             MessagingCenter.Subscribe<CameraStreamService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
@@ -84,11 +81,14 @@ namespace Arqus
                 SetImageData(imageData);
             });
 
-            MessagingCenter.Subscribe<CameraPageViewModel, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (sender, cameraID) =>
+            MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), (sender, state) =>
             {
-                carousel.SetFocus(cameraID - 1);
-
-                MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);
+                // NOTE: Room for optimization if we do not search through the whole list
+                screenList.ForEach(screen =>
+                {
+                    if (screen.CameraID == state.ID)
+                        screen.SetMode(state.Mode);
+                });
             });
         }
 
@@ -137,6 +137,7 @@ namespace Arqus
             cameraMovementSpeed = 0.001f;
             // Create carousel
             carousel = new Carousel(300, 8, 0, 0);
+            
 
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
@@ -178,15 +179,18 @@ namespace Arqus
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
             screenList = CameraStore.GenerateCameraScreens();
-
+           
             foreach (CameraScreen screen in screenList)
             {
                 Node screenNode = meshNode.CreateChild();
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
                 screen.Scale = 10;
                 screenNode.AddComponent(screen);
+
+                if(screen.CameraID == CameraStore.State.ID)
+                    carousel.SetFocus(screen.position);
             }
-            
+
         }
 
 

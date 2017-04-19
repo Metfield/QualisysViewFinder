@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using Urho.Forms;
 using Xamarin.Forms;
 
@@ -20,17 +21,19 @@ namespace Arqus
         {
             this.navigationService = navigationService;
 
-            NavigateCameraViewCommand = new DelegateCommand(() =>
-            navigationService.NavigateAsync("CameraPage"));
+            //NavigateCameraViewCommand = new DelegateCommand(() => OnNavigateToCameraPage());
             // MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString())
-            //MessagingCenter.Subscribe<Application, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
+
+            MessagingCenter.Subscribe<Application, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
         }
 
-        void OnNavigateToCameraPage(Application application, int cameraID)
+        void OnNavigateToCameraPage(Application sender, int cameraID)
         {
-            NavigationParameters parameters = new NavigationParameters();
-            parameters.Add("cameraID", cameraID);
-            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", parameters));
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                CameraStore.State.ID = cameraID;
+                navigationService.NavigateAsync("CameraPage");
+            });
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)

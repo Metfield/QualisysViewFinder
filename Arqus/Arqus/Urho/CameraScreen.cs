@@ -100,14 +100,12 @@ namespace Arqus.Visualization
             // so the screens can be positioned accordingly
             position = screenCount;
             screenCount++;
-
-            // Listen to the view model and change the stream mode accordingly
-            MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraID, (sender, state) =>
-            {
-                SetMode(state.Mode);
-            });
         }
         
+        public static void ResetScreenCounter()
+        {
+            screenCount = 0;
+        }
 
         public override void OnAttachedToNode(Node node)
         {
@@ -115,7 +113,7 @@ namespace Arqus.Visualization
             
             // Create screen Node, scale it accordingly and rotate it so it faces camera
             screenNode = node.CreateChild("screenNode");
-            screenNode.Scale = new Vector3(Width, 0, Height);
+            screenNode.Scale = new Vector3(Width, 1, Height);
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
 
             // Initialize marker sphere pool with arbitrary number of spheres
@@ -123,12 +121,21 @@ namespace Arqus.Visualization
 
             // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
+            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f)));
+            
+            
 
             // Create intensity plane, its material and assign it
             intensityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
             Material = new Material();
+
+            texture = new Texture2D();
+            texture.SetNumLevels(1);
+            texture.SetSize(Resolution.Width, Resolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            Material.SetTexture(TextureUnit.Diffuse, texture);
+            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             intensityScreen.SetMaterial(Material);
+            
             // Disable this plane right away since we always start with marker mode
             intensityScreen.Enabled = false;
 
@@ -183,7 +190,7 @@ namespace Arqus.Visualization
 
         private void CleanMarker()
         {
-            Pool.Hide();
+            //Pool.Hide();
         }
 
         private void CleanIntensity()
@@ -192,7 +199,7 @@ namespace Arqus.Visualization
         }
 
         private void SetIntensityMode()
-        {
+        {   
             markerScreen.Enabled = false;
             intensityScreen.Enabled = true;
             CurrentCameraMode = CameraMode.ModeMarkerIntensity;

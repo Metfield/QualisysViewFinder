@@ -32,7 +32,7 @@ namespace Arqus
     class CameraStore
     {        
         // TODO: Initialize this depending on the first cameras current mode when connecting to the QTM host
-        //public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
+        public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
         static QTMNetworkConnection connection = new QTMNetworkConnection();
 
         /// <summary>
@@ -45,6 +45,7 @@ namespace Arqus
         /// <returns></returns>
         public static List<CameraScreen> GenerateCameraScreens()
         {
+            CameraScreen.ResetScreenCounter();
             return connection.GetImageSettings().Select(camera => new CameraScreen(camera.CameraID, camera.Width, camera.Height)).ToList();
         }
 

@@ -37,10 +37,11 @@ namespace Arqus
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
 
-            cameraState = new CameraState(1, CameraMode.ModeMarker);
+            cameraState = CameraStore.State;
             
             // Default to marker mode
             SetCameraMode();
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -72,7 +73,7 @@ namespace Arqus
         private async void SetCameraMode()
         {
             await settingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
-            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState);
+            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), cameraState);
         }
 
 
@@ -88,7 +89,7 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            
+            //MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (string)parameters["cameraID"]);
         }
     }
 }

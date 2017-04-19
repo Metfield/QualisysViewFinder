@@ -17,8 +17,7 @@ namespace Arqus.Helpers
     }
 
     public class Carousel
-    {
-        
+    {        
         public double Radius
         {
             get { return length / (2 * Math.PI); }
@@ -86,7 +85,6 @@ namespace Arqus.Helpers
         {
             this.focus = focus;
             Offset = 0;
-        }
-        
+        }                
     }
 }

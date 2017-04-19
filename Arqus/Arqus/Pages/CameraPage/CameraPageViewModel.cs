@@ -10,7 +10,6 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-
     public class CameraPageViewModel : BindableBase, INavigationAware
     {
         private ISettingsService settingsService;
@@ -26,7 +25,6 @@ namespace Arqus
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
-
             
             // NOTE: This couples the ViewModel to the Urho View
             // maybe it's a better idea to create a service which

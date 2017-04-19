@@ -27,6 +27,8 @@ namespace Arqus
         private Vector3 cameraOffset;
         private Position cameraMinPosition;
 
+        private float carouselInitialDistance;
+
         float meshScale,
               markerSphereScale;
 
@@ -45,7 +47,11 @@ namespace Arqus
         /// </summary>
         /// <param name="options"></param>
         [Preserve]
-        public CameraApplication(ApplicationOptions options) : base(options){ }
+        public CameraApplication(ApplicationOptions options) : base(options)
+        {
+            // TODO: Hardcoded value for now...
+            carouselInitialDistance = -70;
+        }
 
         static CameraApplication()
         {
@@ -122,7 +128,6 @@ namespace Arqus
                     screenList[count].MarkerData = camera;
                 count++;
             }
-
         }
 
 
@@ -136,14 +141,12 @@ namespace Arqus
         {
             cameraMovementSpeed = 0.001f;
             // Create carousel
-            carousel = new Carousel(300, 8, 0, 0);
-            
+            carousel = new Carousel(300, 8, 0, 0);            
 
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
             Input.SubscribeToTouchEnd(OnTouchReleased);
-
-
+            
             // Create new scene
             scene = new Scene();
             scene.Clear(true, true);
@@ -154,8 +157,9 @@ namespace Arqus
             // Create camera 
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
-            // TODO: Change this to max when that has been implemented
-            cameraNode.Position = new Vector3(0, 0, carousel.Min);
+            
+            // Reposition it..
+            cameraNode.Position = new Vector3(0, 0, carouselInitialDistance);
 
             // Create light and attach to camera
             Node lightNode = cameraNode.CreateChild(name: "light");
@@ -228,7 +232,18 @@ namespace Arqus
         {
             if (Input.NumTouches == 1)
             {
-                carousel.Offset += eventArgs.DX * cameraMovementSpeed;
+                // Check if we are panning or just scrolling the carousel 
+                // based on current zoom
+                if (camera.Node.Position.Z == carouselInitialDistance)
+                {
+                    // We want to scroll 
+                    carousel.Offset += eventArgs.DX * cameraMovementSpeed;
+                }                
+                else
+                {
+                    // We want to Pan
+                    camera.Pan(eventArgs.DX, eventArgs.DY, cameraMovementSpeed * 5, carouselInitialDistance);
+                }
             }
 
             if (Input.NumTouches >= 2)
@@ -239,9 +254,8 @@ namespace Arqus
                 
                 // HACK: Current max is not calculated, this should be fixed to more closesly corelate to
                 // what a full screen actually is...
-                camera.PinchAndZoom(fingerOne, fingerTwo, carousel.Min, carousel.Min - 30);
+                camera.PinchAndZoom(fingerOne, fingerTwo, carouselInitialDistance, carouselInitialDistance + 20);
             }
-
         }
 
         void OnTouchReleased(TouchEndEventArgs eventArgs)

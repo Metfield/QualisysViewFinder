@@ -308,7 +308,7 @@ namespace Arqus
                 if (image == null)
                     break;
 
-                if (gridView.screens.Count > count && gridView.screens[count].CurrentCameraMode != CameraMode.ModeMarker)
+                if (gridView.screens.Count > count && gridView.screens[count].IsImageMode)
                     gridView.screens[count].ImageData = image;
 
                 count++;
@@ -323,7 +323,7 @@ namespace Arqus
 
             foreach (QTMRealTimeSDK.Data.Camera camera in data)
             {
-                if (gridView.screens.Count > count && gridView.screens[count].CurrentCameraMode == CameraMode.ModeMarker)
+                if (gridView.screens.Count > count && !gridView.screens[count].IsImageMode)
                     gridView.screens[count].MarkerData = camera;
                 count++;
             }
@@ -345,7 +345,6 @@ namespace Arqus
         protected override void Stop()
         {
             base.Stop();
-            //scene.SetEnabledRecursive(false);
         }
     }   
 }

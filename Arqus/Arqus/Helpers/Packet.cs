@@ -12,6 +12,21 @@ namespace Arqus.Helpers
     public static class Packet
     {
 
+        public static string CameraImage(int id, bool enabled, string format = "JPG")
+        {
+            string packet = @"<QTM_Settings>
+                <Image>
+                    <Camera>
+                        <ID>{0}</ID>
+                        <Enabled>{1}</Enabled>
+                        <Format>{2}</Format>
+                    </Camera>
+                </Image>
+            </QTM_Settings>";
+
+            return FormatStringToXML(string.Format(packet, id, enabled, format));
+        }
+
         public static string CameraImage(int id, bool enabled, string width, string height, string format = "JPG")
         {
             string packet = @"<QTM_Settings>

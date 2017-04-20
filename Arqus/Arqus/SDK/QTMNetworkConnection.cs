@@ -9,6 +9,7 @@ using System.Net;
 using Prism.Navigation;
 using Xamarin.Forms;
 using System.Threading.Tasks;
+using QTMRealTimeSDK.Data;
 
 namespace Arqus
 {
@@ -192,6 +193,8 @@ namespace Arqus
 
         public List<ImageCamera> GetImageSettings()
         {
+            PacketType packet;
+            protocol.ReceiveRTPacket(out packet);
             var imageSettings = protocol.GetImageSettings();
             return imageSettings ? protocol.ImageSettings.cameraList : null;
         }

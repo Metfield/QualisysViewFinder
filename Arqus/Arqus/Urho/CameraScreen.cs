@@ -1,19 +1,11 @@
 ﻿using Arqus.Helpers;
 using Arqus.Components;
+
 using Urho;
 using Urho.Urho2D;
-using QTMRealTimeSDK;
-using Xamarin.Forms;
 
 namespace Arqus.Visualization
 {
-    public enum CameraScreenMode
-    {
-        Marker,
-        Intensity,
-        Video,
-        Video_MarkerOverlay
-    }
 
     /// <summary>
     /// Constructs and updates camera screens acording to their given resolution and curren stream mode
@@ -22,17 +14,19 @@ namespace Arqus.Visualization
     /// </summary>
     internal class CameraScreen : Component
     {
-        // Shared between instances
-        static int screenCount;
-
         // General properties
-        public int CameraID { private set; get; }
         public int position;
-       
-        
+        public bool IsImageMode { get; set; }
+        public int CameraID { private set; get; }
+
+        // private fields
+        private bool dirty;
         private Node screenNode;
-        private Urho.Shapes.Plane intensityScreen;
+        private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
+
+        // static fields
+        static int screenCount;
 
         public ImageResolution Resolution { private set; get; }
 
@@ -57,8 +51,6 @@ namespace Arqus.Visualization
         private delegate void UpdateDelegate();
         private UpdateDelegate OnUpdateHandler;
 
-        public CameraMode CurrentCameraMode { get; set; }
-
         // Marker mode properties
         public MarkerSpherePool Pool { set; get; }
 
@@ -73,7 +65,6 @@ namespace Arqus.Visualization
         }
 
         // Intensity mode properties
-        private bool dirty;
         private Texture2D texture;
 
         private ImageSharp.Color[] imageData;
@@ -88,10 +79,11 @@ namespace Arqus.Visualization
         }
 
         // TODO: Add initialization for float frameHeight, float frameWidth, float min
-        public CameraScreen(int cameraID, int cameraWidth, int cameraHeight)
+        public CameraScreen(int cameraID, int cameraWidth, int cameraHeight, bool isImageMode)
         {
             CameraID = cameraID;
             Resolution = new ImageResolution(cameraWidth, cameraHeight);
+            IsImageMode = isImageMode;
 
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;
@@ -100,14 +92,12 @@ namespace Arqus.Visualization
             // so the screens can be positioned accordingly
             position = screenCount;
             screenCount++;
-
-            // Listen to the view model and change the stream mode accordingly
-            MessagingCenter.Subscribe<CameraPageViewModel, CameraState>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraID, (sender, state) =>
-            {
-                SetMode(state.Mode);
-            });
         }
         
+        public static void ResetScreenCounter()
+        {
+            screenCount = 0;
+        }
 
         public override void OnAttachedToNode(Node node)
         {
@@ -115,95 +105,71 @@ namespace Arqus.Visualization
             
             // Create screen Node, scale it accordingly and rotate it so it faces camera
             screenNode = node.CreateChild("screenNode");
-            screenNode.Scale = new Vector3(Width, 0, Height);
-            screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
 
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, screenNode);
+
+            screenNode.Scale = new Vector3(Height, 1, Width);
+
+            // Rotate the camera in the clockwise direction with 90 degrees
+            screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            screenNode.Rotate(new Quaternion(0, 90, 0), TransformSpace.Local);
+
+
 
             // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
             markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
 
             // Create intensity plane, its material and assign it
-            intensityScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            imageScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
             Material = new Material();
-            intensityScreen.SetMaterial(Material);
-            // Disable this plane right away since we always start with marker mode
-            intensityScreen.Enabled = false;
 
-            // Start marker mode
-            SetMode(CameraMode.ModeMarker);
+            texture = new Texture2D();
+            texture.SetNumLevels(1);
+            texture.SetSize(Resolution.Width, Resolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            Material.SetTexture(TextureUnit.Diffuse, texture);
+            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
+            imageScreen.SetMaterial(Material);
+        
+            // Initialize current camera mode
+            SetImageMode(IsImageMode);
         }
 
-        public void SetMode(CameraMode mode)
+        public void SetImageMode(bool enable)
         {
-            // If camera is already running in the 
-            if (CurrentCameraMode == mode)
-                return;
-
-            // Clean camera before setting new camera mode
-            CleanCamera();
+            IsImageMode = enable;
 
             // Clear the update handler to more predictibly determine which
             // methods will be called during update
             OnUpdateHandler = null;
 
-            CurrentCameraMode = mode;
-
-            switch (mode)
+            if (enable)
             {
-                case CameraMode.ModeMarker:
-                    SetMarkerMode();
-                    break;
-                case CameraMode.ModeMarkerIntensity:
-                case CameraMode.ModeVideo:
-                    SetIntensityMode();
-                    break;
-                default:
-                    break;
+                CleanMarkerScreen();
+                SetImageMode();
+            }
+            else
+            {
+                CleanImageScreen();
+                SetMarkerMode();
             }
         }
+    
+        private void CleanImageScreen(){ }
+        private void CleanMarkerScreen() { Pool.Hide(); }
 
-        private void CleanCamera()
-        {
-            switch(CurrentCameraMode)
-            {
-                case CameraMode.ModeMarker:
-                    CleanMarker();
-                    break;
-                case CameraMode.ModeMarkerIntensity:
-                case CameraMode.ModeVideo:
-                    CleanIntensity();
-                    break;
-                default:
-                    throw new System.Exception("Camera cleanup for this camera mode is not yet implemented");
-            }
-        }
-
-        private void CleanMarker()
-        {
-            Pool.Hide();
-        }
-
-        private void CleanIntensity()
-        {
-
-        }
-
-        private void SetIntensityMode()
-        {
+        private void SetImageMode()
+        {   
             markerScreen.Enabled = false;
-            intensityScreen.Enabled = true;
-            CurrentCameraMode = CameraMode.ModeMarkerIntensity;
+            imageScreen.Enabled = true;
             OnUpdateHandler = OnImageUpdate;
         }
 
         private void SetMarkerMode()
         {
-            intensityScreen.Enabled = false;
+            imageScreen.Enabled = false;
             markerScreen.Enabled = true;
-            CurrentCameraMode = CameraMode.ModeMarker;
             OnUpdateHandler = OnMarkerUpdate;
         }
         
@@ -280,24 +246,7 @@ namespace Arqus.Visualization
         {
             UpdateMaterialTexture(imageData);
         }        
-
-        /// <summary>
-        /// Creates a solid backdrop texture
-        /// </summary>
-        /// <param name="color">Color of the backdrop</param>
-        private void LoadBackdropTexture(ImageSharp.Color color)
-        {
-            int size = Resolution.PixelCount;
-            ImageSharp.Color[] backdrop = new ImageSharp.Color[size];
-
-            for(int position = 0; position < size; position++)
-            {
-                backdrop[position] = color;
-            }
-
-            imageData = backdrop;
-            UpdateMaterialTexture(imageData);
-        }
+        
 
         /// <summary>
         /// Creates nice frame around the screen

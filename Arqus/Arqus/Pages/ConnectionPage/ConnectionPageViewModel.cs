@@ -244,12 +244,12 @@ namespace Arqus
                 return;
             }
 
-            // TODO: Change to a more generalized event system
-           container.RegisterType<ISettingsService, SettingsService>(new InjectionConstructor(ipAddress));
+            // This service has to be registered after connecting to a QTM host
+           container.RegisterType<ISettingsService, SettingsService>();
             
             // Connection was successfull          
             // Begin streaming 
-            await navigationService.NavigateAsync("GridPage");
+            await navigationService.NavigateAsync("CameraPage");
         }
 
       

@@ -37,10 +37,8 @@ namespace Arqus
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
 
-            cameraState = new CameraState(1, CameraMode.ModeMarker);
-            
-            // Default to marker mode
-            SetCameraMode();
+            cameraState = CameraStore.State;
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);
 
             // Create Camera Settings Drawer object
             settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker);
@@ -80,10 +78,9 @@ namespace Arqus
         private async void SetCameraMode()
         {
             await settingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
-            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState);
+            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), cameraState);
         }
-
-
+        
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
             //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
@@ -96,7 +93,7 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            
+            //MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (string)parameters["cameraID"]);
         }
 
         // Settings Drawer section

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using QTMRealTimeSDK;
 using Arqus.Helpers;
@@ -23,7 +22,7 @@ namespace Arqus
             { CameraMode.ModeVideo, "Video" }
         };
 
-        public SettingsService(string ip)
+        public SettingsService()
         {
             qtmConnection = new QTMNetworkConnection(); 
         }        
@@ -39,6 +38,11 @@ namespace Arqus
                 Debug.WriteLine(e);
                 return false;
             }
+        }
+
+        public bool EnableImageMode(int id, bool enabled)
+        {
+            return qtmConnection.Protocol.SendXML(Packet.CameraImage(id, enabled));
         }
 
         public async void SetCameraSettings(int id )

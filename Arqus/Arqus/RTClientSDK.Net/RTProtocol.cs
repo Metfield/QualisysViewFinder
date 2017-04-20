@@ -1055,6 +1055,9 @@ namespace QTMRealTimeSDK
 
         #region Generic communication methods
 
+
+        private readonly static object sendLock = new object();
+
         /// <summary>Send string to QTM server</summary>
         /// <param name="stringToSend">string with data to send</param>
         /// <param name="packetType">what type of packet it should be sent as</param>
@@ -1073,7 +1076,12 @@ namespace QTMRealTimeSDK
                 b.AddRange(str);
 
                 byte[] msg = b.ToArray();
-                bool status = mNetwork.Send(msg, str.Length + Constants.PACKET_HEADER_SIZE);
+
+                bool status;
+                // NOTE: We have trouble here when streaming images
+
+                status = mNetwork.Send(msg, str.Length + Constants.PACKET_HEADER_SIZE);
+
 
                 return status;
             }

@@ -71,18 +71,6 @@ namespace Arqus
             CreateScene();
             InitializeGrid();
             SetupViewport();
-
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraStreamService, List<QTMRealTimeSDK.Data.Camera>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, cameras) =>
-            {
-                SetMarkerData(cameras);
-            });
-
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraStreamService, List<ImageSharp.Color[]>>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), (sender, imageData) =>
-            {
-                SetImageData(imageData);
-            });
         }
 
         // Sets up scene elements 
@@ -297,37 +285,7 @@ namespace Arqus
                 }
             }
         }
-
-
-        private void SetImageData(List<ImageSharp.Color[]> data)
-        {
-            int count = 0;
-
-            foreach (ImageSharp.Color[] image in data)
-            {
-                if (image == null)
-                    break;
-
-                if (gridView.screens.Count > count && gridView.screens[count].IsImageMode)
-                    gridView.screens[count].ImageData = image;
-
-                count++;
-            }
-        }
-
-        private bool updatingMarkerData;
-
-        private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
-        {
-            int count = 0;
-
-            foreach (QTMRealTimeSDK.Data.Camera camera in data)
-            {
-                if (gridView.screens.Count > count && !gridView.screens[count].IsImageMode)
-                    gridView.screens[count].MarkerData = camera;
-                count++;
-            }
-        }
+        
 
         bool isPinching(ref int x1, ref int x2, ref int y1, ref int y2)
         {

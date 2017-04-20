@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Arqus.Helpers;
 using Arqus.Visualization;
+using System.Diagnostics;
 
 namespace Arqus
 {
@@ -35,7 +36,7 @@ namespace Arqus
             markerStream.StartStream();
 
             // Make sure that the stream update loop runs in its own thread to keep interactions responsive
-            Task.Run(() => UpdateDataTask(1, SendImageData));
+            Task.Run(() => UpdateDataTask(10, SendImageData));
             Task.Run(() => UpdateDataTask(30, SendMarkerData));
         }
 
@@ -44,20 +45,20 @@ namespace Arqus
             return markerStream.GetMarkerData(id);
         }
 
-        public ImageSharp.Color[] GetImageData(int id)
+        public async Task<ImageSharp.Color[]> GetImageData(int id)
         {
-            return imageStream.GetImageData(id);
+            return await imageStream.GetImageData(id);
         }
 
         /// <summary>
         /// Fetches new stream data and updates the local structure
         /// </summary>
-        public async void UpdateDataTask(int frequency, Action onUpdate)
+        public async void UpdateDataTask(int frequency, Func<Task<bool>> onUpdate)
         {
             while (running)
             {
                 DateTime time = DateTime.UtcNow;
-                onUpdate();
+                await onUpdate();
 
                 if (frequency > 0)
                 {
@@ -72,31 +73,58 @@ namespace Arqus
             }
         }
 
-        private async void SendImageData()
+        private async Task<bool> SendImageData()
         {
-            List<ImageSharp.Color[]> imageData = await Task.Run(() => imageStream.GetImageData());
+            List<CameraImage> cameraImages = await Task.Run(() => imageStream.GetImageData());
 
-            if (imageData != null)
+            if (cameraImages != null)
             {
-                MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), imageData);
+                foreach(CameraImage cameraImage in cameraImages)
+                {
+                    try
+                    {
+                        ImageSharp.Color[] imageData = await ImageProcessor.DecodeJPG(cameraImage.ImageData);
+
+                        if (imageData != null)
+                        {
+                            MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData);
+                            return true;
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e);
+                    }
+                }
             }
+            return false;
         }
 
-        private async void SendMarkerData()
+        private async Task<bool> SendMarkerData()
         {
-            List<QTMRealTimeSDK.Data.Camera> markerData = await Task.Run(() => markerStream.GetMarkerData());
+            List<QTMRealTimeSDK.Data.Camera> cameras = await Task.Run(() => markerStream.GetMarkerData());
 
-            if (markerData != null)
+            if (cameras != null)
             {
-                MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString(), markerData);
+                // Camera IDs start at 1 in QTM.
+                // Furthermore the list will be ordered according to the ID,
+                // so looping through the list and incrementing the ID every
+                // time will reflect the camera state in QTM as well.
+                for (int cameraID = 1; cameraID <= cameras.Count; cameraID++)
+                {
+                    MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraID, cameras[cameraID - 1]);
+                }
+                return true;
             }
+            return false;
         }
 
         public void Dispose()
         {
             running = false;
-            imageStream.StopStream();
-            markerStream.StopStream();
+            imageStream.Dispose();
+            markerStream.Dispose();
         }
     }
 }

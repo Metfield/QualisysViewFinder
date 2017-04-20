@@ -3,6 +3,9 @@ using Arqus.Components;
 
 using Urho;
 using Urho.Urho2D;
+using Xamarin.Forms;
+using System.Collections.Generic;
+using QTMRealTimeSDK;
 
 namespace Arqus.Visualization
 {
@@ -115,8 +118,6 @@ namespace Arqus.Visualization
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
             screenNode.Rotate(new Quaternion(0, 90, 0), TransformSpace.Local);
 
-
-
             // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
             markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
@@ -134,6 +135,38 @@ namespace Arqus.Visualization
         
             // Initialize current camera mode
             SetImageMode(IsImageMode);
+
+            SubscribeToDataEvents();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            MessagingCenter.Unsubscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
+            MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.Color[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
+            MessagingCenter.Unsubscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraID);
+        }
+
+        public void SubscribeToDataEvents()
+        {
+            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
+            MessagingCenter.Subscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, markerData) =>
+            {
+                if(!IsImageMode)
+                    MarkerData = markerData;
+            });
+
+            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
+            MessagingCenter.Subscribe<CameraStreamService, ImageSharp.Color[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, imageData) =>
+            {
+                if(IsImageMode)
+                    ImageData = imageData;
+            });
+
+            MessagingCenter.Subscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraID, (sender, mode) =>
+            {
+                SetImageMode(mode != CameraMode.ModeMarker);
+            });
         }
 
         public void SetImageMode(bool enable)
@@ -199,8 +232,8 @@ namespace Arqus.Visualization
 
             if (dirty && screenNode.Enabled)
             {
-                OnUpdateHandler?.Invoke();
                 dirty = false;
+                OnUpdateHandler?.Invoke();
             }
         }
                 
@@ -209,30 +242,20 @@ namespace Arqus.Visualization
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used
             int lastUsedInArray = 0;
-
-            // Get necessary frame information to position markers
-            // Horizontal bounds
-            float leftBound = screenNode.WorldPosition.X - (Width * 0.5f);
-            float rightBound = leftBound + Width;
-
-            // Vertical bounds
-            float upperBound = screenNode.WorldPosition.Y + (Height * 0.5f);
-            float lowerBound = upperBound - Height;
-
+            
             // Iterate through the marker array, transform and draw spheres
             for (int i = 0; i < markerData.MarkerCount; i++)
             {
                 // Transform from camera coordinates to frame coordinates
-                float adjustedX = Helpers.DataOperations.ConvertRange(0, Resolution.Width, leftBound, rightBound, markerData.MarkerData2D[i].X / 64);
-                float adjustedY = Helpers.DataOperations.ConvertRange(0, Resolution.Height, upperBound, lowerBound, markerData.MarkerData2D[i].Y / 64);
+                float adjustedX = DataOperations.ConvertRange(0, Resolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X / 64);
+                float adjustedY = DataOperations.ConvertRange(0, Resolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y / 64);
                 float adjustedScaleX = DataOperations.ConvertRange(0, Resolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX / 64);
                 float adjustedScaleY = DataOperations.ConvertRange(0, Resolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY / 64);
 
+                MarkerSphere sphere = Pool.Get(i);
                 // Set world position with new frame coordinates            
-                Pool.Get(i).SetWorldPosition(new Vector3(adjustedX, adjustedY, screenNode.WorldPosition.Z - 1));
-
-                // Maybe unnecessary to do this every time?
-                Pool.Get(i).Scale = new Vector3(adjustedScaleX, 0, adjustedScaleY);
+                sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
+                sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
 
                 // Last element will set this variable
                 lastUsedInArray = i;
@@ -244,7 +267,8 @@ namespace Arqus.Visualization
 
         private void OnImageUpdate()
         {
-            UpdateMaterialTexture(imageData);
+            if(imageData != null)
+                UpdateMaterialTexture(imageData);
         }        
         
 

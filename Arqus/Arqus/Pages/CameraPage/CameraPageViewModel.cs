@@ -13,9 +13,8 @@ namespace Arqus
 {
     public class CameraPageViewModel : BindableBase, INavigationAware
     {
-        private ISettingsService settingsService;
         private INavigationService navigationService;
-        
+
         private CameraState cameraState;
 
         private CameraSettingsDrawer settingsDrawer;
@@ -23,9 +22,8 @@ namespace Arqus
 
         public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
         {
-            this.settingsService = settingsService;
             this.navigationService = navigationService;
-            
+
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));            
@@ -88,23 +86,33 @@ namespace Arqus
 
         private async void SetCameraMode()
         {
-            await settingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
-            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString(), cameraState);
-        }
-        
-        public void OnNavigatedFrom(NavigationParameters parameters)
-        {
-            //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
+            await SettingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
+            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState.Mode);
         }
 
-        public void OnNavigatingTo(NavigationParameters parameters)
+        public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            //MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
+            try
+            {
+                NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
+
+                if (navigationMode == NavigationMode.Back)
+                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            //MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), (string)parameters["cameraID"]);
+
+        }
+
+        public void OnNavigatingTo(NavigationParameters parameters)
+        {
+            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
         }
 
         // Settings Drawer section
@@ -141,12 +149,12 @@ namespace Arqus
                 if (cameraState.Mode == CameraMode.ModeVideo)
                 {
                     cameraSettings[cameraState.ID - 1].VideoExposure = value;
-                    settingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
                 }
                 else
                 { 
                     cameraSettings[cameraState.ID - 1].MarkerExposure = value;
-                    settingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, value);
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, value);
                 }
             }
         }
@@ -173,12 +181,12 @@ namespace Arqus
                 if (cameraState.Mode == CameraMode.ModeVideo)
                 {
                     cameraSettings[cameraState.ID - 1].VideoFlash = value;
-                    settingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, value);
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, value);
                 }
                 else
                 {
                     cameraSettings[cameraState.ID - 1].MarkerThreshold = value;
-                    settingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, value);
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, value);
                 }
             }
         }

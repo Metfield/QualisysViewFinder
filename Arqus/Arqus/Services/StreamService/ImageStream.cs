@@ -5,6 +5,7 @@ using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Arqus.Services
 {
@@ -21,18 +22,13 @@ namespace Arqus.Services
         /// 
         /// </summary>
         /// <returns>List of decoded images</returns>
-        public List<Color[]> GetImageData()
+        public List<CameraImage> GetImageData()
         {
             List<Color[]> imageData = new List<Color[]>();
             
             if(currentPacket != null)
             {
-                foreach (CameraImage camera in currentPacket?.GetImageData())
-                {
-                    imageData.Add(ImageProcessor.DecodeJPG(camera.ImageData));
-                }
-
-                return imageData;
+                return currentPacket.GetImageData();
             }
             else
             {
@@ -41,12 +37,12 @@ namespace Arqus.Services
 
         }
 
-        public Color[] GetImageData(int id)
+        public async Task<Color[]> GetImageData(int id)
         {
             if (currentPacket != null)
             {
                 byte[] imageData = currentPacket.GetImageData(id).ImageData;
-                return ImageProcessor.DecodeJPG(imageData);
+                return await ImageProcessor.DecodeJPG(imageData);
             }
 
             return null;

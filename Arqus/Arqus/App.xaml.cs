@@ -37,7 +37,6 @@ namespace Arqus
             // Register types for navigation
             Container.RegisterTypeForNavigation<NavigationPage>();
             Container.RegisterTypeForNavigation<ConnectionPage>();
-            Container.RegisterTypeForNavigation<OnlineStreamMenuPage>();
             Container.RegisterTypeForNavigation<CameraPage>();
             Container.RegisterTypeForNavigation<GridPage>();
             
@@ -51,6 +50,8 @@ namespace Arqus
         protected void OnDisconnected()
         {
             cameraService.Dispose();
+            //SettingsService.Dispose();
         }
+        
     }
 }

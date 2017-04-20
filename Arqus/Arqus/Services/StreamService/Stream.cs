@@ -19,7 +19,7 @@ namespace Arqus.Services
     /// intutive manner
     /// 
     /// </summary>
-    abstract class Stream
+    abstract class Stream : IDisposable
     {
         private bool streaming;
         private ComponentType type;
@@ -33,11 +33,16 @@ namespace Arqus.Services
         private Object thisLock;
         protected QTMNetworkConnection networkConnection;
 
+        protected int port;
+        static int streamCount;
+
         protected Stream(ComponentType type, int frequency)
         {
             this.type = type;
             this.frequency = frequency;
             networkConnection = new QTMNetworkConnection();
+            port = streamCount + 2230;
+            streamCount++;
         }
 
         public void StartStream()
@@ -48,6 +53,8 @@ namespace Arqus.Services
 
                 // NOTE: We might have to initatiate a unique network instance for each stream
                 bool success = networkConnection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type);
+                //bool success = true;
+
 
                 if (!success)
                     return;
@@ -83,9 +90,13 @@ namespace Arqus.Services
             while (streaming)
             {
                 DateTime time = DateTime.UtcNow;
-                PacketType packetType = new PacketType();
-                networkConnection.Protocol.ReceiveRTPacket(out packetType);
-                currentPacket = networkConnection.Protocol.GetRTPacket();
+                //GC.Collect();
+                
+                currentPacket = await Task.Run(() => {
+                    PacketType packetType = new PacketType();
+                    networkConnection.Protocol.ReceiveRTPacket(out packetType);
+                    return networkConnection.Protocol.GetRTPacket();
+                    });
 
                 if (frequency > 0)
                 {
@@ -101,5 +112,10 @@ namespace Arqus.Services
             }
         }
 
+        public void Dispose()
+        {
+            StopStream();
+            networkConnection.Protocol.Dispose();
+        }
     }
 }

@@ -13,13 +13,13 @@ using QTMRealTimeSDK.Data;
 
 namespace Arqus
 {
-    public class QTMNetworkConnection
+    public class QTMNetworkConnection : IDisposable
     {
         public static string Version { get; private set; }
 
         private static string _ipAddress;
         private static string _password;
-        private bool hasControl;
+        private static readonly object controlLock = new object();
         
         private RTProtocol protocol;
         public RTProtocol Protocol
@@ -31,7 +31,10 @@ namespace Arqus
         
         public QTMNetworkConnection(string ipAddress)
         {
-            Connect(ipAddress, _password);
+            Protocol = new RTProtocol();
+
+            if(!Protocol.IsConnected())
+                Connect(ipAddress, _password);
         }
 
         /// <summary>
@@ -44,9 +47,10 @@ namespace Arqus
 
             // If an ipAddress is already set make a connection attempt
             // since this is assumed to be the default use case
-            if (_ipAddress != null)
+            if (!Protocol.IsConnected() && _ipAddress != null)
             {
-                Connect(_ipAddress, _password);
+                if (!Connect(_ipAddress, _password))
+                    Debug.WriteLine("UNABLE TO CONNECT TO QTM");
             }
         }
 
@@ -74,7 +78,7 @@ namespace Arqus
         /// <returns>boolean indicating success or failure</returns>
         public bool Connect()
         {
-            if (!Protocol.Connect(_ipAddress))
+            if (!Protocol.Connect(_ipAddress, 0))
             {
                 return false;
             }
@@ -212,11 +216,17 @@ namespace Arqus
 
         public bool SetCameraMode(int id, string mode)
         {
-            if(!hasControl)
-                hasControl = TakeControl();
 
             string packetString = Packet.Camera(id, mode);
-            bool success = Protocol.SendXML(packetString);
+
+            bool success;
+
+            lock (controlLock)
+            {
+                TakeControl();
+                success = Protocol.SendXML(packetString);
+                ReleaseControl();
+            }
 
             if (success && IsImage(mode))
             {
@@ -231,22 +241,25 @@ namespace Arqus
                 Debug.WriteLine("Unable to Enable/Disbale image mode");
             }
 
-            hasControl = !ReleaseControl();
+
 
             return success;
         }
 
         public bool SetImageStream(int id, bool enabled)
         {
-            if(!hasControl)
-                hasControl = TakeControl();
-
             // TODO: This should not be hardcoded, get the image setting and pass the resolution as a parameter instead
             string packetString = Packet.CameraImage(id, enabled, "1823", "1087");
-            bool response = Protocol.SendXML(packetString);
-            hasControl = !ReleaseControl();
+            bool success;
 
-            return response;
+            lock(controlLock)
+            {
+                TakeControl();
+                success = Protocol.SendXML(packetString);
+                ReleaseControl();
+            }
+
+            return success;
         }
        
 
@@ -255,6 +268,9 @@ namespace Arqus
             return mode != "Marker";
         }
 
-
+        public void Dispose()
+        {
+            Protocol.Dispose();
+        }
     }
 }

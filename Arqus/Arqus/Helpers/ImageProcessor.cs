@@ -1,13 +1,14 @@
 ﻿using ImageSharp;
 using ImageSharp.Formats;
+using System.Threading.Tasks;
 
 namespace Arqus.Helpers
 {
     class ImageProcessor
     {
-        public static Color[] DecodeJPG(byte[] data)
+        public static async Task<Color[]> DecodeJPG(byte[] data)
         {
-            return Image.Load(data).Pixels;
+            return await Task.Run(() => Image.Load(data).Pixels);
         }
     }
 }

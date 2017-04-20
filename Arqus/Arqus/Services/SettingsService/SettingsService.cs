@@ -7,31 +7,27 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using QTMRealTimeSDK;
 using Arqus.Helpers;
+using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
-    class SettingsService : ISettingsService
+    class SettingsService
     {
-        private QTMNetworkConnection qtmConnection;
+        private static QTMNetworkConnection connection = new QTMNetworkConnection();
         
         // We need to convert the CameraMode enum to a string that matches the API's
-        Dictionary<CameraMode, string> CameraModeString = new Dictionary<CameraMode, string>()
+        static Dictionary<CameraMode, string> CameraModeString = new Dictionary<CameraMode, string>()
         {
             { CameraMode.ModeMarker, "Marker" },
             { CameraMode.ModeMarkerIntensity, "Marker Intensity" },
             { CameraMode.ModeVideo, "Video" }
         };
-
-        public SettingsService()
-        {
-            qtmConnection = new QTMNetworkConnection(); 
-        }        
-
-        public async Task<bool> SetCameraMode(int id, CameraMode mode)
+        
+        public static async Task<bool> SetCameraMode(int id, CameraMode mode)
         {
             try
             {
-                return await Task.Run(() => qtmConnection.SetCameraMode(id, CameraModeString[mode]));
+                return await Task.Run(() => connection.SetCameraMode(id, CameraModeString[mode]));
             }
             catch (Exception e)
             {
@@ -40,9 +36,59 @@ namespace Arqus
             }
         }
 
-        public bool EnableImageMode(int id, bool enabled)
+        public static bool EnableImageMode(int id, bool enabled)
         {
-            return qtmConnection.Protocol.SendXML(Packet.CameraImage(id, enabled));
+            return connection.Protocol.SendXML(Packet.CameraImage(id, enabled));
+        }
+        
+        public static List<SettingsGeneralCameraSystem> GetCameraSettings()
+        {
+            connection.Protocol.GetGeneralSettings();
+            return connection.Protocol.GeneralSettings.cameraSettings;
+        }
+
+        public static List<ImageCamera> GetImageCameraSettings()
+        {
+            connection.Protocol.GetImageSettings();
+            return connection.Protocol.ImageSettings.cameraList;
+        }
+        private static readonly string port = "7979";
+        private static string baseUrl = "http://{0}:{1}/api/experimental/{2}";
+        static HttpClient client = new HttpClient();
+
+        /*private static string GetUrl(string resource)
+        {
+            //return string.Format(baseUrl, QTMNetworkConnection.IpAddress, port, resource);
+        }
+        */
+
+        /*
+        public static async Task<List<object>> GetCameraSettings()
+        {
+            try
+            {
+                var uri = new Uri(GetUrl("settings"));
+                var response = await client.GetAsync(uri);
+
+                if(response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    Settings settings = JsonConvert.DeserializeObject<Settings>(content);
+                    return settings.Cameras;
+                }
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine("Failed to get camera settings. \n Error: " + e);
+            }
+            return null;
+        }
+        */
+
+
+        public static void Dispose()
+        {
+            connection.Dispose();
         }
 
         public async void SetCameraSettings(int id )

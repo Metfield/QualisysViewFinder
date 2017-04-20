@@ -38,6 +38,9 @@ namespace Arqus
         public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
         static QTMNetworkConnection connection = new QTMNetworkConnection();
         static SettingsService settingsService = new SettingsService();
+        static public List<CameraScreen> Screens { get; set; }
+
+
 
         /// <summary>
         /// Name: GenerateCameraScreens
@@ -51,27 +54,29 @@ namespace Arqus
         {
             List<CameraScreen> cameraScreens = new List<CameraScreen>();
             CameraScreen.ResetScreenCounter();
-
-            connection.Protocol.GetGeneralSettings();
-            List<SettingsGeneralCameraSystem> cameraSettings = connection.Protocol.GeneralSettings.cameraSettings;
-
-            connection.Protocol.GetImageSettings();
-            List<ImageCamera> imageSettings = connection.Protocol.ImageSettings.cameraList;
+            
+            List<SettingsGeneralCameraSystem> cameraSettings = SettingsService.GetCameraSettings();
+            List<ImageCamera> imageSettings = SettingsService.GetImageCameraSettings();
 
             foreach (ImageCamera imageCamera in imageSettings)
             {
                 CameraMode cameraMode = cameraSettings.Where(camera => camera.CameraId == imageCamera.CameraID).First().Mode;
-                SetCameraMode(cameraMode, imageCamera.CameraID);
+
+                if(!imageCamera.Enabled && cameraMode != CameraMode.ModeMarker)
+                    SetCameraMode(cameraMode, imageCamera.CameraID);
+
                 bool isImageMode = cameraMode != CameraMode.ModeMarker;
+
                 CameraScreen screen = new CameraScreen(
                     imageCamera.CameraID, 
                     imageCamera.Width, 
                     imageCamera.Height, 
                     isImageMode
                     );
+
                 cameraScreens.Add(screen);
 
-                // Make sure that the current settings are reflected in the state of the applicating
+                // Make sure that the current settings are reflected in the state of the application
                 // The state of the QTM host should always have precedence unless expliciltly told to
                 // change settings
                 if (imageCamera.CameraID == State.ID)
@@ -84,12 +89,12 @@ namespace Arqus
 
         public static async void SetCameraMode(CameraMode mode, int id)
         {
-            await settingsService.SetCameraMode(id, mode);
+            await SettingsService.SetCameraMode(id, mode);
         }
 
         public static async void SetCameraMode(CameraMode mode)
         {
-            bool success = await settingsService.SetCameraMode(State.ID, mode);
+            bool success = await SettingsService.SetCameraMode(State.ID, mode);
 
             if (success)
                 State.Mode = mode;

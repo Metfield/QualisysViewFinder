@@ -244,9 +244,9 @@ namespace Arqus
                 return;
             }
 
-            // This service has to be registered after connecting to a QTM host
-           container.RegisterType<ISettingsService, SettingsService>();
-            
+            // 
+            //networkConnection.Dispose();
+
             // Connection was successfull          
             // Begin streaming 
             await navigationService.NavigateAsync("CameraPage");

@@ -17,6 +17,8 @@ namespace Arqus
         
         private CameraState cameraState;
 
+        private CameraSettingsDrawer settingsDrawer;
+
         public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
         {
             this.settingsService = settingsService;
@@ -24,7 +26,7 @@ namespace Arqus
             
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
-            SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
+            SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));            
             
             // NOTE: This couples the ViewModel to the Urho View
             // maybe it's a better idea to create a service which
@@ -39,6 +41,9 @@ namespace Arqus
             
             // Default to marker mode
             SetCameraMode();
+
+            // Create Camera Settings Drawer object
+            settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker);
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -47,7 +52,6 @@ namespace Arqus
         }
 
         public DelegateCommand GetStreamDataCommand { get; set; }
-
         public DelegateCommand SetCameraModeToMarkerCommand { get; set; }
         public DelegateCommand SetCameraModeToVideoCommand { get; set; }
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
@@ -63,7 +67,13 @@ namespace Arqus
 
         private void SetCameraMode(CameraMode mode)
         {
+            // Change camera state mode
             cameraState.Mode = mode;
+
+            // Change the drawer layout
+            settingsDrawer.ChangeDrawerMode(mode);
+
+            // Set the mode
             SetCameraMode();
         }
 
@@ -87,6 +97,76 @@ namespace Arqus
         public void OnNavigatedTo(NavigationParameters parameters)
         {
             
+        }
+
+        // Settings Drawer section
+        private string firstSliderString,
+                       secondSliderString;
+
+        private int firstSliderValue,
+                    firstSliderMinValue,
+                    firstSliderMaxValue,                    
+                    secondSliderValue,
+                    secondSliderMinValue,
+                    secondSliderMaxValue;
+
+        // Command handlers for cammera settings
+        public string FirstSliderString
+        {
+            get { return firstSliderString; }
+            set { SetProperty(ref firstSliderString, value); }
+        }
+
+        public string SecondSliderString
+        {
+            get { return secondSliderString; }
+            set { SetProperty(ref secondSliderString, value); }
+        }
+
+        public int FirstSliderValue
+        {
+            get { return firstSliderValue; }
+            set
+            {
+                SetProperty(ref firstSliderValue, value);
+                
+                //if()
+            }
+        }
+
+        public int FirstSliderMinValue
+        {
+            get { return firstSliderMinValue; }
+            set { SetProperty(ref firstSliderMinValue, value); }
+        }
+
+        public int FirstSliderMaxValue
+        {
+            get { return firstSliderMaxValue; }
+            set { SetProperty(ref firstSliderMaxValue, value); }
+        }
+
+        public int SecondSliderValue
+        {
+            get { return secondSliderValue; }
+            set
+            {
+                SetProperty(ref secondSliderValue, value);
+
+                // Update structure's value
+            }
+        }
+
+        public int SecondSliderMinValue
+        {
+            get { return secondSliderMinValue; }
+            set { SetProperty(ref secondSliderMinValue, value); }
+        }
+
+        public int SecondSliderMaxValue
+        {
+            get { return secondSliderMaxValue; }
+            set { SetProperty(ref secondSliderMaxValue, value); }
         }
     }
 }

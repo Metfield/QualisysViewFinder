@@ -43,6 +43,20 @@ namespace Arqus.Helpers
             return FormatStringToXML(string.Format(packet, id, mode));
         }
 
+        public static string SettingsParameter(int id, string parameter, int value)
+        {
+            string packet = @"<QTM_Settings>
+                <General>
+                    <Camera>
+                        <ID>{0}</ID>
+                        <"+parameter+">{1}</"+parameter+">" +
+                    "</Camera>" + 
+                "</General>" +
+            "</QTM_Settings>";
+            
+            return FormatStringToXML(string.Format(packet, id, value));
+        }
+
         private static string FormatStringToXML(string value)
         {
             XmlDocument document = new XmlDocument();

@@ -30,8 +30,22 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout VerticalOptions="FillAndExpand">
-        <Label Text="CAMERA PAGE" />
+        
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
+
+        <!-- All-purpose Settings drawer-->
+        <StackLayout VerticalOptions="End" IsEnabled="True">
+            <Frame HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray">
+                <StackLayout VerticalOptions="StartAndExpand">
+                    <Label Text="{Binding FirstSliderString}"/>                    
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding FirstSliderMaxValue}" Minimum="{Binding FirstSliderMinValue}"  Value="{Binding FirstSliderValue}"/>
+                    
+                    <Label Text="{Binding SecondSliderString}"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding SecondSliderMaxValue}" Minimum="{Binding SecondSliderMinValue}" Value="{Binding SecondSliderValue}"/>
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+
     </StackLayout>
 
     <!--

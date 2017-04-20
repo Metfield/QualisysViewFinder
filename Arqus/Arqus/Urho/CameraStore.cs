@@ -8,15 +8,20 @@ using System.Linq;
 using System.Text;
 
 namespace Arqus
-{
-    
+{    
     /// <summary>
     /// Object that holds the state of the currently selected camera
     /// </summary>
     public class CameraState
     {
-        public int ID { get; set; }
+        public int ID { get;  set; }
         public CameraMode Mode { get; set; }
+
+        public int MarkerExposure { get; set; }
+        public int MarkerThreshold { get; set; }
+
+        public int VideoExposure { get; set; }
+        public int VideoFlash { get; set; }
 
         public CameraState(int id, CameraMode mode)
         {

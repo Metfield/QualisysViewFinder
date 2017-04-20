@@ -26,8 +26,7 @@ namespace Arqus
         public SettingsService(string ip)
         {
             qtmConnection = new QTMNetworkConnection(); 
-        }
-        
+        }        
 
         public async Task<bool> SetCameraMode(int id, CameraMode mode)
         {
@@ -40,6 +39,12 @@ namespace Arqus
                 Debug.WriteLine(e);
                 return false;
             }
+        }
+
+        public async void SetCameraSettings(int id )
+        {
+            //qtmConnection.Protocol.
+
         }
     }
 }

@@ -39,16 +39,23 @@ namespace Arqus
                 return false;
             }
         }
-
-        public bool EnableImageMode(int id, bool enabled)
+        
+        public async Task<bool> SetCameraSettings(int id, string settingsParameter, int value)
         {
-            return qtmConnection.Protocol.SendXML(Packet.CameraImage(id, enabled));
-        }
+            string commandPacket = Packet.SettingsParameter(id, settingsParameter, value);
+            string result;
 
-        public async void SetCameraSettings(int id )
-        {
-            //qtmConnection.Protocol.
+            bool blah = qtmConnection.Protocol.SendXML(commandPacket);
 
+            try
+            {
+                return await Task.Run(() => qtmConnection.Protocol.SendCommandExpectXMLResponse(commandPacket, out result));
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
         }
     }
 }

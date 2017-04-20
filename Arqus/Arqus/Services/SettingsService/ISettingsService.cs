@@ -10,5 +10,6 @@ namespace Arqus
     public interface ISettingsService
     {
         Task<bool> SetCameraMode(int id, CameraMode mode);
+        Task<bool> SetCameraSettings(int id, string settingsParameter, int value);
     }
 }

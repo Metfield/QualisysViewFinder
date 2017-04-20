@@ -4,6 +4,7 @@ using Prism.Mvvm;
 using Prism.Navigation;
 using QTMRealTimeSDK;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -18,6 +19,7 @@ namespace Arqus
         private CameraState cameraState;
 
         private CameraSettingsDrawer settingsDrawer;
+        private List<CameraSettings> cameraSettings;
 
         public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
         {
@@ -39,6 +41,15 @@ namespace Arqus
 
             cameraState = CameraStore.State;
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);
+
+            // Create camera settings array
+            cameraSettings = new List<CameraSettings>();
+            
+            // Create each camera settings object with a camera id
+            for(int i = 1; i <= cameraState.NumCams; i++)
+            {
+                cameraSettings.Add(new CameraSettings(i));
+            }
 
             // Create Camera Settings Drawer object
             settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker);
@@ -106,7 +117,7 @@ namespace Arqus
                     secondSliderValue,
                     secondSliderMinValue,
                     secondSliderMaxValue;
-
+        
         // Command handlers for cammera settings
         public string FirstSliderString
         {
@@ -126,8 +137,17 @@ namespace Arqus
             set
             {
                 SetProperty(ref firstSliderValue, value);
-                
-                //if()
+
+                if (cameraState.Mode == CameraMode.ModeVideo)
+                {
+                    cameraSettings[cameraState.ID - 1].VideoExposure = value;
+                    settingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
+                }
+                else
+                { 
+                    cameraSettings[cameraState.ID - 1].MarkerExposure = value;
+                    settingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, value);
+                }
             }
         }
 
@@ -150,7 +170,16 @@ namespace Arqus
             {
                 SetProperty(ref secondSliderValue, value);
 
-                // Update structure's value
+                if (cameraState.Mode == CameraMode.ModeVideo)
+                {
+                    cameraSettings[cameraState.ID - 1].VideoFlash = value;
+                    settingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, value);
+                }
+                else
+                {
+                    cameraSettings[cameraState.ID - 1].MarkerThreshold = value;
+                    settingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, value);
+                }
             }
         }
 

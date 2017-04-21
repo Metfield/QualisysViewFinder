@@ -292,6 +292,7 @@
     <AndroidResource Include="Resources\Drawable\arqus_logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Pages\CameraPage\" />
     <Folder Include="Resources\images\" />
   </ItemGroup>
   <ItemGroup>

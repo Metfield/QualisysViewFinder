@@ -34,7 +34,6 @@ namespace Arqus.Services
             {
                 return null;
             }
-
         }
 
         public async Task<Color[]> GetImageData(int id)
@@ -47,6 +46,5 @@ namespace Arqus.Services
 
             return null;
         }
-
     }
 }

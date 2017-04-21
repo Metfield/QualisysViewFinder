@@ -86,14 +86,17 @@ namespace Arqus
             // Make a check to determine wether the password is correct
             // and that the object instance can take control and thereby
             // send commands and/or update settings
-            if (!CheckControl())
+           /* if (!CheckControl())
             {
                 return false;
-            }
+            }                           <= redundant */
 
             string ver;
             Protocol.GetQTMVersion(out ver);
             Version = ver;
+
+            // Try to assume control from beginning
+            TakeControl();
 
             return true;
         }
@@ -123,9 +126,11 @@ namespace Arqus
             if(!success)
             {
                 string response = Protocol.GetErrorString();
+                SharedProjects.Notification.Show("Slave mode", response);
                 Debug.WriteLine("Error: " + response);
             }
 
+            SharedProjects.Notification.Show("Success!", "Master connection established");
             return success;
         }
 
@@ -221,12 +226,12 @@ namespace Arqus
 
             bool success;
 
-            lock (controlLock)
+            /*lock (controlLock)
             {
-                TakeControl();
+                TakeControl();*/
                 success = Protocol.SendXML(packetString);
-                ReleaseControl();
-            }
+                /*ReleaseControl();
+            }*/
 
             if (success && IsImage(mode))
             {
@@ -252,12 +257,12 @@ namespace Arqus
             string packetString = Packet.CameraImage(id, enabled, "1823", "1087");
             bool success;
 
-            lock(controlLock)
+       /*     lock(controlLock)
             {
-                TakeControl();
+                TakeControl();*/
                 success = Protocol.SendXML(packetString);
-                ReleaseControl();
-            }
+         /*       ReleaseControl();
+            }*/
 
             return success;
         }

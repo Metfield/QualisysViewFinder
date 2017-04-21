@@ -245,9 +245,12 @@ namespace Arqus
             // 
             //networkConnection.Dispose();
 
+            // Send connection instance to settings service
+            SettingsService.Initialize(networkConnection);
+
             // Connection was successfull          
             // Begin streaming 
-            await navigationService.NavigateAsync("GridPage");
+            await navigationService.NavigateAsync("CameraPage");
         }
 
       

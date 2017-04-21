@@ -20,7 +20,7 @@ namespace Arqus
         private CameraSettingsDrawer settingsDrawer;
         private List<CameraSettings> cameraSettings;
 
-        public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
+        public CameraPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
 
@@ -42,15 +42,26 @@ namespace Arqus
 
             // Create camera settings array
             cameraSettings = new List<CameraSettings>();
-            
+
+            List<QTMRealTimeSDK.Settings.SettingsGeneralCameraSystem> tempGeneralSettings = SettingsService.GetCameraSettings();
+                        
             // Create each camera settings object with a camera id
-            for(int i = 1; i <= cameraState.NumCams; i++)
+            for (int i = 1; i <= SettingsService.GetCameraCount(); i++)
             {
-                cameraSettings.Add(new CameraSettings(i));
+                CameraSettings camSettings = new CameraSettings(i);
+
+                camSettings.MarkerExposure = tempGeneralSettings[i - 1].MarkerExposure.Current;
+                camSettings.MarkerThreshold = tempGeneralSettings[i - 1].MarkerThreshold.Current;
+                camSettings.VideoExposure = tempGeneralSettings[i - 1].VideoExposure.Current;
+                camSettings.VideoFlash = tempGeneralSettings[i - 1].VideoFlashTime.Current;
+                
+                cameraSettings.Add(camSettings);
             }
 
             // Create Camera Settings Drawer object
-            settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker);
+            settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker, CameraStore.State.ID, 
+                                                      tempGeneralSettings[CameraStore.State.ID - 1], 
+                                                      cameraSettings[CameraStore.State.ID - 1]);
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -78,7 +89,7 @@ namespace Arqus
             cameraState.Mode = mode;
 
             // Change the drawer layout
-            settingsDrawer.ChangeDrawerMode(mode);
+            settingsDrawer.ChangeDrawerMode(mode, cameraSettings[cameraState.ID - 1]);
 
             // Set the mode
             SetCameraMode();

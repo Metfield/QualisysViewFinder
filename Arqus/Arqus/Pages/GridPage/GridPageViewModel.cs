@@ -63,7 +63,6 @@ namespace Arqus
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
         }
     }
 }

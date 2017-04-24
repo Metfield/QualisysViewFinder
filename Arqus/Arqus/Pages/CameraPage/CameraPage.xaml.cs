@@ -26,6 +26,7 @@ namespace Arqus
 
         protected override void OnDisappearing()
         {
+            currentApplication.Exit();
             UrhoSurface.OnDestroy();
             base.OnDisappearing();
         }

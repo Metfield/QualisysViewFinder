@@ -8,7 +8,8 @@ namespace Arqus.Helpers
     {
         public static async Task<Color[]> DecodeJPG(byte[] data)
         {
-            return await Task.Run(() => Image.Load(data).Pixels);
+            var img = await Task.Run(() => Image.Load(data));
+            return img.Pixels;
         }
     }
 }

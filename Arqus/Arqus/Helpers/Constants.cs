@@ -34,5 +34,11 @@ namespace Arqus.Helpers
         public static string MARKER_THRESHOLD_PACKET_STRING = "Marker_Threshold";
         public static string VIDEO_EXPOSURE_PACKET_STRING = "Video_Exposure";
         public static string VIDEO_FLASHPACKET_STRING = "Video_Flash_Time";
+
+        public class CAMERA
+        {
+            public static int WIDTH = 912;
+            public static int HEIGHT = 544;
+        }
     }
 }

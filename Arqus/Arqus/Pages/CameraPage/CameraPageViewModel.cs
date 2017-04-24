@@ -18,7 +18,7 @@ namespace Arqus
 
         private CameraSettingsDrawer settingsDrawer;
 
-        public CameraPageViewModel(INavigationService navigationService, ISettingsService settingsService)
+        public CameraPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
 
@@ -81,6 +81,7 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
+            /*
             try
             {
                 NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
@@ -92,6 +93,7 @@ namespace Arqus
             {
                 Debug.WriteLine(e);
             }
+            */
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
@@ -101,9 +103,9 @@ namespace Arqus
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
         }
 
+       
         // Settings Drawer section
         private string firstSliderString,
                        secondSliderString;

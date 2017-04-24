@@ -12,13 +12,13 @@ namespace Arqus
         // Holds reference to CameraPageViewModel so that bindings
         // can be changed here
         CameraPageViewModel pageViewModel;
-
+        
         public CameraSettingsDrawer(CameraPageViewModel cpvm, CameraMode mode)
         {
             pageViewModel = cpvm;
             ChangeDrawerMode(mode);
         }
-
+        
         public void ChangeDrawerMode(CameraMode newMode)
         {
             // ATTENTION! It is very important to set Max value first, otherwise an 
@@ -60,6 +60,7 @@ namespace Arqus
                     // Add Exception handling
                     break;
             }
+            
         }
     }
 }

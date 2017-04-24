@@ -39,8 +39,7 @@ namespace Arqus
         static QTMNetworkConnection connection = new QTMNetworkConnection();
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
-
-
+        
 
         /// <summary>
         /// Name: GenerateCameraScreens

@@ -211,7 +211,7 @@ namespace Arqus
         public DelegateCommand ConnectCommand { private set;  get; }
 
 
-        private string ipAddress = "192.168.10.168";
+        private string ipAddress = "192.168.10.161";
 
         public string IPAddress
         {
@@ -249,6 +249,7 @@ namespace Arqus
 
             // Connection was successfull          
             // Begin streaming 
+            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
             await navigationService.NavigateAsync("CameraPage");
         }
 

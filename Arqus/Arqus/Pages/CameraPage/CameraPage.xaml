@@ -34,7 +34,7 @@
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
 
         <!-- All-purpose Settings drawer-->
-        <StackLayout VerticalOptions="End" IsEnabled="True">
+        <!-- <StackLayout VerticalOptions="End" IsEnabled="True">
             <Frame HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray">
                 <StackLayout VerticalOptions="StartAndExpand">
                     <Label Text="{Binding FirstSliderString}"/>                    
@@ -45,7 +45,8 @@
                 </StackLayout>
             </Frame>
         </StackLayout>
-
+        -->
+        
     </StackLayout>
 
     <!--

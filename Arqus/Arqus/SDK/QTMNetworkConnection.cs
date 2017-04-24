@@ -6,9 +6,6 @@ using Arqus.Helpers;
 using System.Diagnostics;
 using QTMRealTimeSDK.Settings;
 using System.Net;
-using Prism.Navigation;
-using Xamarin.Forms;
-using System.Threading.Tasks;
 using QTMRealTimeSDK.Data;
 
 namespace Arqus
@@ -78,7 +75,7 @@ namespace Arqus
         /// <returns>boolean indicating success or failure</returns>
         public bool Connect()
         {
-            if (!Protocol.Connect(_ipAddress, 0))
+            if (!Protocol.Connect(_ipAddress))
             {
                 return false;
             }
@@ -218,7 +215,6 @@ namespace Arqus
         {
 
             string packetString = Packet.Camera(id, mode);
-
             bool success;
 
             lock (controlLock)
@@ -249,7 +245,7 @@ namespace Arqus
         public bool SetImageStream(int id, bool enabled)
         {
             // TODO: This should not be hardcoded, get the image setting and pass the resolution as a parameter instead
-            string packetString = Packet.CameraImage(id, enabled, "1823", "1087");
+            string packetString = Packet.CameraImage(id, enabled);
             bool success;
 
             lock(controlLock)

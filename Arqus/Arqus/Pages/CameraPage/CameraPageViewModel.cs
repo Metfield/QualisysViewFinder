@@ -4,6 +4,7 @@ using Prism.Mvvm;
 using Prism.Navigation;
 using QTMRealTimeSDK;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Xamarin.Forms;
@@ -17,6 +18,7 @@ namespace Arqus
         private CameraState cameraState;
 
         private CameraSettingsDrawer settingsDrawer;
+        private List<CameraSettings> cameraSettings;
 
         public CameraPageViewModel(INavigationService navigationService)
         {
@@ -38,8 +40,28 @@ namespace Arqus
             cameraState = CameraStore.State;
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);
 
+            // Create camera settings array
+            cameraSettings = new List<CameraSettings>();
+
+            List<QTMRealTimeSDK.Settings.SettingsGeneralCameraSystem> tempGeneralSettings = SettingsService.GetCameraSettings();
+                        
+            // Create each camera settings object with a camera id
+            for (int i = 1; i <= SettingsService.GetCameraCount(); i++)
+            {
+                CameraSettings camSettings = new CameraSettings(i);
+
+                camSettings.MarkerExposure = tempGeneralSettings[i - 1].MarkerExposure.Current;
+                camSettings.MarkerThreshold = tempGeneralSettings[i - 1].MarkerThreshold.Current;
+                camSettings.VideoExposure = tempGeneralSettings[i - 1].VideoExposure.Current;
+                camSettings.VideoFlash = tempGeneralSettings[i - 1].VideoFlashTime.Current;
+                
+                cameraSettings.Add(camSettings);
+            }
+
             // Create Camera Settings Drawer object
-            settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker);
+            settingsDrawer = new CameraSettingsDrawer(this, CameraMode.ModeMarker, CameraStore.State.ID, 
+                                                      tempGeneralSettings[CameraStore.State.ID - 1], 
+                                                      cameraSettings[CameraStore.State.ID - 1]);
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -67,7 +89,7 @@ namespace Arqus
             cameraState.Mode = mode;
 
             // Change the drawer layout
-            settingsDrawer.ChangeDrawerMode(mode);
+            settingsDrawer.ChangeDrawerMode(mode, cameraSettings[cameraState.ID - 1]);
 
             // Set the mode
             SetCameraMode();
@@ -116,7 +138,7 @@ namespace Arqus
                     secondSliderValue,
                     secondSliderMinValue,
                     secondSliderMaxValue;
-
+        
         // Command handlers for cammera settings
         public string FirstSliderString
         {
@@ -136,8 +158,17 @@ namespace Arqus
             set
             {
                 SetProperty(ref firstSliderValue, value);
-                
-                //if()
+
+                if (cameraState.Mode == CameraMode.ModeVideo)
+                {
+                    cameraSettings[cameraState.ID - 1].VideoExposure = value;
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
+                }
+                else
+                { 
+                    cameraSettings[cameraState.ID - 1].MarkerExposure = value;
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, value);
+                }
             }
         }
 
@@ -160,7 +191,16 @@ namespace Arqus
             {
                 SetProperty(ref secondSliderValue, value);
 
-                // Update structure's value
+                if (cameraState.Mode == CameraMode.ModeVideo)
+                {
+                    cameraSettings[cameraState.ID - 1].VideoFlash = value;
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, value);
+                }
+                else
+                {
+                    cameraSettings[cameraState.ID - 1].MarkerThreshold = value;
+                    SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, value);
+                }
             }
         }
 

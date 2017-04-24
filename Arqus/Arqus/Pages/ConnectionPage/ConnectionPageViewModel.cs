@@ -218,8 +218,7 @@ namespace Arqus
             get { return ipAddress; }
             set { ipAddress = value; }
         }
-
-
+        
         private string password = "test";
 
         public string Password
@@ -227,7 +226,6 @@ namespace Arqus
             get { return password; }
             set { SetProperty(ref password, value); }
         }
-
 
         /// <summary>
         /// Callback method for starting connection
@@ -246,6 +244,9 @@ namespace Arqus
 
             // 
             //networkConnection.Dispose();
+
+            // Send connection instance to settings service
+            SettingsService.Initialize(networkConnection);
 
             // Connection was successfull          
             // Begin streaming 

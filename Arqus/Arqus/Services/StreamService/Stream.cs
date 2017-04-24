@@ -54,14 +54,12 @@ namespace Arqus.Services
                 // NOTE: We might have to initatiate a unique network instance for each stream
                 bool success = networkConnection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type);
                 //bool success = true;
-
-
+                
                 if (!success)
                     return;
                 else
                     // Run stream in its own thread to prevent it from blocking more time critical processes on the main thread
                     Task.Run( () => ContinuousStream());
-
             }
             else
             {
@@ -98,7 +96,7 @@ namespace Arqus.Services
                     return networkConnection.Protocol.GetRTPacket();
                     });
 
-                if (frequency > 0)
+                /*if (frequency > 0)
                 {
                     var deltaTime = (DateTime.UtcNow - time).TotalMilliseconds;
                     var timeToWait = 1000d / frequency - deltaTime;
@@ -107,7 +105,7 @@ namespace Arqus.Services
                     {
                         await Task.Delay(TimeSpan.FromMilliseconds(timeToWait));
                     }
-                }
+                }*/
                 
             }
         }

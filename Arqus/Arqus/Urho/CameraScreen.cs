@@ -218,18 +218,6 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
-            /*
-            if (screenNode.WorldPosition.Z >= min - 20 && screenNode.WorldPosition.Z <= min + 20)
-            {
-                screenNode.Enabled = true;
-            }
-            else if (screenNode.Enabled)
-            {
-                screenNode.Enabled = false;
-                Pool.Hide();
-            }
-            */
-
             if (dirty && screenNode.Enabled)
             {
                 dirty = false;

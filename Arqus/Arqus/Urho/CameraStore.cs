@@ -6,21 +6,17 @@ using System.Collections.Generic;
 using QTMRealTimeSDK.Settings;
 
 namespace Arqus
-{    
+{
     /// <summary>
     /// Object that holds the state of the currently selected camera
     /// </summary>
     public class CameraState
     {
-        public int ID { get;  set; }
+        public int ID { get; set; }
         public CameraMode Mode { get; set; }
 
-        public int MarkerExposure { get; set; }
-        public int MarkerThreshold { get; set; }
-
-        public int VideoExposure { get; set; }
-        public int VideoFlash { get; set; }
-
+        public int NumCams{ get; set; }
+        
         public CameraState(int id, CameraMode mode)
         {
             ID = id;
@@ -56,6 +52,8 @@ namespace Arqus
             
             List<SettingsGeneralCameraSystem> cameraSettings = SettingsService.GetCameraSettings();
             List<ImageCamera> imageSettings = SettingsService.GetImageCameraSettings();
+
+            State.NumCams = imageSettings.Count;
 
             foreach (ImageCamera imageCamera in imageSettings)
             {

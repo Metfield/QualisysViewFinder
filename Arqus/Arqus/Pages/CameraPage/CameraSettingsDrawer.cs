@@ -14,10 +14,6 @@ namespace Arqus
         // Holds reference to CameraPageViewModel so that bindings
         // can be changed here
         CameraPageViewModel pageViewModel;
-<<<<<<< HEAD
-        
-        public CameraSettingsDrawer(CameraPageViewModel cpvm, CameraMode mode)
-=======
 
         int currentCamera;
 
@@ -28,7 +24,6 @@ namespace Arqus
             VIDEO_MAX_FLASH, VIDEO_MIN_FLASH;
 
         public CameraSettingsDrawer(CameraPageViewModel cpvm, CameraMode mode, int camID, SettingsGeneralCameraSystem generalSettings, CameraSettings currCamSettings)
->>>>>>> UsageFlow
         {
             pageViewModel = cpvm;            
             currentCamera = camID;
@@ -47,13 +42,8 @@ namespace Arqus
 
             ChangeDrawerMode(mode, currCamSettings);
         }
-<<<<<<< HEAD
-        
-        public void ChangeDrawerMode(CameraMode newMode)
-=======
 
         public void ChangeDrawerMode(CameraMode newMode, CameraSettings newCamSettings)
->>>>>>> UsageFlow
         {
             // ATTENTION! It is very important to set Max value first, otherwise an 
             // exception will be triggered

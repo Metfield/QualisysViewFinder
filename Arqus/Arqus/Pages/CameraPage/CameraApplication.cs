@@ -72,23 +72,7 @@ namespace Arqus
             SetupViewport();
         }
 
-
-        private void SetImageData(List<ImageSharp.Color[]> data)
-        {
-            int count = 0;
-
-            foreach (ImageSharp.Color[] image in data)
-            {
-                if (image == null)
-                    break;
-
-                // TODO: Handle video as well
-                if (screenList.Count > count && screenList[count].IsImageMode)
-                    screenList[count].ImageData = image;
-
-                count++;
-            }
-        }
+        
 
         private bool updatingMarkerData;
 

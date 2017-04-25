@@ -1,23 +1,42 @@
-﻿using QTMRealTimeSDK;
+﻿using Arqus.Helpers;
+using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace Arqus.Services
 {
-    class MarkerStream: Stream
+    class MarkerStream: Stream<Camera>
     {
-        public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency){ }
+        public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency){}
 
-        public List<Camera> GetMarkerData()
+        protected override void EnqueueDataAsync(RTPacket packet)
         {
-            return currentPacket?.Get2DMarkerData();   
+            var data = packet.Get2DMarkerData();
+
+            if(data != null)
+            {
+                uint id = 1;
+                foreach (var camera in data)
+                {
+                    if(camera.MarkerData2D.Length > 0)
+                    {
+                        Enqueue(dataQueue, id, camera, DateTimeOffset.Now.ToUnixTimeMilliseconds());
+                    }
+                    id++;
+                }
+            }
         }
 
-        public Camera? GetMarkerData(int id)
+        /*
+        protected override bool GetCurrentFrame()
         {
-            return currentPacket?.Get2DMarkerData(id);
+            return QTMNetworkConnection.GetCurrentCameraFrame();
         }
+        */
     }
 }

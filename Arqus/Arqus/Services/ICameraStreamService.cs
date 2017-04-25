@@ -9,6 +9,6 @@ namespace Arqus
     public interface ICameraStreamService
     {
         Camera? GetMarkerData(int id);
-        ImageSharp.Color[] GetImageData(int id);
+        ImageSharp.PixelFormats.Rgba32[] GetImageData(int id);
     }
 }

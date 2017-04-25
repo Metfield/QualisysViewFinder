@@ -19,7 +19,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICameraStreamService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
@@ -52,16 +51,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\CameraStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml.cs">
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\OnlineStreamMenuPage\OnlineStreamMenuPage.xaml.cs">
-      <SubType>Code</SubType>
-      <DependentUpon>OnlineStreamMenuPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\OnlineStreamMenuPage\OnlineStreamMenuPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
@@ -79,10 +72,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\OnlineStreamMenuPage\OnlineStreamMenuPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

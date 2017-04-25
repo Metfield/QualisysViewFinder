@@ -1,50 +1,62 @@
 ﻿using Arqus.Helpers;
 using ImageSharp;
-using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace Arqus.Services
 {
-    class ImageStream : Stream
+    class ImageStream : Stream<ImageSharp.PixelFormats.Rgba32[]>
     {
-
+        int limiter = 0;
         public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency){ }
-        
-        /// <summary>
-        /// Name: GetImageData
-        /// 
-        /// Description: Decodes and return image data
-        /// frome the current data packet of the stream
-        /// 
-        /// </summary>
-        /// <returns>List of decoded images</returns>
-        public List<CameraImage> GetImageData()
+
+        private readonly object streamLock = new object();
+
+        protected override void EnqueueDataAsync(RTPacket packet)
         {
-            List<Color[]> imageData = new List<Color[]>();
+            var data = packet.GetImageData();
             
-            if(currentPacket != null)
+            if(data.Count > 0)
             {
-                return currentPacket.GetImageData();
-            }
-            else
-            {
-                return null;
+                foreach (var cameraImage in data)
+                {
+                    if (cameraImage.ImageData != null && cameraImage.ImageData.Length > 0)
+                    {
+                        if(limiter > 7)
+                           return;
+
+                        Task.Run( async () =>
+                        {
+                            lock(streamLock)
+                            {
+                                limiter++;
+                            }
+                            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                            using (ImageSharp.Image imageData = await Task.Run(() => ImageSharp.Image.Load(cameraImage.ImageData)))
+                            {
+                                MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData.Pixels);
+                                Thread.Sleep(50);
+                                lock(streamLock)
+                                {
+                                    limiter--;
+                                }
+                            }
+                        });
+                    }
+                }
             }
         }
 
-        public async Task<Color[]> GetImageData(int id)
+        /*
+        protected override bool GetCurrentFrame()
         {
-            if (currentPacket != null)
-            {
-                byte[] imageData = currentPacket.GetImageData(id).ImageData;
-                return await ImageProcessor.DecodeJPG(imageData);
-            }
-
-            return null;
+            return QTMNetworkConnection.GetCurrentImageFrame();
         }
+        */
     }
 }

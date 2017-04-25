@@ -103,7 +103,6 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            /*
             try
             {
                 NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
@@ -115,12 +114,12 @@ namespace Arqus
             {
                 Debug.WriteLine(e);
             }
-            */
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-
+            // Begin streaming 
+            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)

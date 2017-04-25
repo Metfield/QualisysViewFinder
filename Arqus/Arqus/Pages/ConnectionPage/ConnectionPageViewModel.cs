@@ -28,7 +28,7 @@ namespace Arqus
             NONE
         }
         
-        private QTMNetworkConnection networkConnection;
+        private QTMNetworkConnection connection;
         private INavigationService navigationService;
         private IUnityContainer container;
         private IPageDialogService pageDialogService;
@@ -39,7 +39,7 @@ namespace Arqus
             this.navigationService = navigationService;
             this.pageDialogService = pageDialogService;
 
-            networkConnection = new QTMNetworkConnection();
+            connection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;
 
             RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
@@ -179,7 +179,7 @@ namespace Arqus
         {
             // BUG: The application will crash upon a second refresh
             // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
+            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
 
 
             return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
@@ -211,7 +211,7 @@ namespace Arqus
         public DelegateCommand ConnectCommand { private set;  get; }
 
 
-        private string ipAddress = "192.168.10.161";
+        private string ipAddress = "192.168.10.179";
 
         public string IPAddress
         {
@@ -233,7 +233,7 @@ namespace Arqus
         async void OnConnectionStarted()
         {
             // Connect to IP
-            bool success = networkConnection.Connect(IPAddress, Password);
+            bool success = connection.Connect(IPAddress, Password);
 
             if (!success)
             {
@@ -246,11 +246,9 @@ namespace Arqus
             //networkConnection.Dispose();
 
             // Send connection instance to settings service
-            SettingsService.Initialize(networkConnection);
+            SettingsService.Initialize();
 
             // Connection was successfull          
-            // Begin streaming 
-            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
             await navigationService.NavigateAsync("CameraPage");
         }
 

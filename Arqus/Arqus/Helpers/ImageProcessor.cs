@@ -1,14 +1,18 @@
 ﻿using ImageSharp;
 using ImageSharp.Formats;
+using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Arqus.Helpers
 {
     class ImageProcessor
     {
-        public static async Task<Color[]> DecodeJPG(byte[] data)
+        public static ImageSharp.PixelFormats.Rgba32[] DecodeJPG(byte[] data)
         {
-            var img = await Task.Run(() => Image.Load(data));
+            DateTime time = DateTime.UtcNow;
+            var img = Image.Load(data);
+            Debug.WriteLine("Time to decode: " + (DateTime.UtcNow - time).TotalMilliseconds);
             return img.Pixels;
         }
     }

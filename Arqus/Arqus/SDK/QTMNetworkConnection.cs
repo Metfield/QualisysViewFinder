@@ -14,102 +14,64 @@ namespace Arqus
     {
         public static string Version { get; private set; }
 
-        private static string _ipAddress;
-        private static string _password;
-        private static readonly object controlLock = new object();
-        
-        private RTProtocol protocol;
-        public RTProtocol Protocol
-        {
-            get { return protocol; }
-            set { protocol = value; }
-        }
-        
-        
-        public QTMNetworkConnection(string ipAddress)
-        {
-            Protocol = new RTProtocol();
+        private static string ipAddress;
+        private static string password;
+        private static readonly object padlock = new object();
 
-            if(!Protocol.IsConnected())
-                Connect(ipAddress, _password);
-        }
 
-        /// <summary>
-        /// NOTE: This should only be used when an intial connection has already been made
-        /// This might not be a good approach?
-        /// </summary>
+        public static RTProtocol Master { get; set; }
+        public RTProtocol Protocol { get; private set; }
+        
         public QTMNetworkConnection()
         {
             Protocol = new RTProtocol();
+            Connect();
+        }
 
-            // If an ipAddress is already set make a connection attempt
-            // since this is assumed to be the default use case
-            if (!Protocol.IsConnected() && _ipAddress != null)
-            {
-                if (!Connect(_ipAddress, _password))
-                    Debug.WriteLine("UNABLE TO CONNECT TO QTM");
-            }
+
+        public QTMNetworkConnection(int port)
+        {
+            Protocol = new RTProtocol();
+            Connect(port);
         }
 
         /// <summary>
-        /// Set the IpAddress property of the object instance and makes a connection attempt
+        /// Attempts to connect to a QTM host
         /// </summary>
         /// <returns>boolean indicating success or failure</returns>
         public bool Connect(string ipAddress, string password = "")
         {
-            if(IsValidIPv4(ipAddress))
+            lock(padlock)
             {
-                _ipAddress = ipAddress;
-                _password = password;
-                bool response = Connect();
-                return response;
+                QTMNetworkConnection.ipAddress = ipAddress;
+                QTMNetworkConnection.password = password;
             }
 
-            return false;
+            return Connect();
         }
+        
 
 
         /// <summary>
         /// Attempts to connect to a QTM host
         /// </summary>
         /// <returns>boolean indicating success or failure</returns>
-        public bool Connect()
+        public bool Connect(int port = -1)
         {
-            if (!Protocol.Connect(_ipAddress))
+            if(IsValidIPv4(ipAddress))
             {
-                return false;
+                if (Protocol.Connect(ipAddress, port))
+                {
+                    string ver;
+                    Protocol.GetQTMVersion(out ver);
+                    Version = ver;
+                    return TakeControl();
+                }
             }
-
-            // Make a check to determine wether the password is correct
-            // and that the object instance can take control and thereby
-            // send commands and/or update settings
-           /* if (!CheckControl())
-            {
-                return false;
-            }                           <= redundant */
-
-            string ver;
-            Protocol.GetQTMVersion(out ver);
-            Version = ver;
-
-            // Try to assume control from beginning
-            TakeControl();
-
-            return true;
+            
+            return false;
         }
-
-        /// <summary>
-        /// Checks to determine if object instance can take control
-        /// </summary>
-        /// <returns>true if the instance is able to take control</returns>
-        private bool CheckControl()
-        {
-            if (!TakeControl())
-                return false;
-
-            return ReleaseControl();
-        }
-
+        
         /// <summary>
         /// Takes control of the QTM host
         /// 
@@ -118,17 +80,25 @@ namespace Arqus
         /// <returns>true if the client took control</returns>
         private bool TakeControl()
         {
-            bool success = Protocol.TakeControl(_password);
-
-            if(!success)
+            if(!ReferenceEquals(Master, Protocol))
             {
-                string response = Protocol.GetErrorString();
-                SharedProjects.Notification.Show("Slave mode", response);
-                Debug.WriteLine("Error: " + response);
+                if (Master != null)
+                    ReleaseControl();
+
+                if (!Protocol.TakeControl(password))
+                {
+                    string response = Protocol.GetErrorString();
+                    Debug.WriteLine("Error: " + response);
+                    return false;
+                }
+                
+                lock(padlock)
+                {
+                    Master = Protocol;
+                }
             }
 
-            SharedProjects.Notification.Show("Success!", "Master connection established");
-            return success;
+            return true;
         }
 
         /// <summary>
@@ -137,7 +107,7 @@ namespace Arqus
         /// <returns>true if the client released control</returns>
         private bool ReleaseControl()
         {
-            bool success = Protocol.ReleaseControl();
+            bool success = Master.ReleaseControl();
 
             if(!success)
             {
@@ -180,13 +150,25 @@ namespace Arqus
             return false;
         }
 
+        static List<ComponentType> streamTypes = new List<ComponentType>();
+
+        public bool UpdateStream(ComponentType type)
+        {
+            lock(padlock)
+            {
+                streamTypes.Add(type);
+            }
+
+            return Protocol.StreamFrames(StreamRate.RateAllFrames, 30, streamTypes);
+        }
+
         public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
             try
             {
                 if (Protocol.DiscoverRTServers(port))
                 {
-                    Debug.WriteLine(string.Format("QTM Servers: {0}", protocol.DiscoveryResponses.Count));
+                    Debug.WriteLine(string.Format("QTM Servers: {0}", Protocol.DiscoveryResponses.Count));
                 }
             }
             catch (Exception e)
@@ -200,9 +182,9 @@ namespace Arqus
         public List<ImageCamera> GetImageSettings()
         {
             PacketType packet;
-            protocol.ReceiveRTPacket(out packet);
-            var imageSettings = protocol.GetImageSettings();
-            return imageSettings ? protocol.ImageSettings.cameraList : null;
+            Protocol.ReceiveRTPacket(out packet);
+            var imageSettings = Protocol.GetImageSettings();
+            return imageSettings ? Protocol.ImageSettings.cameraList : null;
         }
 
         public IEnumerable<ImageResolution> GetAllCameraResolutions()
@@ -218,49 +200,27 @@ namespace Arqus
 
         public bool SetCameraMode(int id, string mode)
         {
-
             string packetString = Packet.Camera(id, mode);
-            bool success;
 
-            /*lock (controlLock)
+            TakeControl();
+            if(Protocol.SendXML(packetString))
             {
-                TakeControl();*/
-                success = Protocol.SendXML(packetString);
-                /*ReleaseControl();
-            }*/
-
-            if (success && IsImage(mode))
-            {
-                SetImageStream(id, true);
-            }
-            else if (success)
-            {
-                SetImageStream(id, false);
+                SetImageStream(id, IsImage(mode));
             }
             else
             {
-                Debug.WriteLine("Unable to Enable/Disbale image mode");
+                Debug.WriteLine("Unable to Enable/Disable image mode");
+                return false;
             }
-
-
-
-            return success;
+            
+            return true;
         }
 
         public bool SetImageStream(int id, bool enabled)
         {
-            // TODO: This should not be hardcoded, get the image setting and pass the resolution as a parameter instead
             string packetString = Packet.CameraImage(id, enabled);
-            bool success;
-
-       /*     lock(controlLock)
-            {
-                TakeControl();*/
-                success = Protocol.SendXML(packetString);
-         /*       ReleaseControl();
-            }*/
-
-            return success;
+            TakeControl();
+            return Protocol.SendXML(packetString);
         }
        
 

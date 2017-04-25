@@ -36,16 +36,15 @@ namespace Arqus
                 return false;
             }
         }
-
+        
         public static bool EnableImageMode(int id, bool enabled)
         {
             return connection.Protocol.SendXML(Packet.CameraImage(id, enabled));
         }
         
-        public static void Initialize(QTMNetworkConnection qtmConnection)
+        public static void Initialize()
         {
-            connection = qtmConnection;
-
+            connection = new QTMNetworkConnection();
             connection.Protocol.GetGeneralSettings();
             generalSettings = connection.Protocol.GeneralSettings.cameraSettings;
         }
@@ -71,7 +70,7 @@ namespace Arqus
         
         public static void Dispose()
         {
-            connection.Dispose();
+            //QTMNetworkConnection.Dispose();
         }
 
         // Used for capping the rate with which QTM will be notified

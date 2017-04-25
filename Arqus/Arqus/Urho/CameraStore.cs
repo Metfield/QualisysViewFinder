@@ -4,6 +4,7 @@ using Arqus.Visualization;
 using System.Linq;
 using System.Collections.Generic;
 using QTMRealTimeSDK.Settings;
+using Arqus.Helpers;
 
 namespace Arqus
 {
@@ -32,7 +33,6 @@ namespace Arqus
     {        
         // TODO: Initialize this depending on the first cameras current mode when connecting to the QTM host
         public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
-        static QTMNetworkConnection connection = new QTMNetworkConnection();
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
         
@@ -66,8 +66,8 @@ namespace Arqus
 
                 CameraScreen screen = new CameraScreen(
                     imageCamera.CameraID, 
-                    imageCamera.Width, 
-                    imageCamera.Height, 
+                    912, 
+                    544, 
                     isImageMode
                     );
 

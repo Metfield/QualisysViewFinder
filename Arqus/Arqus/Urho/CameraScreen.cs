@@ -6,6 +6,7 @@ using Urho.Urho2D;
 using Xamarin.Forms;
 using System.Collections.Generic;
 using QTMRealTimeSDK;
+using Arqus.Services;
 
 namespace Arqus.Visualization
 {
@@ -70,9 +71,9 @@ namespace Arqus.Visualization
         // Intensity mode properties
         private Texture2D texture;
 
-        private ImageSharp.Color[] imageData;
+        private ImageSharp.PixelFormats.Rgba32[] imageData;
 
-        public ImageSharp.Color[] ImageData
+        public ImageSharp.PixelFormats.Rgba32[] ImageData
         {
             set
             {
@@ -143,22 +144,22 @@ namespace Arqus.Visualization
         {
             base.Dispose(disposing);
             MessagingCenter.Unsubscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
-            MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.Color[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
+            MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
             MessagingCenter.Unsubscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraID);
         }
 
         public void SubscribeToDataEvents()
         {
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, markerData) =>
+            MessagingCenter.Subscribe<Stream<QTMRealTimeSDK.Data.Camera>, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, markerData) =>
             {
                 if(!IsImageMode)
                     MarkerData = markerData;
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraStreamService, ImageSharp.Color[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, imageData) =>
-            {
+            MessagingCenter.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, imageData) =>
+             {
                 if(IsImageMode)
                     ImageData = imageData;
             });
@@ -206,9 +207,9 @@ namespace Arqus.Visualization
             OnUpdateHandler = OnMarkerUpdate;
         }
         
-        public unsafe bool UpdateMaterialTexture(ImageSharp.Color[] imageData)
+        public unsafe bool UpdateMaterialTexture(ImageSharp.PixelFormats.Rgba32[] imageData)
         {
-            fixed (ImageSharp.Color* bptr = imageData)
+            fixed (ImageSharp.PixelFormats.Rgba32* bptr = imageData)
             {
                 return texture.SetData(0, 0, 0, Resolution.Width, Resolution.Height, bptr);
             }

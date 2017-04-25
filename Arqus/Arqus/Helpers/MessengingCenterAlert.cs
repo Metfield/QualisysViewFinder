@@ -11,7 +11,8 @@ namespace Arqus.Helpers
         ENTER_PASSWORD,
         SET_CAMERA_SELECTION,
         CONNECTED,
-        DISCONNECTED
+        DISCONNECTED,
+        CAMERA_SETTINGS_CHANGED
     }
 
     public class MessagingCenterAlert

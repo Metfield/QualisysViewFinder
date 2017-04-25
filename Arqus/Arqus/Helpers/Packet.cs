@@ -56,7 +56,7 @@ namespace Arqus.Helpers
                 <General>
                     <Camera>
                         <ID>{0}</ID>
-                        <Mode>{1}</Mode>
+                        <Mode>{1}</Mode> 
                     </Camera>
                 </General>
             </QTM_Settings>";
@@ -64,7 +64,7 @@ namespace Arqus.Helpers
             return FormatStringToXML(string.Format(packet, id, mode));
         }
 
-        public static string SettingsParameter(int id, string parameter, int value)
+        public static string SettingsParameter(int id, string parameter, float value)
         {
             string packet = @"<QTM_Settings>
                 <General>

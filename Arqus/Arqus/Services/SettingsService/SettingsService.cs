@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using QTMRealTimeSDK;
 using Arqus.Helpers;
 using QTMRealTimeSDK.Settings;
+using System.Threading;
 
 namespace Arqus
 {
@@ -46,12 +47,58 @@ namespace Arqus
         {
             connection = qtmConnection;
 
-            connection.Protocol.GetGeneralSettings();
+            // Get the first one manually and then let the auto-update run
+            connection.Protocol.GetGeneralSettings();            
             generalSettings = connection.Protocol.GeneralSettings.cameraSettings;
+
+            // Start periodic fetching of camera settings in a 
+            // separate thread
+            //Task.Run(() => RefreshSettings());
         }
 
+        /// <summary>
+        /// Fetch camera settings every dt miliseconds 
+        /// 
+        /// NOTE!!!! This is currently NOT used as getting
+        /// General Settings is a problem right now.
+        /// 
+        /// TODO: Try when things are more stable
+        /// </summary>
+        private static async void RefreshSettings()
+        {
+            while(connection.Protocol.IsConnected())
+            {
+                // Can this even fail?
+                while (!connection.Protocol.GetGeneralSettings())
+                {                    
+                    Task.Delay(100);
+                }
+
+                generalSettings = connection.Protocol.GeneralSettings.cameraSettings;                
+            }
+        }
+
+        /// <summary>
+        /// Get fresh General Settings
+        /// </summary>
+        /// <returns></returns>
         public static List<SettingsGeneralCameraSystem> GetCameraSettings()
-        {            
+        {
+            // Refresh general settings
+            connection.Protocol.GetGeneralSettings();                  
+
+            try
+            {
+                // Try and fetch the new settings
+                generalSettings = connection.Protocol.GeneralSettings.cameraSettings;
+            }
+            catch(Exception e)
+            {                
+                Debug.Print("SettingsService::GetCameraSettings Exception!.. " + e.Message);            
+            }
+           
+            // If the 'try' fails, this will at least return the 
+            // last fetched general settings
             return generalSettings;
         }           
 
@@ -78,7 +125,14 @@ namespace Arqus
         // of camera settings changes
         static DateTime timeStamp = DateTime.UtcNow;
 
-        public static async Task<bool> SetCameraSettings(int id, string settingsParameter, int value)
+        /// <summary>
+        /// Sends new settings to QTM
+        /// </summary>
+        /// <param name="id">Camera ID</param>
+        /// <param name="settingsParameter">Parameter to send</param>
+        /// <param name="value">Parameter's value</param>
+        /// <returns>Returns true if successful</returns>
+        public static async Task<bool> SetCameraSettings(int id, string settingsParameter, float value)
         {
             // Wait arbitrary 50 ms to update value
             if ((DateTime.UtcNow - timeStamp).TotalMilliseconds < 50)

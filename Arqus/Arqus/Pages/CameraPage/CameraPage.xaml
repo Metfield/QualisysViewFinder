@@ -37,11 +37,11 @@
         <StackLayout VerticalOptions="End" IsEnabled="True">
             <Frame HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray">
                 <StackLayout VerticalOptions="StartAndExpand">
-                    <Label Text="{Binding FirstSliderString}"/>                    
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding FirstSliderMaxValue}" Minimum="{Binding FirstSliderMinValue}"  Value="{Binding FirstSliderValue}"/>
+                    <Label Text="{Binding FirstSliderString}"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding FirstSliderMaxValue}" Minimum="{Binding FirstSliderMinValue}"  Value="{Binding FirstSliderValue, Mode=TwoWay}"/>
                     
                     <Label Text="{Binding SecondSliderString}"/>
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding SecondSliderMaxValue}" Minimum="{Binding SecondSliderMinValue}" Value="{Binding SecondSliderValue}"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding SecondSliderMaxValue}" Minimum="{Binding SecondSliderMinValue}" Value="{Binding SecondSliderValue, Mode=TwoWay}"/>
                 </StackLayout>
             </Frame>
         </StackLayout>

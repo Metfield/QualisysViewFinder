@@ -126,11 +126,11 @@ namespace Arqus
             if(!success)
             {
                 string response = Protocol.GetErrorString();
-                SharedProjects.Notification.Show("Slave mode", response);
+                //SharedProjects.Notification.Show("Slave mode", response);
                 Debug.WriteLine("Error: " + response);
             }
 
-            SharedProjects.Notification.Show("Success!", "Master connection established");
+            //SharedProjects.Notification.Show("Success!", "Master connection established");
             return success;
         }
 
@@ -149,6 +149,14 @@ namespace Arqus
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// End Connection
+        /// </summary>
+        public void Disconnect()
+        {
+            protocol.Disconnect();
         }
 
         /// <summary>
@@ -257,12 +265,12 @@ namespace Arqus
             string packetString = Packet.CameraImage(id, enabled, "1823", "1087");
             bool success;
 
-       /*     lock(controlLock)
-            {
-                TakeControl();*/
+//          lock(controlLock)
+//          {
+//              TakeControl();
                 success = Protocol.SendXML(packetString);
-         /*       ReleaseControl();
-            }*/
+//              ReleaseControl();
+//          }
 
             return success;
         }

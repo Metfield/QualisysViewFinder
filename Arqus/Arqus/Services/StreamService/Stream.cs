@@ -1,10 +1,12 @@
-﻿using QTMRealTimeSDK;
+﻿using Arqus.Helpers;
+using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace Arqus.Services
 {
@@ -87,14 +89,23 @@ namespace Arqus.Services
         {
             while (streaming)
             {
-                DateTime time = DateTime.UtcNow;
-                //GC.Collect();
-                
-                currentPacket = await Task.Run(() => {
+                //DateTime time = DateTime.UtcNow;                
+                // GC.Collect();
+
+                currentPacket = await Task.Run(() => 
+                {
                     PacketType packetType = new PacketType();
-                    networkConnection.Protocol.ReceiveRTPacket(out packetType);
-                    return networkConnection.Protocol.GetRTPacket();
-                    });
+                    networkConnection.Protocol.ReceiveRTPacket(out packetType);                    
+
+                    // Make sure this is a data packet
+                    if (packetType == PacketType.PacketData)
+                    {
+                        return networkConnection.Protocol.GetRTPacket();
+                    }
+                    
+                    // Return last packet in case there was no new one
+                    return currentPacket;                    
+                });
 
                 /*if (frequency > 0)
                 {
@@ -106,7 +117,6 @@ namespace Arqus.Services
                         await Task.Delay(TimeSpan.FromMilliseconds(timeToWait));
                     }
                 }*/
-                
             }
         }
 

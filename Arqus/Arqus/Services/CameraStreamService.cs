@@ -24,6 +24,9 @@ namespace Arqus
         private ImageStream imageStream;
         private MarkerStream markerStream;
 
+        // Listens to events ;)
+        private QTMEventListener qtmEventListener;
+
         public CameraStreamService() { }
 
         public void Start()
@@ -38,6 +41,10 @@ namespace Arqus
             // Make sure that the stream update loop runs in its own thread to keep interactions responsive
             Task.Run(() => UpdateDataTask(10, SendImageData));
             Task.Run(() => UpdateDataTask(30, SendMarkerData));
+
+            // Create event listener and start listening immediately
+            // Frequency of 30
+            qtmEventListener = new QTMEventListener(30, true);
         }
 
         public Camera? GetMarkerData(int id)
@@ -124,7 +131,8 @@ namespace Arqus
         {
             running = false;
             imageStream.Dispose();
-            markerStream.Dispose();
+            markerStream.Dispose();            
+            qtmEventListener.Dispose();
         }
     }
 }

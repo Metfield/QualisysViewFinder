@@ -1,102 +1,103 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>3988e928-8c20-495e-91d6-58c10739b4c8</SharedGUID>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Arqus</Import_RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)CameraSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraSettingsDrawer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml.cs">
-      <DependentUpon>GridPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ICameraStreamService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\GridViewComponent.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Packet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
-      <DependentUpon>CameraPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\Settings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MessengingCenterAlert.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml.cs">
-      <DependentUpon>ConnectionPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMNetworkConnection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml.cs">
-      <DependentUpon>QTMServerList.xaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)arqus_logo.png" />
-    <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Pages\GridPage\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3988e928-8c20-495e-91d6-58c10739b4c8</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Arqus</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CameraSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraSettingsDrawer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml.cs">
+      <DependentUpon>GridPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ICameraStreamService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\GridViewComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
+      <DependentUpon>CameraPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MessengingCenterAlert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml.cs">
+      <DependentUpon>ConnectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMNetworkConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml.cs">
+      <DependentUpon>QTMServerList.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)arqus_logo.png" />
+    <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Pages\GridPage\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

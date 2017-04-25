@@ -31,13 +31,13 @@ namespace Arqus
         {
             Device.BeginInvokeOnMainThread(() =>
             {
-                NavigationParameters parameters = new NavigationParameters()
+                /*NavigationParameters parameters = new NavigationParameters()
                 {
                     { "toCameraPage", true }
-                };
+                };*/
 
                 CameraStore.State.ID = cameraID;
-                navigationService.NavigateAsync("CameraPage", parameters);
+                navigationService.NavigateAsync("CameraPage");
             });
         }
 

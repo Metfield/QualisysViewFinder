@@ -14,14 +14,15 @@ namespace Arqus.Services
     {
         public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency){}
 
+        List<Camera> cameras;
         protected override void RetrieveDataAsync(RTPacket packet)
         {
-            var data = packet.Get2DMarkerData();
+            cameras = packet.Get2DMarkerData();
 
-            if(data != null)
+            if(cameras != null)
             {
                 uint id = 1;
-                foreach (var camera in data)
+                foreach (var camera in cameras)
                 {
                     if(camera.MarkerData2D.Length > 0)
                     {

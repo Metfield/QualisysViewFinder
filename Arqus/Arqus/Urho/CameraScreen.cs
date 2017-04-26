@@ -155,14 +155,14 @@ namespace Arqus.Visualization
             MessagingCenter.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
             {
                 if(!IsImageMode())
-                    MarkerData = markerData;
+                    Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
             MessagingCenter.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
              {
                 if(IsImageMode())
-                    ImageData = imageData;
+                    Urho.Application.InvokeOnMain(() => ImageData = imageData);
             });
 
             MessagingCenter.Subscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
@@ -190,19 +190,25 @@ namespace Arqus.Visualization
         }
     
         private void CleanImageScreen(){ }
-        private void CleanMarkerScreen() { Pool.Hide(); }
+        private void CleanMarkerScreen() { Urho.Application.InvokeOnMainAsync(() => Pool.Hide());  }
 
         private void SetImageMode()
-        {   
-            markerScreen.Enabled = false;
-            imageScreen.Enabled = true;
+        {
             OnUpdateHandler = OnImageUpdate;
+            Urho.Application.InvokeOnMainAsync(() =>
+            {
+                markerScreen.Enabled = false;
+                imageScreen.Enabled = true;
+            });
         }
 
         private void SetMarkerMode()
         {
-            imageScreen.Enabled = false;
-            markerScreen.Enabled = true;
+            Urho.Application.InvokeOnMainAsync(() =>
+            {
+                imageScreen.Enabled = false;
+                markerScreen.Enabled = true;
+            });
             OnUpdateHandler = OnMarkerUpdate;
         }
         

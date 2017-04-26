@@ -25,11 +25,11 @@ namespace Arqus
             { CameraMode.ModeVideo, "Video" }
         };
 
-        public static async Task<bool> SetCameraMode(int id, CameraMode mode)
+        public static bool SetCameraMode(int id, CameraMode mode)
         {
             try
             {
-                return await Task.Run(() => connection.SetCameraMode(id, CameraModeString[mode]));
+                return connection.SetCameraMode(id, CameraModeString[mode]);
             }
             catch (Exception e)
             {

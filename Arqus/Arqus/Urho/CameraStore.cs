@@ -64,7 +64,7 @@ namespace Arqus
                     .First();
 
                 if(!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
-                    SetCameraMode(cameraSettings.Mode, imageCameraSettings.CameraID);
+                    SettingsService.SetCameraMode(imageCameraSettings.CameraID, cameraSettings.Mode);
 
                 bool isImageMode = cameraSettings.Mode != CameraMode.ModeMarker;
 
@@ -91,19 +91,7 @@ namespace Arqus
         {
             CurrentCamera = Cameras[id];
         }
-
-        public static async void SetCameraMode(CameraMode mode, int id)
-        {
-            await SettingsService.SetCameraMode(id, mode);
-        }
-
-        public static async void SetCameraMode(CameraMode mode)
-        {
-            bool success = await SettingsService.SetCameraMode(CurrentCamera.ID, mode);
-
-            if (success)
-                CurrentCamera.Mode = mode;
-        }
+        
 
         // TODO: Look over this later
         /*static void RefreshCameraAndScreen()

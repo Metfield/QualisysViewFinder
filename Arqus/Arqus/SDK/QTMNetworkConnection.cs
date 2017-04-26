@@ -15,7 +15,9 @@ namespace Arqus
 
         private static string ipAddress;
         private static string password;
-        private static readonly object padlock = new object();        
+
+        private bool hasControl = false;
+        private static readonly object controlLock = new object();        
         public static RTProtocol Master { get; set; }
         public RTProtocol Protocol { get; private set; }
         
@@ -36,7 +38,7 @@ namespace Arqus
         /// <returns>boolean indicating success or failure</returns>
         public bool Connect(string ipAddress, string password = "")
         {
-            lock(padlock)
+            lock(controlLock)
             {
                 QTMNetworkConnection.ipAddress = ipAddress;
                 QTMNetworkConnection.password = password;
@@ -56,7 +58,7 @@ namespace Arqus
                     string ver;
                     Protocol.GetQTMVersion(out ver);
                     Version = ver;
-                    return TakeControl();
+                    return true;
                 }
             }
             return false;
@@ -68,23 +70,24 @@ namespace Arqus
         /// </summary>
         /// <returns>true if the client took control</returns>
         private bool TakeControl()
-        {
-            if(!ReferenceEquals(Master, Protocol))
-            {
-                if (Master != null)
-                    ReleaseControl();
-                if (!Protocol.TakeControl(password))
-                {
-                    string response = Protocol.GetErrorString();
-                    Debug.WriteLine("Error: " + response);
-                    return false;
-                }                
-                lock(padlock)
-                {
-                    Master = Protocol;
-                }
+        {
+            if (hasControl)
+                return true;
+
+            if (Master != null)
+                Master.ReleaseControl();
+            
+            if (!Protocol.TakeControl(password))
+            {
+                string response = Protocol.GetErrorString();
+                Debug.WriteLine("Error: " + response);
+                return false;
             }
-            return true;
+
+            Master = Protocol;
+            hasControl = true;
+
+            return true;
         }        
         /// <summary>
         /// Releases the control for the current client
@@ -172,9 +175,16 @@ namespace Arqus
 
         public bool SetCameraMode(int id, string mode)
         {
-            string packetString = Packet.Camera(id, mode);
-            TakeControl();
-            if(Protocol.SendXML(packetString))
+            string packetString = Packet.Camera(id, mode);            
+            bool success;
+
+            lock (controlLock)
+            {
+                TakeControl();
+                success = Protocol.SendXML(packetString);
+            }
+
+            if (success)
             {
                 SetImageStream(id, IsImage(mode));
             }
@@ -182,14 +192,25 @@ namespace Arqus
             {
                 Debug.WriteLine("Unable to Enable/Disable image mode");
                 return false;
-            }            
+            }
+
             return true;
         }        
         public bool SetImageStream(int id, bool enabled)
         {
+            
             string packetString = Packet.CameraImage(id, enabled);
-            TakeControl();
-            return Protocol.SendXML(packetString);
+            
+
+            bool success;
+
+            lock (controlLock)
+            {
+                TakeControl();
+                success = Protocol.SendXML(packetString);
+            }
+
+            return success;
         }
        
         public bool SetCameraSettings(int id, string settingsParameter, float value)

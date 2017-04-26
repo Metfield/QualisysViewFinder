@@ -52,7 +52,7 @@ namespace Arqus
                 if (Debugger.IsAttached)
                 {
                     // NOTE: This will always activate when switching mode
-                    //Debugger.Break();
+                    Debugger.Break();
                 }
                 e.Handled = true;
             };

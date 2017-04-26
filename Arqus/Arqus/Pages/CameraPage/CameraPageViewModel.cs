@@ -137,7 +137,7 @@ namespace Arqus
             if (CameraStore.CurrentCamera.Mode == mode)
                 return;
 
-            CameraStore.CurrentCamera.Mode = mode;
+            
 
             // Change the drawer layout
             //settingsDrawer.SetDrawerMode(mode, cameraSettings[CameraStore.CurrentCamera.ID - 1]);
@@ -147,13 +147,12 @@ namespace Arqus
             //SetCameraRangeConvertValues(mode);
 
             // Set the mode
-           Task.Run(() => SetCameraMode());
-        }
+           Task.Run(() => {
+               if (SettingsService.SetCameraMode(CameraStore.CurrentCamera.ID, mode))
+                    CameraStore.CurrentCamera.Mode = mode;
 
-        private async void SetCameraMode()
-        {
-            await SettingsService.SetCameraMode(CameraStore.CurrentCamera.ID, CameraStore.CurrentCamera.Mode);
-            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraStore.CurrentCamera.ID, CameraStore.CurrentCamera.Mode);
+               MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraStore.CurrentCamera.ID, CameraStore.CurrentCamera.Mode);
+           });
         }
 
         /// <summary>

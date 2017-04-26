@@ -101,11 +101,11 @@ namespace QTMRealTimeSDK
     {
         [XmlEnum("Control port")]
         SourceControlPort = 0,
-        [XmlEnum("IR_receiver")]
+        [XmlEnum("IR receiver")]
         SourceIRReceiver,
         [XmlEnum("SMPTE")]
         SourceSMPTE,
-        [XmlEnum("Video_sync")]
+        [XmlEnum("Video sync")]
         SourceVideoSync
     }
 
@@ -224,9 +224,9 @@ namespace QTMRealTimeSDK
         /// <summary>Image settings from QTM</summary>
         public SettingsImage ImageSettings { get { return mImageSettings; } }
 
-        private SettingsGazeVector mGazeVectorSettings;
+        private SettingsGazeVectors mGazeVectorSettings;
         /// <summary>Gaze vector settings from QTM</summary>
-        public SettingsGazeVector GazeVectorSettings { get { return mGazeVectorSettings; } }
+        public SettingsGazeVectors GazeVectorSettings { get { return mGazeVectorSettings; } }
 
         private bool mBroadcastSocketCreated = false;
         private RTNetwork mNetwork;
@@ -540,7 +540,7 @@ namespace QTMRealTimeSDK
             byte[] msg = b.ToArray();
 
             //if we don't have a udp broadcast socket, create one
-            if (mNetwork.CreateUDPSocket(ref replyPort, true))
+            if (mBroadcastSocketCreated || mNetwork.CreateUDPSocket(ref replyPort, true))
             {
                 mBroadcastSocketCreated = true;
                 var status = mNetwork.SendUDPBroadcast(msg, 10);
@@ -1055,9 +1055,6 @@ namespace QTMRealTimeSDK
 
         #region Generic communication methods
 
-
-        private readonly static object sendLock = new object();
-
         /// <summary>Send string to QTM server</summary>
         /// <param name="stringToSend">string with data to send</param>
         /// <param name="packetType">what type of packet it should be sent as</param>
@@ -1076,12 +1073,7 @@ namespace QTMRealTimeSDK
                 b.AddRange(str);
 
                 byte[] msg = b.ToArray();
-
-                bool status;
-                // NOTE: We have trouble here when streaming images
-
-                status = mNetwork.Send(msg, str.Length + Constants.PACKET_HEADER_SIZE);
-
+                bool status = mNetwork.Send(msg, str.Length + Constants.PACKET_HEADER_SIZE);
 
                 return status;
             }
@@ -1156,16 +1148,15 @@ namespace QTMRealTimeSDK
             {
                 PacketType packetType;
 
-                while (ReceiveRTPacket(out packetType, true) > 0)
+                if (ReceiveRTPacket(out packetType) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
                         return true;
                     }
-                    if (packetType == PacketType.PacketError)
+                    else
                     {
                         mErrorString = mPacket.GetErrorString();
-                        return false;
                     }
                 }
             }

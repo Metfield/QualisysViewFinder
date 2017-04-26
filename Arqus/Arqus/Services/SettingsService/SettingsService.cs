@@ -49,7 +49,7 @@ namespace Arqus
 
             // Get the first one manually and then let the auto-update run
             connection.Protocol.GetGeneralSettings();
-            generalSettings = connection.Protocol.GeneralSettings.cameraSettings;
+            generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
 
             // Start periodic fetching of camera settings in a 
             // separate thread
@@ -74,7 +74,7 @@ namespace Arqus
                     Task.Delay(100);
                 }
 
-                generalSettings = connection.Protocol.GeneralSettings.cameraSettings;
+                generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
             }
         }
 
@@ -90,7 +90,7 @@ namespace Arqus
             try
             {
                 // Try and fetch the new settings
-                generalSettings = connection.Protocol.GeneralSettings.cameraSettings;
+                generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
             }
             catch (Exception e)
             {
@@ -110,7 +110,7 @@ namespace Arqus
         public static List<ImageCamera> GetImageCameraSettings()
         {
             connection.Protocol.GetImageSettings();
-            return connection.Protocol.ImageSettings.cameraList;
+            return connection.Protocol.ImageSettings.Cameras;
         }
         private static readonly string port = "7979";
         private static string baseUrl = "http://{0}:{1}/api/experimental/{2}";

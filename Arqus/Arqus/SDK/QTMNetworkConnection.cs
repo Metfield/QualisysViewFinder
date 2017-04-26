@@ -156,7 +156,7 @@ namespace Arqus
         {
             Protocol.ReceiveRTPacket(out packet);
             var imageSettings = Protocol.GetImageSettings();
-            return imageSettings ? Protocol.ImageSettings.cameraList : null;
+            return imageSettings ? Protocol.ImageSettings.Cameras: null;
         }
 
         public IEnumerable<ImageResolution> GetAllCameraResolutions()

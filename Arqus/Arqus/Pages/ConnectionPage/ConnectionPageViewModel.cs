@@ -247,6 +247,7 @@ namespace Arqus
 
             // Send connection instance to settings service
             SettingsService.Initialize();
+            CameraStore.GenerateCameras();
 
             // Connection was successfull          
             await navigationService.NavigateAsync("CameraPage");

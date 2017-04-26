@@ -5,14 +5,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Urho;
-using Arqus.Helpers;
 using Arqus.Visualization;
-
-using QTMRealTimeSDK;
-using QTMRealTimeSDK.Settings;
-
 using Xamarin.Forms;
 using Urho.Actions;
+using Arqus.Helpers;
 
 namespace Arqus
 {
@@ -82,7 +78,7 @@ namespace Arqus
 
             foreach (QTMRealTimeSDK.Data.Camera camera in data)
             {
-                if (screenList.Count > count && !screenList[count].IsImageMode)
+                if (screenList.Count > count && !screenList[count].IsImageMode())
                     screenList[count].MarkerData = camera;
                 count++;
             }
@@ -146,7 +142,7 @@ namespace Arqus
                 screen.Scale = 10;
                 screenNode.AddComponent(screen);
 
-                if(screen.CameraID == CameraStore.State.ID)
+                if(screen.Camera.ID == CameraStore.CurrentCamera.ID)
                     carousel.SetFocus(screen.position);
             }
 
@@ -216,7 +212,7 @@ namespace Arqus
         {
             List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
             CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
-            Debug.WriteLine(focus.CameraID);
+            Debug.WriteLine(focus.Camera.ID);
             carousel.SetFocus(focus.position);
 
             // Make an ease in during snapping
@@ -227,7 +223,7 @@ namespace Arqus
             }
             */
 
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.CameraID);
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID);
         }    
 
     }

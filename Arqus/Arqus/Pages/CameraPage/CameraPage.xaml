@@ -39,36 +39,14 @@
                 <StackLayout VerticalOptions="StartAndExpand">
                     <Label Text="{Binding FirstSliderString}"/>
                     <Slider HorizontalOptions="Fill" Maximum="{Binding FirstSliderMaxValue}" Minimum="{Binding FirstSliderMinValue}"  Value="{Binding FirstSliderValue, Mode=TwoWay}"/>
-                    
+
                     <Label Text="{Binding SecondSliderString}"/>
                     <Slider HorizontalOptions="Fill" Maximum="{Binding SecondSliderMaxValue}" Minimum="{Binding SecondSliderMinValue}" Value="{Binding SecondSliderValue, Mode=TwoWay}"/>
                 </StackLayout>
             </Frame>
         </StackLayout>
-                
+
     </StackLayout>
 
-    <!--
-    <StackLayout VerticalOptions="End" IsVisible="{Binding isDetailed}">
-        <Image Command="{Binding SetCameraModeToMarkerCommand}" >
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </Image>
-        <ToolbarItem Command="{Binding SetCameraModeToVideoCommand}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_camera_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-        <ToolbarItem Command="{Binding SetCameraModeToIntensityCommand}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_exposure_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-    </StackLayout>
-    -->
 
 </ContentPage>

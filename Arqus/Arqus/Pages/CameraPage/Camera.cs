@@ -1,26 +1,34 @@
-﻿using QTMRealTimeSDK;
+﻿using Arqus.Helpers;
+using Arqus.Visualization;
+using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Arqus.Pages
+namespace Arqus.DataModels
 {
     class Camera
     {
         // public properties
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public QTMRealTimeSDK.Settings.Resolution MarkerResolution { get; private set; }
+        public ImageResolution ImageResolution { get; private set; }
+        public CameraMode Mode { get; set; }
+        public CameraModel Model { get; private set; }
+        public int Orientation { get; set; }
 
         // private variables
         private int id;
+        public int ID { get; private set; }
         private CameraMode currentMode;
 
-        public Camera(int id, int width, int height)
+        public Camera(int id, CameraMode mode, QTMRealTimeSDK.Settings.Resolution markerResolution, ImageResolution imageResolution, CameraModel model, int orientation)
         {
-            this.id = id;
-
-            Width = width;
-            Height = height;
+            ID = id;
+            Mode = mode;
+            Model = model;
+            Orientation = orientation;
+            ImageResolution = imageResolution;
+            MarkerResolution = markerResolution;
         }
 
         /// <summary>

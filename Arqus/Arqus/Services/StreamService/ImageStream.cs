@@ -17,7 +17,7 @@ namespace Arqus.Services
 
         private readonly object streamLock = new object();
 
-        protected override void EnqueueDataAsync(RTPacket packet)
+        protected override void RetrieveDataAsync(RTPacket packet)
         {
             var data = packet.GetImageData();
             
@@ -50,13 +50,8 @@ namespace Arqus.Services
                     }
                 }
             }
+            //data.Clear();
         }
-
-        /*
-        protected override bool GetCurrentFrame()
-        {
-            return QTMNetworkConnection.GetCurrentImageFrame();
-        }
-        */
+        
     }
 }

@@ -14,7 +14,7 @@ namespace Arqus.Services
     {
         public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency){}
 
-        protected override void EnqueueDataAsync(RTPacket packet)
+        protected override void RetrieveDataAsync(RTPacket packet)
         {
             var data = packet.Get2DMarkerData();
 
@@ -25,18 +25,11 @@ namespace Arqus.Services
                 {
                     if(camera.MarkerData2D.Length > 0)
                     {
-                        Enqueue(dataQueue, id, camera, DateTimeOffset.Now.ToUnixTimeMilliseconds());
+                        MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + id, camera);
                     }
                     id++;
                 }
             }
         }
-
-        /*
-        protected override bool GetCurrentFrame()
-        {
-            return QTMNetworkConnection.GetCurrentCameraFrame();
-        }
-        */
     }
 }

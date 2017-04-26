@@ -97,7 +97,7 @@ namespace Arqus
                 // TODO: get resolution from camera
                 screen.Scale = ScreenScale;
 
-                gridElementNode = gridNode.CreateChild("Camera" + screen.CameraID.ToString());                
+                gridElementNode = gridNode.CreateChild("Camera" + screen.Camera.ID.ToString());                
                 gridElementNode.AddComponent(screen);
 
                 // Determine element's position in grid

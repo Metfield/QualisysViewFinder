@@ -211,7 +211,7 @@ namespace Arqus
                 if (screenNode.Name == "screenNode")
                 {
                     // Get selected camera ID 
-                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().CameraID;
+                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
 
                     // Start Camera view.
                     MessagingCenter.Send(Xamarin.Forms.Application.Current, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);

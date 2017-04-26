@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using QTMRealTimeSDK.Settings;
 using Arqus.Helpers;
+using Arqus.DataModels;
 
 namespace Arqus
 {
@@ -33,6 +34,9 @@ namespace Arqus
     {        
         // TODO: Initialize this depending on the first cameras current mode when connecting to the QTM host
         public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
+
+        public static Camera CurrentCamera;
+        public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
         
@@ -45,43 +49,47 @@ namespace Arqus
         /// ImageCameras recieved from the QTM host.
         /// </summary>
         /// <returns></returns>
-        public static List<CameraScreen> GenerateCameraScreens()
+        public static bool GenerateCameras()
         {
-            List<CameraScreen> cameraScreens = new List<CameraScreen>();
+            Cameras = new Dictionary<int, Camera>();
             CameraScreen.ResetScreenCounter();
             
-            List<SettingsGeneralCameraSystem> cameraSettings = SettingsService.GetCameraSettings();
-            List<ImageCamera> imageSettings = SettingsService.GetImageCameraSettings();
+            List<SettingsGeneralCameraSystem> cameraSettingsList = SettingsService.GetCameraSettings();
+            List<ImageCamera> imageCameraSettingsList = SettingsService.GetImageCameraSettings();
 
-            State.NumCams = imageSettings.Count;
-
-            foreach (ImageCamera imageCamera in imageSettings)
+            foreach (ImageCamera imageCameraSettings in imageCameraSettingsList)
             {
-                CameraMode cameraMode = cameraSettings.Where(camera => camera.CameraId == imageCamera.CameraID).First().Mode;
+                SettingsGeneralCameraSystem cameraSettings = cameraSettingsList
+                    .Where(c => c.CameraId == imageCameraSettings.CameraID)
+                    .First();
 
-                if(!imageCamera.Enabled && cameraMode != CameraMode.ModeMarker)
-                    SetCameraMode(cameraMode, imageCamera.CameraID);
+                if(!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
+                    SetCameraMode(cameraSettings.Mode, imageCameraSettings.CameraID);
 
-                bool isImageMode = cameraMode != CameraMode.ModeMarker;
+                bool isImageMode = cameraSettings.Mode != CameraMode.ModeMarker;
 
-                CameraScreen screen = new CameraScreen(
-                    imageCamera.CameraID, 
-                    912, 
-                    544, 
-                    isImageMode
-                    );
-
-                cameraScreens.Add(screen);
-
+                ImageResolution imageResolution = new ImageResolution(912, 544);
+                Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings.Mode, cameraSettings.MarkerResolution, imageResolution, cameraSettings.Model, cameraSettings.Orientation);
+                Cameras.Add(camera.ID, camera);
+                
                 // Make sure that the current settings are reflected in the state of the application
                 // The state of the QTM host should always have precedence unless expliciltly told to
                 // change settings
-                if (imageCamera.CameraID == State.ID)
-                    State.Mode = cameraMode;
-                
+                if (CurrentCamera == null)
+                    CurrentCamera = camera;
             }
 
-            return cameraScreens;
+            return true;
+        }
+
+        public static List<CameraScreen> GenerateCameraScreens()
+        {
+            return Cameras.Values.Select(camera => new CameraScreen(camera)).ToList();
+        }
+
+        public static void SetCurrentCamera(int id)
+        {
+            CurrentCamera = Cameras[id];
         }
 
         public static async void SetCameraMode(CameraMode mode, int id)
@@ -91,10 +99,10 @@ namespace Arqus
 
         public static async void SetCameraMode(CameraMode mode)
         {
-            bool success = await SettingsService.SetCameraMode(State.ID, mode);
+            bool success = await SettingsService.SetCameraMode(CurrentCamera.ID, mode);
 
             if (success)
-                State.Mode = mode;
+                CurrentCamera.Mode = mode;
         }
 
         // TODO: Look over this later

@@ -35,8 +35,7 @@ namespace Arqus
                 {
                     { "toCameraPage", true }
                 };*/
-
-                CameraStore.State.ID = cameraID;
+                
                 navigationService.NavigateAsync("CameraPage");
             });
         }

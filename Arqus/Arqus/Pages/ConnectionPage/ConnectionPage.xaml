@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Arqus"
+             xmlns:ui="clr-namespace:Arqus.UI"
              x:Class="Arqus.ConnectionPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
@@ -20,10 +21,13 @@
             HorizontalOptions="CenterAndExpand" 
             Orientation="Horizontal">
 
-                <Button Text="Discover"
-                    Command="{Binding ConnectionModeDiscoveryCommand}"/>
-                <Button Text="Manually"
-                    Command="{Binding ConnectionModeManuallyCommand}"/>
+                <ui:JiggleButton Text="Discover"
+                        Style="{StaticResource primaryButton}"
+                        Command="{Binding ConnectionModeDiscoveryCommand}"/>
+
+                <ui:JiggleButton Text="Manually"
+                        Style="{StaticResource primaryButton}"
+                        Command="{Binding ConnectionModeManuallyCommand}"/>
 
 
             </StackLayout>
@@ -31,6 +35,7 @@
             <StackLayout IsVisible="{Binding IsDiscovery}" VerticalOptions="StartAndExpand">
 
                 <local:QTMServerList x:Name="qtmListView" />
+                
             </StackLayout>
 
             <StackLayout IsVisible="{Binding IsManually}" 
@@ -41,7 +46,8 @@
                 <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
                 <Entry Placeholder="Password" Text="{Binding Password}" />
 
-                <Button Text="Connect" 
+                <ui:JiggleButton Text="Connect"
+                        Style="{StaticResource primaryButton}"
                         Command="{Binding ConnectCommand}" />
 
             </StackLayout>

@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CameraSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraSettingsDrawer.cs" />
@@ -22,8 +23,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ICameraStreamService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ElasticsearchService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\MobileCenterService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
@@ -47,7 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MessengingCenterAlert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MessengingCenterService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">

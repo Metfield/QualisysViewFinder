@@ -1,4 +1,5 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ namespace Arqus
                             continue;
                         }
 
-                        MessagingCenter.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED.ToString());
+                        MessagingCenterService.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
                         ignoreNextPacket = true;
                     }
                 }

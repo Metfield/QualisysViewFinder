@@ -14,7 +14,7 @@ namespace Arqus
 {
     class SettingsService
     {
-        private static QTMNetworkConnection connection;
+        private static QTMNetworkConnection connection = new QTMNetworkConnection();
         public static List<SettingsGeneralCameraSystem> generalSettings;
 
         // We need to convert the CameraMode enum to a string that matches the API's
@@ -45,8 +45,7 @@ namespace Arqus
 
         public static void Initialize()
         {
-            connection = new QTMNetworkConnection();
-
+            connection.Connect();
             // Get the first one manually and then let the auto-update run
             connection.Protocol.GetGeneralSettings();
             generalSettings = connection.Protocol.GeneralSettings.CameraSettings;

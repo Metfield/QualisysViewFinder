@@ -1,4 +1,5 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Settings;
 using System;
@@ -214,7 +215,7 @@ namespace Arqus
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
 
                     // Start Camera view.
-                    MessagingCenter.Send(Xamarin.Forms.Application.Current, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID);
+                    MessagingCenterService.Send(Xamarin.Forms.Application.Current, MessageSubject.SET_CAMERA_SELECTION, cameraID);
                     //this.Stop();
                 }
             }

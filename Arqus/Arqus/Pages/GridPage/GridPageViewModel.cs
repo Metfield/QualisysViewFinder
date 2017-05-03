@@ -1,4 +1,5 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -22,7 +23,7 @@ namespace Arqus
             this.navigationService = navigationService;
 
             //NavigateCameraViewCommand = new DelegateCommand(() => OnNavigateToCameraPage());
-            // MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString())
+            // MessagingCenterService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString())
 
             MessagingCenter.Subscribe<Application, int>(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), OnNavigateToCameraPage);
         }
@@ -47,7 +48,7 @@ namespace Arqus
                 NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
 
                 if ( navigationMode == NavigationMode.Back)
-                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
+                    MessagingCenterService.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
             }
             catch (Exception e)
             {

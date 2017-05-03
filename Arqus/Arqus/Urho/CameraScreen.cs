@@ -7,6 +7,7 @@ using Urho.Urho2D;
 using Xamarin.Forms;
 using QTMRealTimeSDK;
 using Arqus.Services;
+using Arqus.Service;
 
 namespace Arqus.Visualization
 {
@@ -118,7 +119,8 @@ namespace Arqus.Visualization
 
             // Rotate the camera in the clockwise direction with 90 degrees
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            screenNode.Rotate(new Quaternion(0, 90, 0), TransformSpace.Local);
+            // Apply camera orientation and an offset to match the no rotation position with QTM
+            screenNode.Rotate(new Quaternion(0, Camera.Orientation + 90, 0), TransformSpace.Local);
 
             // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
@@ -152,20 +154,20 @@ namespace Arqus.Visualization
         public void SubscribeToDataEvents()
         {
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
+            MessagingCenterService.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
             {
                 if(!IsImageMode())
                     Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
+            MessagingCenterService.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
              {
                 if(IsImageMode())
                     Urho.Application.InvokeOnMain(() => ImageData = imageData);
             });
 
-            MessagingCenter.Subscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
+            MessagingCenterService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
                 SetImageMode(mode != CameraMode.ModeMarker);
             });

@@ -4,6 +4,8 @@ using Xamarin.Forms;
 using Arqus.Helpers;
 using Microsoft.Practices.Unity;
 using System.Diagnostics;
+using Arqus.Services.MobileCenterService;
+using Arqus.Service;
 
 namespace Arqus
 {
@@ -19,12 +21,12 @@ namespace Arqus
 
             cameraService = new CameraStreamService();
 
-            MessagingCenter.Subscribe<Application>(this, MessageSubject.CONNECTED.ToString(), (sender) =>
+            MessagingCenterService.Subscribe<Application>(this, MessageSubject.CONNECTED, (sender) =>
             {
                 OnConnected();
             });
 
-            MessagingCenter.Subscribe<Application>(this, MessageSubject.DISCONNECTED.ToString(), (sender) =>
+            MessagingCenterService.Subscribe<Application>(this, MessageSubject.DISCONNECTED, (sender) =>
             {
                 OnDisconnected();
             });
@@ -39,7 +41,13 @@ namespace Arqus
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<CameraPage>();
             Container.RegisterTypeForNavigation<GridPage>();
-            
+        }
+
+       
+        protected override void OnStart()
+        {
+            base.OnStart();
+            MobileCenterService.Init();
         }
 
         protected void OnConnected()

@@ -1,4 +1,6 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
+using Arqus.Services.MobileCenterService;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -63,13 +65,8 @@ namespace Arqus
             // handles selection. If there is a good way to inject
             // the settings service into the Urho view that might
             // be a better way to go about it..
-            MessagingCenter.Subscribe<CameraApplication, int>(this,
-                MessageSubject.SET_CAMERA_SELECTION.ToString(),
-                OnCameraSelection);
-            
-            MessagingCenter.Subscribe<QTMEventListener>(this,
-                MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(),
-                UpdateCameraSettings);
+            MessagingCenterService.Subscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION, OnCameraSelection);
+            MessagingCenterService.Subscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED, UpdateCameraSettings);
                 
             // Create camera settings array
             cameraSettings = new List<CameraSettings>();
@@ -103,12 +100,14 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
+            MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
+
             try
             {
-                NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
+                NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
 
                 if (navigationMode == NavigationMode.Back)
-                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
+                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
             }
             catch (Exception e)
             {
@@ -118,12 +117,12 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-
+            MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
+            MessagingCenterService.Send(Application.Current, MessageSubject.CONNECTED);
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -133,12 +132,6 @@ namespace Arqus
 
         private void SetCameraMode(CameraMode mode)
         {
-            // Change camera state mode
-            if (CameraStore.CurrentCamera.Mode == mode)
-                return;
-
-            
-
             // Change the drawer layout
             //settingsDrawer.SetDrawerMode(mode, cameraSettings[CameraStore.CurrentCamera.ID - 1]);
 
@@ -147,12 +140,8 @@ namespace Arqus
             //SetCameraRangeConvertValues(mode);
 
             // Set the mode
-           Task.Run(() => {
-               if (SettingsService.SetCameraMode(CameraStore.CurrentCamera.ID, mode))
-                    CameraStore.CurrentCamera.Mode = mode;
-
-               MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraStore.CurrentCamera.ID, CameraStore.CurrentCamera.Mode);
-           });
+            MobileCenterService.TrackEvent(GetType().Name, "SetCameraMode " + mode.ToString());
+            CameraStore.CurrentCamera.SetCameraMode(mode);
         }
 
         /// <summary>

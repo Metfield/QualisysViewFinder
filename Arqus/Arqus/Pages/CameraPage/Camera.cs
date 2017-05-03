@@ -1,9 +1,11 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using Arqus.Visualization;
 using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
 namespace Arqus.DataModels
 {
@@ -32,15 +34,18 @@ namespace Arqus.DataModels
         }
 
         /// <summary>
-        /// Set the stream mode for the camera
+        /// Set the camera stream mode
         /// </summary>
         /// <param name="mode"></param>
-        public void SetStreamMode(CameraMode mode)
+        public void SetCameraMode(CameraMode mode)
         {
             // Update mode if not already running in that mode
-            if(mode != currentMode)
+            if(Mode != mode)
             {
-                       
+                if (SettingsService.SetCameraMode(ID, mode))
+                    Mode = mode;
+
+                MessagingCenterService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
             }
         }
         

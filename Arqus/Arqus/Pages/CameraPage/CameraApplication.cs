@@ -9,6 +9,7 @@ using Arqus.Visualization;
 using Xamarin.Forms;
 using Urho.Actions;
 using Arqus.Helpers;
+using Arqus.Service;
 
 namespace Arqus
 {
@@ -223,7 +224,7 @@ namespace Arqus
             }
             */
 
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID);
+            MessagingCenterService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID);
         }    
 
     }

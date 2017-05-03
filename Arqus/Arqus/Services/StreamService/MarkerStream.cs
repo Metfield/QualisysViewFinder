@@ -1,4 +1,5 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;
 using System;
@@ -26,7 +27,7 @@ namespace Arqus.Services
                 {
                     if(camera.MarkerData2D.Length > 0)
                     {
-                        MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + id, camera);
+                        MessagingCenterService.Send(this, MessageSubject.STREAM_DATA_SUCCESS + id, camera, false);
                     }
                     id++;
                 }

@@ -2,11 +2,12 @@
 using ImageSharp;
 using QTMRealTimeSDK.Data;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using System.Drawing;
+using ImageSharp.Formats;
+using Arqus.Service;
 
 namespace Arqus.Services
 {
@@ -16,6 +17,8 @@ namespace Arqus.Services
         public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency){ }
 
         private readonly object streamLock = new object();
+
+        private JpegDecoder decoder = new JpegDecoder();
 
         protected override void RetrieveDataAsync(RTPacket packet)
         {
@@ -27,26 +30,27 @@ namespace Arqus.Services
                 {
                     if (cameraImage.ImageData != null && cameraImage.ImageData.Length > 0)
                     {
-                        if(limiter > 7)
+                        if(limiter > 24)
                            return;
 
-                        Task.Run( async () =>
-                        {
-                            lock(streamLock)
-                            {
-                                limiter++;
-                            }
-                            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                            using (ImageSharp.Image imageData = await Task.Run(() => ImageSharp.Image.Load(cameraImage.ImageData)))
-                            {
-                                MessagingCenter.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData.Pixels);
-                                Thread.Sleep(50);
-                                lock(streamLock)
-                                {
-                                    limiter--;
-                                }
-                            }
-                        });
+                        Task.Run(() =>
+                       {
+                           lock (streamLock)
+                           {
+                               limiter++;
+                           }
+
+                           long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+
+                           ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
+                           MessagingCenterService.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData.Pixels, false);
+
+                           lock (streamLock)
+                           {
+                               limiter--;
+                           }
+                       });
                     }
                 }
             }

@@ -6,6 +6,7 @@ using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -16,6 +17,7 @@ namespace Arqus
         private INavigationService navigationService;
 
         private CameraState cameraState;
+        private CameraPage cameraPageModel;
 
         private CameraSettingsDrawer settingsDrawer;
         private List<CameraSettings> cameraSettings;
@@ -24,12 +26,7 @@ namespace Arqus
         private const float SLIDER_MIN = 0.0f,
                             SLIDER_MAX = 1.0f;
 
-        // Where FS: First slider & SS: Second slider
-        // Change these when changing mode
-        private float CURRENT_CAM_FS_MIN,
-                      CURRENT_CAM_FS_MAX,
-                      CURRENT_CAM_SS_MIN,
-                      CURRENT_CAM_SS_MAX;
+        bool isChangingMode = false;
 
         // This will hold the current, temporary camera settings
         List<QTMRealTimeSDK.Settings.SettingsGeneralCameraSystem> tempGeneralSettings;
@@ -37,7 +34,7 @@ namespace Arqus
         // Used to determine if whether Arqus should send new
         // camera setting value to QTM or not. We don't want to
         // send it to QTM if we just got it from it...
-        bool qtmUpdatedSettingValue = false;
+        public bool qtmUpdatedSettingValue = true;        
 
         public DelegateCommand GetStreamDataCommand { get; set; }
         public DelegateCommand SetCameraModeToMarkerCommand { get; set; }
@@ -52,6 +49,8 @@ namespace Arqus
             get { return currentMode; }
             set { SetProperty(ref currentMode, value); }
         }
+
+        Frame videoDrawerFrame, markerDrawerFrame;
 
         public CameraPageViewModel(INavigationService navigationService)
         {
@@ -75,7 +74,7 @@ namespace Arqus
                 UpdateCameraSettings);
 
             cameraState = CameraStore.State;
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);            
 
             // Create camera settings array
             cameraSettings = new List<CameraSettings>();
@@ -86,26 +85,24 @@ namespace Arqus
             // Create each camera settings object with a camera id
             for (int i = 1; i <= SettingsService.GetCameraCount(); i++)
             {
+                // Create camera settings object
                 CameraSettings camSettings = new CameraSettings(i);
+                               
+                // Copy relevant values 
+                camSettings.MarkerExposure = tempGeneralSettings[i - 1].MarkerExposure;  
+                camSettings.MarkerThreshold = tempGeneralSettings[i - 1].MarkerThreshold;
+                camSettings.VideoExposure = tempGeneralSettings[i - 1].VideoExposure;
+                camSettings.VideoFlashTime = tempGeneralSettings[i - 1].VideoFlashTime;
 
-                camSettings.MarkerExposure = tempGeneralSettings[i - 1].MarkerExposure.Current;
-                camSettings.MarkerThreshold = tempGeneralSettings[i - 1].MarkerThreshold.Current;
-                camSettings.VideoExposure = tempGeneralSettings[i - 1].VideoExposure.Current;
-                camSettings.VideoFlash = tempGeneralSettings[i - 1].VideoFlashTime.Current;
-                
+                // Add object to list
                 cameraSettings.Add(camSettings);
-            }
+            }                        
 
             // Create Camera Settings Drawer object
-            settingsDrawer = new CameraSettingsDrawer(this, CameraStore.State.ID, 
-                                                      tempGeneralSettings[CameraStore.State.ID - 1],
-                                                      SLIDER_MIN, SLIDER_MAX);
+            settingsDrawer = new CameraSettingsDrawer(this, CameraStore.State, cameraSettings[CameraStore.State.ID - 1]);
 
-            // Change the drawer mode
-            settingsDrawer.SetDrawerMode(cameraState.Mode, cameraSettings[CameraStore.State.ID - 1]);
-
-            // Set the current mode
-            SetCameraMode(cameraState.Mode);
+            // Reset flag
+            qtmUpdatedSettingValue = false;
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -136,28 +133,30 @@ namespace Arqus
         private void OnCameraSelection(Object sender, int cameraID)
         {
             cameraState.ID = cameraID;
+            UpdateCameraSettings(this);
         }
         
         private void SetCameraMode(CameraMode mode)
-        {
+        {           
             // Change camera state mode
             cameraState.Mode = mode;
 
-            // Change the drawer layout
-            settingsDrawer.SetDrawerMode(mode, cameraSettings[cameraState.ID - 1]);
-
-            // Change min and max values to convert to according 
-            // to camera mode
-            SetCameraRangeConvertValues(mode);
-
             // Set the mode
             SetCameraMode();
+
+            // Switch drawer scheme
+            SwitchDrawers(cameraState.Mode);
         }
 
         private async void SetCameraMode()
         {
             await SettingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
             MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState.Mode);
+        }
+
+        public CameraSettingsDrawer GetSettingsDrawer()
+        {
+            return settingsDrawer;
         }
 
         /// <summary>
@@ -168,171 +167,297 @@ namespace Arqus
         private void UpdateCameraSettings(Object sender)
         {
             qtmUpdatedSettingValue = true;
-            int camIndex = CameraStore.State.ID - 1;
+            int camIndex = cameraState.ID - 1;
 
-            // Get new camera settings
-            // NOTE: As of this time this is highly unstable!
-            // TODO: Uh.. something about it?
+            // Get new camera settings            
             tempGeneralSettings = SettingsService.GetCameraSettings();
+
+            // Copy new values
+            cameraSettings[camIndex].MarkerExposure = tempGeneralSettings[camIndex].MarkerExposure;
+            cameraSettings[camIndex].MarkerThreshold = tempGeneralSettings[camIndex].MarkerThreshold;
+            cameraSettings[camIndex].VideoExposure = tempGeneralSettings[camIndex].VideoExposure;
+            cameraSettings[camIndex].VideoFlashTime = tempGeneralSettings[camIndex].VideoFlashTime;           
             
-            // Safe guard for shit crash which is not really working
-            if (tempGeneralSettings == null)
-                return;
-
-            // Update camera settings values, then convert it and set it in slider
-            if (cameraState.Mode != CameraMode.ModeVideo)
-            {
-                // Marker or Marker Intensity mode                
-                cameraSettings[cameraState.ID - 1].MarkerExposure = tempGeneralSettings[camIndex].MarkerExposure.Current;
-                FirstSliderValue = DataOperations.ConvertRange(CURRENT_CAM_FS_MIN, CURRENT_CAM_FS_MAX,
-                                                               SLIDER_MIN, SLIDER_MAX, tempGeneralSettings[camIndex].MarkerExposure.Current);
-
-                cameraSettings[cameraState.ID - 1].MarkerThreshold = tempGeneralSettings[camIndex].MarkerThreshold.Current;
-                SecondSliderValue = DataOperations.ConvertRange(CURRENT_CAM_SS_MIN, CURRENT_CAM_SS_MAX,
-                                                           SLIDER_MIN, SLIDER_MAX, tempGeneralSettings[camIndex].MarkerThreshold.Current);
-            }
-            else
-            {
-                // Video mode                
-                cameraSettings[cameraState.ID - 1].VideoExposure = tempGeneralSettings[camIndex].VideoExposure.Current;
-                FirstSliderValue = DataOperations.ConvertRange(CURRENT_CAM_FS_MIN, CURRENT_CAM_FS_MAX,
-                                                              SLIDER_MIN, SLIDER_MAX, tempGeneralSettings[camIndex].VideoExposure.Current);
-
-                cameraSettings[cameraState.ID - 1].VideoFlash = tempGeneralSettings[camIndex].VideoFlashTime.Current;
-                SecondSliderValue = DataOperations.ConvertRange(CURRENT_CAM_SS_MIN, CURRENT_CAM_SS_MAX,
-                                                           SLIDER_MIN, SLIDER_MAX, tempGeneralSettings[camIndex].VideoFlashTime.Current);                
-            }
-
+            // Send new settings to drawer 
+            settingsDrawer.SetCamera(cameraSettings[camIndex]);
+                      
+            // Reset flag
             qtmUpdatedSettingValue = false;
         }
-        
+
         /// <summary>
         /// All these values will temporarily hold sliders-related
         /// information
         /// 
         /// From this point everything concerns drawer menu and sliders.
-        /// </summary>        
-        private string  firstSliderString,
-                        secondSliderString;                
+        /// </summary>                  
 
-        private float   firstSliderValue,
-                        firstSliderMinValue,
-                        firstSliderMaxValue,
-                        secondSliderValue,
-                        secondSliderMinValue,
-                        secondSliderMaxValue;
-        
-        // Command handlers for cammera settings
-        public string FirstSliderString
+        private double markerExposureSliderValue,
+                        markerExposureSliderMax,
+                        markerExposureSliderMin,
+                        markerThresholdSliderValue,
+                        markerThresholdSliderMax,
+                        markerThresholdSliderMin,
+
+                        videoExposureSliderValue,
+                        videoExposureSliderMax,
+                        videoExposureSliderMin,
+                        videoFlashSliderValue,
+                        videoFlashSliderMax,
+                        videoFlashSliderMin;
+
+
+        /// <summary>
+        /// Will be called from CameraPage.xaml.cs 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        /*public async void OnFirstSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
         {
-            get { return firstSliderString; }
-            set { SetProperty(ref firstSliderString, value); }
+            // Only update value if it was set by UI, not by QTM
+            if (qtmUpdatedSettingValue || (args.NewValue > 1))
+            {
+                qtmUpdatedSettingValue = false;
+                return;
+            }
+
+            // Set UI update flag
+            uiUpdatedSettingValue = true;
+
+            // Check for stream mode
+            // Send the value to QTM and then update local structure
+            if (cameraState.Mode == CameraMode.ModeVideo)
+            {
+                cameraSettings[cameraState.ID - 1].VideoExposure = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
+            }
+            else
+            {
+                cameraSettings[cameraState.ID - 1].MarkerExposure = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
+            }
+        }*/
+
+        /// <summary>
+        /// Will be called from CameraPage.xaml.cs 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+       /* public async void OnSecondSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
+        {            
+            // Only update value if it was set by UI, not by QTM
+            if (qtmUpdatedSettingValue || (args.NewValue > 1))
+            {
+                qtmUpdatedSettingValue = false;
+                return;
+            }
+
+            // Set UI update flag
+            uiUpdatedSettingValue = true;
+
+            // Check for stream mode
+            // Send the value to QTM and then update local structure
+            if (cameraState.Mode == CameraMode.ModeVideo)
+            {
+                cameraSettings[cameraState.ID - 1].VideoFlash = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, (float)args.NewValue);                
+            }
+            else
+            {
+                cameraSettings[cameraState.ID - 1].MarkerThreshold = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, (float)args.NewValue);                
+            }
+        }*/
+
+        private async void SendCameraSettingValue(string setting, double value)
+        {
+            await SettingsService.SetCameraSettings(CameraStore.State.ID, setting, (float)value);
         }
 
-        public string SecondSliderString
+        // Command handlers for cammera settings     
+        public double MarkerExposureSliderValue
         {
-            get { return secondSliderString; }
-            set { SetProperty(ref secondSliderString, value); }
-        }
-
-        public float FirstSliderValue
-        {
-            get { return firstSliderValue; }
+            get { return markerExposureSliderValue; }
             set
             {
-                SetProperty(ref firstSliderValue, value);
-
-                if (qtmUpdatedSettingValue)
-                    return;
-
-                if (cameraState.Mode == CameraMode.ModeVideo)
-                {             
-                    SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
-                }
-                else
+                if (markerExposureSliderValue != value)
                 {
-                    SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, value);
+                    SetProperty(ref markerExposureSliderValue, value);
+
+                    // Send it to QTM if value was set locally
+                    if (!qtmUpdatedSettingValue)
+                    {
+                        SendCameraSettingValue(Constants.MARKER_EXPOSURE_PACKET_STRING, value);                        
+                    }
                 }
             }
         }
 
-        public float FirstSliderMinValue
+        public double MarkerExposureSliderMin
         {
-            get { return firstSliderMinValue; }
-            set { SetProperty(ref firstSliderMinValue, value); }
-        }
-
-        public float FirstSliderMaxValue
-        {
-            get { return firstSliderMaxValue; }
-            set { SetProperty(ref firstSliderMaxValue, value); }
-        }
-
-        public float SecondSliderValue
-        {
-            get { return secondSliderValue; }
+            get { return markerExposureSliderMin; }
             set
             {
-                SetProperty(ref secondSliderValue, value);
+                if (markerExposureSliderMin != value)
+                    SetProperty(ref markerExposureSliderMin, value);
+            }
+        }
 
-                if (qtmUpdatedSettingValue)
-                    return;
-
-                if (cameraState.Mode == CameraMode.ModeVideo)
-                {     
-                    SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, value);
-                }
-                else
+        public double MarkerExposureSliderMax
+        {
+            get { return markerExposureSliderMax; }
+            set
+            {
+                if (markerExposureSliderMax != value)
+                    SetProperty(ref markerExposureSliderMax, value);
+            }
+        }
+        
+        public double MarkerThresholdSliderValue
+        {
+            get { return markerThresholdSliderValue; }
+            set
+            {
+                if (markerThresholdSliderValue != value)
                 {
-                    SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, value);
+                    SetProperty(ref markerThresholdSliderValue, value);
+
+                    // Send it to QTM if value was set locally
+                    if (!qtmUpdatedSettingValue)
+                    {
+                        SendCameraSettingValue(Constants.MARKER_THRESHOLD_PACKET_STRING, value);
+                    }
                 }
             }
         }
             
-        public float SecondSliderMinValue
+        public double MarkerThresholdSliderMin
         {
-            get { return secondSliderMinValue; }
-            set { SetProperty(ref secondSliderMinValue, value); }
+            get { return markerThresholdSliderMin; }
+            set
+            {
+                if (markerThresholdSliderMin != value)
+                    SetProperty(ref markerThresholdSliderMin, value);
+            }
         }
 
-        public float SecondSliderMaxValue
+        public double MarkerThresholdSliderMax
         {
-            get { return secondSliderMaxValue; }
-            set { SetProperty(ref secondSliderMaxValue, value); }
+            get { return markerThresholdSliderMax; }
+            set
+            {
+                if (markerThresholdSliderMax != value)
+                    SetProperty(ref markerThresholdSliderMax, value);
+            }
         }
 
-        /// <summary>
-        /// Sets current Min and Max values so that UpdateCameraSettings can
-        /// convert from Camera range [x,y] to slider's range [0,1] 
-        /// </summary>
-        /// <param name="mode"></param>
-        private void SetCameraRangeConvertValues(CameraMode mode)
+        // Video Drawer
+        public double VideoExposureSliderValue
+        {
+            get { return videoExposureSliderValue; }
+            set
+            {
+                if (videoExposureSliderValue != value)
+                {
+                    SetProperty(ref videoExposureSliderValue, value);
+
+                    // Send it to QTM if value was set locally
+                    if (!qtmUpdatedSettingValue)
+                    {
+                        SendCameraSettingValue(Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
+                    }
+                }
+            }
+        }
+
+        public double VideoExposureSliderMin
+        {
+            get { return videoExposureSliderMin; }
+            set
+            {
+                if (videoExposureSliderMin != value)
+                    SetProperty(ref videoExposureSliderMin, value);
+            }
+        }
+
+        public double VideoExposureSliderMax
+        {
+            get { return videoExposureSliderMax; }
+            set
+            {
+                if (videoExposureSliderMax != value)
+                    SetProperty(ref videoExposureSliderMax, value);
+            }
+        }
+
+        public double VideoFlashSliderValue
+        {
+            get { return videoFlashSliderValue; }
+            set
+            {
+                if (videoFlashSliderValue != value)
+                {
+                    SetProperty(ref videoFlashSliderValue, value);
+
+                    // Send it to QTM if value was set locally
+                    if (!qtmUpdatedSettingValue)
+                    {
+                        SendCameraSettingValue(Constants.VIDEO_FLASH_PACKET_STRING, value);
+                    }
+                }
+            }
+        }
+
+        public double VideoFlashSliderMin
+        {
+            get { return videoFlashSliderMin; }
+            set
+            {
+                if (videoFlashSliderMin != value)
+                    SetProperty(ref videoFlashSliderMin, value);
+            }
+        }
+
+        public double VideoFlashSliderMax
+        {
+            get { return videoFlashSliderMax; }
+            set
+            {
+                if (videoFlashSliderMax != value)
+                    SetProperty(ref videoFlashSliderMax, value);
+            }
+        }
+
+        public void SetModelReference(CameraPage _ref)
+        {
+            // Set reference to model
+            cameraPageModel = _ref;
+
+            // Copy drawer references
+            markerDrawerFrame = cameraPageModel.GetMarkerDrawerFrame();
+            videoDrawerFrame = cameraPageModel.GetVideoDrawerFrame();
+
+            // Switch them drawers now
+            SwitchDrawers(cameraState.Mode);
+        }
+
+        private void SwitchDrawers(CameraMode mode)
         {
             switch (mode)
             {
                 case CameraMode.ModeMarker:
                 case CameraMode.ModeMarkerIntensity:
-                    // Get Marker Exposure range values
-                    CURRENT_CAM_FS_MIN = settingsDrawer.GetMarkerExposureMin();
-                    CURRENT_CAM_FS_MAX = settingsDrawer.GetMarkerExposureMax();
 
-                    // Get Marker Threshold range values
-                    CURRENT_CAM_SS_MIN = settingsDrawer.GetMarkerThresholdMin();
-                    CURRENT_CAM_SS_MAX = settingsDrawer.GetMarkerThresholdMax();
-
+                    videoDrawerFrame.IsVisible = false;
+                    markerDrawerFrame.IsVisible = true;
+                                        
                     break;
+
                 case CameraMode.ModeVideo:
-                    // Get Video Exposure range values
-                    CURRENT_CAM_FS_MIN = settingsDrawer.GetVideoExposureMin();
-                    CURRENT_CAM_FS_MAX = settingsDrawer.GetVideoExposureMax();
 
-                    // Get Video flash range values
-                    CURRENT_CAM_SS_MIN = settingsDrawer.GetVideoFlashMin();
-                    CURRENT_CAM_SS_MAX = settingsDrawer.GetVideoFlashMax();
-                    break;
+                    markerDrawerFrame.IsVisible = false;
+                    videoDrawerFrame.IsVisible = true;
 
-                default:
-                    // Handle exception
                     break;
             }
         }

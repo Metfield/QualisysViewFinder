@@ -11,14 +11,12 @@ namespace Arqus
     public class QTMEventListener : IDisposable
     {
         private int frequency;
-        private QTMNetworkConnection networkConnection;
-        private bool isStreaming;
+        private QTMNetworkConnection networkConnection;   
 
         public QTMEventListener(int freq, bool startListening = true)
         {
             // Init variables
-            frequency = freq;
-            isStreaming = false;
+            frequency = 60;
 
             // TODO: Mmmph.. new connection?
             networkConnection = new QTMNetworkConnection();
@@ -62,7 +60,7 @@ namespace Arqus
                         if (ignoreNextPacket)
                         {
                             ignoreNextPacket = false;
-                            continue;
+                            //continue;
                         }
 
                         MessagingCenter.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED.ToString());

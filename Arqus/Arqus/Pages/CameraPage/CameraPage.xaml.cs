@@ -12,7 +12,6 @@ namespace Arqus
     {
         CameraApplication currentApplication;
 
-
         public CameraPage()
         {
             InitializeComponent();
@@ -21,21 +20,32 @@ namespace Arqus
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            currentApplication = await StartUrhoApp();
+            currentApplication = await StartUrhoApp();                      
+
+            // Set model reference
+            ((CameraPageViewModel)BindingContext).SetModelReference(this);
         }
 
         protected override void OnDisappearing()
         {
             UrhoSurface.OnDestroy();
             base.OnDisappearing();
-        }
-        
+        }        
 
         async Task<CameraApplication> StartUrhoApp()
         {
             CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
             return markerApplication;
         }
+        
+        public Frame GetMarkerDrawerFrame()
+        {
+            return markerDrawer;
+        }
 
+        public Frame GetVideoDrawerFrame()
+        {
+            return videoDrawer;
+        }
     }
 }

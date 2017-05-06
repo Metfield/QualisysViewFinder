@@ -19,7 +19,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICameraStreamService.cs" />
@@ -27,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SettingsSlider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\GridViewComponent.cs" />

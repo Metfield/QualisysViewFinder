@@ -5,7 +5,7 @@
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              Title="Camera Page"
              prism:ViewModelLocator.AutowireViewModel="True"
-             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"
+             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"             
              x:Class="Arqus.CameraPage">
     
     <ContentPage.ToolbarItems>
@@ -32,16 +32,36 @@
     <StackLayout VerticalOptions="FillAndExpand">
         
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
-
-        <!-- All-purpose Settings drawer-->
+        
+        <!-- Drawers layout -->
         <StackLayout VerticalOptions="End" IsEnabled="True">
-            <Frame HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray">
+            
+            <!-- Marker-specific drawer -->
+            <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False">
                 <StackLayout VerticalOptions="StartAndExpand">
-                    <Label Text="{Binding FirstSliderString}"/>
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding FirstSliderMaxValue}" Minimum="{Binding FirstSliderMinValue}"  Value="{Binding FirstSliderValue, Mode=TwoWay}"/>
+                    <Label Text="Marker Exposure"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerExposureSliderMax}" 
+                                                     Minimum="{Binding MarkerExposureSliderMin}"
+                                                     Value="{Binding MarkerExposureSliderValue}"/>
                     
-                    <Label Text="{Binding SecondSliderString}"/>
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding SecondSliderMaxValue}" Minimum="{Binding SecondSliderMinValue}" Value="{Binding SecondSliderValue, Mode=TwoWay}"/>
+                    <Label Text="Marker Threshold"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
+                                                     Minimum="{Binding MarkerThresholdSliderMin}"
+                                                     Value="{Binding MarkerThresholdSliderValue}"/>
+                </StackLayout>
+            </Frame>
+
+            <!-- Video-specific drawer -->
+            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False">
+                <StackLayout VerticalOptions="StartAndExpand">
+                    <Label Text="Video Exposure"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding VideoExposureSliderMax}" 
+                                                     Minimum="{Binding VideoExposureSliderMin}"
+                                                     Value="{Binding VideoExposureSliderValue}" />
+                    <Label Text="Video Flash"/>
+                    <Slider HorizontalOptions="Fill" Maximum="{Binding VideoFlashSliderMax}" 
+                                                     Minimum="{Binding VideoFlashSliderMin}"
+                                                     Value="{Binding VideoFlashSliderValue}" />
                 </StackLayout>
             </Frame>
         </StackLayout>

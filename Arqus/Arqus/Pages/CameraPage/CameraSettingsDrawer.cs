@@ -2,29 +2,35 @@
 using Arqus.Helpers;
 using System.Collections.Generic;
 using QTMRealTimeSDK.Settings;
+using Xamarin.Forms;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Arqus
 {
+    // ATTENTION!!!! It is very important to set Max value first, otherwise an
+    // exception will be triggered
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     /// <summary>
     /// This class is in charge of handling the layout for the settings drawer
     /// in the cameraPage according the the currently selected mode
     /// </summary>
-    class CameraSettingsDrawer
+    public class CameraSettingsDrawer
     {
         // Holds reference to CameraPageViewModel so that bindings
         // can be changed here
         CameraPageViewModel pageViewModel;
+    //    CameraState currentState, previousState;
 
-        int currentCamera;
+        CameraMode currentMode, previousMode;
 
-        public int  MARKER_MAX_EXPOSURE, MARKER_MIN_EXPOSURE,
-                    MARKER_MAX_THRESHOLD, MARKER_MIN_THRESHOLD,
+        // Create sliders
+        // We're now using four different sliders (two for each mode)
+        SettingsSlider /*firstSlider, secondSlider,*/
 
-                    VIDEO_MAX_EXPOSURE, VIDEO_MIN_EXPOSURE,
-                    VIDEO_MAX_FLASH, VIDEO_MIN_FLASH;
-
-        private float   SLIDER_MIN,
-                        SLIDER_MAX;
+                       markerExposureSlider, markerThresholdSlider,
+                       videoExposureSlider, videoFlashSlider;
 
         /// <summary>
         /// Creates settings drawer object that will hold values
@@ -37,35 +43,77 @@ namespace Arqus
         /// <param name="currCamSettings"></param>
         /// <param name="min">Min value for slider</param>
         /// <param name="max">Max value for slider</param>
-        public CameraSettingsDrawer(CameraPageViewModel cpvm, int camID, SettingsGeneralCameraSystem generalSettings, float sliderMin = 0.0f, float sliderMax = 1.0f)
+        public CameraSettingsDrawer(CameraPageViewModel cpvm, CameraState cs, CameraSettings generalSettings)
         {
             pageViewModel = cpvm;            
-            currentCamera = camID;
 
-            // Set current camera min and max settings
-            MARKER_MAX_EXPOSURE = generalSettings.MarkerExposure.Max;
-            MARKER_MIN_EXPOSURE = generalSettings.MarkerExposure.Min;
+            // Create slider objects 
+            CreateSettingSliders();
 
-            MARKER_MAX_THRESHOLD = generalSettings.MarkerThreshold.Max;
-            MARKER_MIN_THRESHOLD = generalSettings.MarkerThreshold.Min;
+            // Set drawer mode
+            SetCamera(generalSettings);                  
+        }
 
-            VIDEO_MAX_EXPOSURE = generalSettings.VideoExposure.Max;
-            VIDEO_MIN_EXPOSURE = generalSettings.VideoExposure.Min;
+        /// <summary>
+        /// Creates settings sliders objects
+        /// </summary>
+        void CreateSettingSliders()
+        {
+            markerExposureSlider  = new SettingsSlider();
+            markerThresholdSlider = new SettingsSlider();
+            videoExposureSlider   = new SettingsSlider();
+            videoFlashSlider      = new SettingsSlider();
+        }
 
-            VIDEO_MAX_FLASH = generalSettings.VideoFlashTime.Max;
-            VIDEO_MIN_FLASH = generalSettings.VideoFlashTime.Min;
+        void SetSettings(CameraSettings generalSettings)
+        {            
+            markerExposureSlider.Max = generalSettings.MarkerExposure.Max;
+            markerExposureSlider.Min = generalSettings.MarkerExposure.Min;
+            markerExposureSlider.Value = generalSettings.MarkerExposure.Current;
 
-            // Set local min and max values [0,1]
-            SLIDER_MIN = sliderMin;
-            SLIDER_MAX = sliderMax;
+            markerThresholdSlider.Max = generalSettings.MarkerThreshold.Max;
+            markerThresholdSlider.Min = generalSettings.MarkerThreshold.Min;
+            markerThresholdSlider.Value = generalSettings.MarkerThreshold.Current;
 
-            // Set these min and max values to actual sliders
-            pageViewModel.FirstSliderMaxValue = SLIDER_MAX;
-            pageViewModel.FirstSliderMinValue = SLIDER_MIN;
+            videoExposureSlider.Max = generalSettings.VideoExposure.Max;
+            videoExposureSlider.Min = generalSettings.VideoExposure.Min;
+            videoExposureSlider.Value = generalSettings.VideoExposure.Current;
 
-            pageViewModel.SecondSliderMaxValue = SLIDER_MAX;
-            pageViewModel.SecondSliderMinValue = SLIDER_MIN;                        
-        }             
+            videoFlashSlider.Max = generalSettings.VideoFlashTime.Max;
+            videoFlashSlider.Min = generalSettings.VideoFlashTime.Min;
+            videoFlashSlider.Value = generalSettings.VideoFlashTime.Current;
+        }
+
+        public void SetCamera(CameraSettings generalSettings)
+        {   
+            SetSettings(generalSettings);
+
+            UpdateDrawer();
+        }
+
+        private void UpdateDrawer()
+        {
+            // Marker Exposure slider
+            pageViewModel.MarkerExposureSliderMax = markerExposureSlider.Max;
+            pageViewModel.MarkerExposureSliderMin = markerExposureSlider.Min;
+            pageViewModel.MarkerExposureSliderValue = markerExposureSlider.Value;            
+
+            // Marker Threshold slider
+            pageViewModel.MarkerThresholdSliderMax = markerThresholdSlider.Max;
+            pageViewModel.MarkerThresholdSliderMin = markerThresholdSlider.Min;
+            pageViewModel.MarkerThresholdSliderValue = markerThresholdSlider.Value;
+
+            // Video Exposure slider
+            pageViewModel.VideoExposureSliderMax = videoExposureSlider.Max;
+            pageViewModel.VideoExposureSliderMin = videoExposureSlider.Min;
+            pageViewModel.VideoExposureSliderValue = videoExposureSlider.Value;
+
+            // Video Flash slider
+            pageViewModel.VideoFlashSliderMax = videoFlashSlider.Max;
+            pageViewModel.VideoFlashSliderMin = videoFlashSlider.Min;
+            pageViewModel.VideoFlashSliderValue = videoFlashSlider.Value;
+        }
+         
 
         /// <summary>
         /// Changes current value on slider and sliders' text
@@ -73,83 +121,89 @@ namespace Arqus
         /// </summary>
         /// <param name="newMode"></param>
         /// <param name="newCamSettings"></param>
-        public void SetDrawerMode(CameraMode newMode, CameraSettings newCamSettings)
+       /* public void SetDrawerMode(CameraMode newMode)
         {
-            // ATTENTION! It is very important to set Max value first, otherwise an 
-            // exception will be triggered
-            switch(newMode)
+            // Return if it's same mode
+            if (currentMode == newMode)
+                return;
+
+            previousMode = currentMode;
+            currentMode = newMode;
+            
+
+            //pageViewModel.qtmUpdatedSettingValue = true;
+
+            // Assign current sliders based on mode
+            switch (currentMode)
             {
                 case CameraMode.ModeMarker:
                 case CameraMode.ModeMarkerIntensity:
-                    // Handle first slider -EXPOSURE
-                    pageViewModel.FirstSliderString = Constants.MARKER_EXPOSURE_SLIDER_NAME;
-                    pageViewModel.FirstSliderValue = DataOperations.ConvertRange(MARKER_MIN_EXPOSURE, MARKER_MAX_EXPOSURE,
-                                                                                         SLIDER_MIN, SLIDER_MAX, newCamSettings.MarkerExposure);                        
 
-                    // Handle second slider -THRESHOLD
-                    pageViewModel.SecondSliderString = Constants.MARKER_THRESHOLD_SLIDER_NAME;                                  
-                    pageViewModel.SecondSliderValue = DataOperations.ConvertRange(MARKER_MIN_THRESHOLD, MARKER_MAX_THRESHOLD,
-                                                                                         SLIDER_MIN, SLIDER_MAX, newCamSettings.MarkerThreshold);                                        
+                    // Return if we were already in similar mode
+                    if (previousMode == CameraMode.ModeMarker ||
+                        previousMode == CameraMode.ModeMarkerIntensity)
+                        return;
+
+                    
+                    // Store previous values
+                    videoExposureSlider.Value = firstSlider.Value;
+                    videoFlashSlider.Value = secondSlider.Value;                    
+
+                    // Set mew sliders and strings for marker mode
+                    pageViewModel.FirstSliderString = Constants.MARKER_EXPOSURE_SLIDER_NAME;
+                    firstSlider = markerExposureSlider;
+
+                    pageViewModel.SecondSliderString = Constants.MARKER_THRESHOLD_SLIDER_NAME;
+                    secondSlider = markerThresholdSlider;
+
                     break;
 
                 case CameraMode.ModeVideo:
-                    // Handle first slider -EXPOSURE
+
+                   
+                    // Store previous values
+                    markerExposureSlider.Value = firstSlider.Value;
+                    markerThresholdSlider.Value = secondSlider.Value;
+                    
+                    // Set mew sliders and strings for video mode
                     pageViewModel.FirstSliderString = Constants.VIDEO_EXPOSURE_SLIDER_NAME;
-                    pageViewModel.FirstSliderValue = DataOperations.ConvertRange(VIDEO_MIN_EXPOSURE, VIDEO_MAX_EXPOSURE,
-                                                                                         SLIDER_MIN, SLIDER_MAX, newCamSettings.VideoExposure);                    
+                    firstSlider = videoExposureSlider;
 
-                    // Handle second slider -FLASH_TIME
                     pageViewModel.SecondSliderString = Constants.VIDEO_FLASH_SLIDER_NAME;
-                    pageViewModel.SecondSliderValue = DataOperations.ConvertRange(VIDEO_MIN_FLASH, VIDEO_MAX_FLASH,
-                                                                                         SLIDER_MIN, SLIDER_MAX, newCamSettings.VideoFlash);
-                    break;
+                    secondSlider = videoFlashSlider;
 
-                default:
-                    // Add Exception handling
                     break;
             }
+
+            UpdateDrawer();
+
+            //pageViewModel.qtmUpdatedSettingValue = false;
+        }*/
+       
+
+        //public async void OnFirstSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
+        public async void OnFirstSliderValueChangedFromUI(double value)
+        {
+          /*  firstSlider.Value = value;
+                        
+            await SettingsService.SetCameraSettings(currentState.ID, IsCurrentModeVideo() ? 
+                                                                        Constants.VIDEO_EXPOSURE_PACKET_STRING :
+                                                                        Constants.MARKER_EXPOSURE_PACKET_STRING, (float)value);*/
         }
 
-        /////////////////////////////////////////////////////
-        /// Good old fasioned getters from here and out    
-        /////////////////////////////////////////////////////
-        public int GetMarkerExposureMin()
+        //public async void OnSecondSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
+        public async void OnSecondSliderValueChangedFromUI(double value)
         {
-            return MARKER_MIN_EXPOSURE;
-        }
-        public int GetMarkerExposureMax()
-        {
-            return MARKER_MAX_EXPOSURE;
+            /*secondSlider.Value = value;
+
+            await SettingsService.SetCameraSettings(currentState.ID, IsCurrentModeVideo() ?
+                                                                        Constants.VIDEO_FLASH_PACKET_STRING :
+                                                                        Constants.MARKER_THRESHOLD_PACKET_STRING, (float)value);*/
         }
 
-        public int GetMarkerThresholdMin()
+        private bool IsCurrentModeVideo()
         {
-            return MARKER_MIN_THRESHOLD;
-        }
-
-        public int GetMarkerThresholdMax()
-        {
-            return MARKER_MAX_THRESHOLD;
-        }
-
-        public int GetVideoExposureMin()
-        {
-            return VIDEO_MIN_EXPOSURE;
-        }
-
-        public int GetVideoExposureMax()
-        {
-            return VIDEO_MAX_EXPOSURE;
-        }
-
-        public int GetVideoFlashMin()
-        {
-            return VIDEO_MIN_FLASH;
-        }
-
-        public int GetVideoFlashMax()
-        {
-            return VIDEO_MAX_FLASH;
+            return currentMode == CameraMode.ModeVideo;
         }
     }
 }

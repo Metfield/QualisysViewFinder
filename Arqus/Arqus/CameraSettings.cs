@@ -1,20 +1,26 @@
-﻿using System;
+﻿using QTMRealTimeSDK.Settings;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace Arqus
 {
-    class CameraSettings
+    public class CameraSettings
     {
         public int CameraID { get; private set; }
 
+
+        /*public CameraSetting MarkerExposure, MarkerThreshold,   // Marker/intensity-related
+                            VideoExposure, VideoFlash;         // Video stream-related*/
+
         // Marker/intensity-related
-        public int MarkerExposure { get; set; }
-        public int MarkerThreshold { get; set; }
+        public CameraSetting MarkerExposure     { get; set; }
+        public CameraSetting MarkerThreshold    { get; set; }
 
         // Video stream-related
-        public int VideoExposure { get; set; }
-        public int VideoFlash { get; set; }
+        public CameraSetting VideoExposure      { get; set; }
+        public CameraSetting VideoFlashTime     { get; set; }
 
         public CameraSettings(int id)
         {

@@ -1,4 +1,5 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using QTMRealTimeSDK.Data;
 using System;
 using System.Collections.Generic;
@@ -37,10 +38,9 @@ namespace Arqus
             Task.Run(() => ListenToEvents());
         }
 
+
         private void ListenToEvents()
         {
-            PacketType packetType = new PacketType();
-
             // System is getting double event packages..
             // For now just ignore one.. 
             //TODO: Fix this issue!
@@ -48,6 +48,8 @@ namespace Arqus
 
             while (networkConnection.Protocol.IsConnected())
             {
+
+                PacketType packetType;
                 // Get Packet and don't skip events
                 networkConnection.Protocol.ReceiveRTPacket(out packetType, false);
 
@@ -63,7 +65,7 @@ namespace Arqus
                             //continue;
                         }
 
-                        MessagingCenter.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED.ToString());
+                        MessagingService.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED, payload: new { Poop = "poop" });
                         ignoreNextPacket = true;
                     }
                 }

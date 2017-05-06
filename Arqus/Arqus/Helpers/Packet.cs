@@ -12,28 +12,21 @@ namespace Arqus.Helpers
     public static class Packet
     {
 
-        public static string CameraImage(int id, bool enabled, string format = "JPG")
+        public static string CameraImage(int id, bool enabled)
         {
             string packet = @"<QTM_Settings>
                 <Image>
                     <Camera>
                         <ID>{0}</ID>
                         <Enabled>{1}</Enabled>
-                        <Format>{2}</Format>
-                        <Width>640</Width>
-                        <Height>400</Height>
-                        <Left_Crop>0.0</Left_Crop>
-                        <Top_Crop>0.0</Top_Crop>
-                        <Right_Crop>1.0</Right_Crop>
-                        <Bottom_Crop>1.0</Bottom_Crop>
                     </Camera>
                 </Image>
             </QTM_Settings>";
 
-            return FormatStringToXML(string.Format(packet, id, enabled, format));
+            return FormatStringToXML(string.Format(packet, id, enabled));
         }
 
-        public static string CameraImage(int id, bool enabled, string width, string height, string format = "JPG")
+        public static string CameraImage(int id, bool enabled, int width, int height, string format = "JPG")
         {
             string packet = @"<QTM_Settings>
                 <Image>
@@ -48,6 +41,22 @@ namespace Arqus.Helpers
             </QTM_Settings>";
             
             return FormatStringToXML(string.Format(packet, id, enabled, format, width, height));
+        }
+
+        public static string CameraImage(int id, int width, int height)
+        {
+            string packet = @"<QTM_Settings>
+                <Image>
+                    <Camera>
+                        <ID>{0}</ID>
+                        <Width>{1}</Width>
+                        <Height>{2}</Height>
+                    </Camera>
+                </Image>
+            </QTM_Settings>";
+
+            return FormatStringToXML(string.Format(packet, id, width, height));
+
         }
 
         public static string Camera(int id, string mode)

@@ -36,7 +36,8 @@ namespace Arqus
             // Get camera count from stream class
             //cameraCount = CameraStream.Instance.GetStreamMarkerData().Count;
 
-            screens = CameraStore.GenerateCameraScreens();
+
+            //screens = CameraStore.GenerateCameraScreens();
 
             // Fill column number
             Columns = columns;
@@ -97,7 +98,7 @@ namespace Arqus
                 // TODO: get resolution from camera
                 screen.Scale = ScreenScale;
 
-                gridElementNode = gridNode.CreateChild("Camera" + screen.CameraID.ToString());                
+                gridElementNode = gridNode.CreateChild("Camera" + screen.Camera.ID.ToString());                
                 gridElementNode.AddComponent(screen);
 
                 // Determine element's position in grid

@@ -21,7 +21,7 @@ namespace Arqus
         // Holds reference to CameraPageViewModel so that bindings
         // can be changed here
         CameraPageViewModel pageViewModel;
-    //    CameraState currentState, previousState;
+    //    CameraStore.CurrentCamera currentState, previousState;
 
         CameraMode currentMode, previousMode;
 
@@ -43,7 +43,7 @@ namespace Arqus
         /// <param name="currCamSettings"></param>
         /// <param name="min">Min value for slider</param>
         /// <param name="max">Max value for slider</param>
-        public CameraSettingsDrawer(CameraPageViewModel cpvm, CameraState cs, CameraSettings generalSettings)
+        public CameraSettingsDrawer(CameraPageViewModel cpvm, CameraSettings generalSettings)
         {
             pageViewModel = cpvm;            
 

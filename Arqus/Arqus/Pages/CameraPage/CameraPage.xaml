@@ -43,7 +43,7 @@
                     <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerExposureSliderMax}" 
                                                      Minimum="{Binding MarkerExposureSliderMin}"
                                                      Value="{Binding MarkerExposureSliderValue}"/>
-                    
+
                     <Label Text="Marker Threshold"/>
                     <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
                                                      Minimum="{Binding MarkerThresholdSliderMin}"

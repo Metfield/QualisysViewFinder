@@ -1,25 +1,20 @@
 ﻿using Arqus.Connection;
-using Arqus.Helpers;
-using Arqus.Services;
+using Arqus.Services.MobileCenterService;
 using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Services;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Arqus
 {
-    class ConnectionPageViewModel : BindableBase
+    class ConnectionPageViewModel : BindableBase, INavigatedAware
     {
         public enum ConnectionMode
         {
@@ -28,35 +23,43 @@ namespace Arqus
             NONE
         }
         
-        private QTMNetworkConnection networkConnection;
-        private INavigationService navigationService;
-        private IUnityContainer container;
-        private IPageDialogService pageDialogService;
+        private QTMNetworkConnection connection;
 
-        public ConnectionPageViewModel(INavigationService navigationService, IUnityContainer container, IPageDialogService pageDialogService)
+        private IUnityContainer container;
+        private INavigationService navigationService;
+
+        public ConnectionPageViewModel(
+            INavigationService navigationService, 
+            IUnityContainer container, 
+            IPageDialogService pageDialogService)
         {
             this.container = container;
             this.navigationService = navigationService;
-            this.pageDialogService = pageDialogService;
 
-            networkConnection = new QTMNetworkConnection();
+            connection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;
 
             RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
             
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
-            ConnectCommand = new DelegateCommand(() => OnConnectionStarted());
+            ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
 
+            
+        }
 
-            MessagingCenter.Subscribe<QTMNetworkConnection>(this, MessageSubject.ENTER_PASSWORD.ToString(), async (sender) =>
-            {
-                await pageDialogService.DisplayAlertAsync("Incorrect Password", "The entered password was incorrect please enter a valid one.", "Ok");
-            });
+        public void OnNavigatedFrom(NavigationParameters parameters)
+        {
+            MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
+        }
+
+        public void OnNavigatedTo(NavigationParameters parameters)
+        {
+            MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
         }
         
 
-       QTMServer selectedServer = null;
+        QTMServer selectedServer = null;
 
         /// <summary>
         /// The selected server to connect to
@@ -179,7 +182,7 @@ namespace Arqus
         {
             // BUG: The application will crash upon a second refresh
             // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = networkConnection.DiscoverQTMServers();
+            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
 
 
             return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
@@ -211,7 +214,7 @@ namespace Arqus
         public DelegateCommand ConnectCommand { private set;  get; }
 
 
-        private string ipAddress = "192.168.10.168";
+        private string ipAddress = "192.168.10.179";
 
         public string IPAddress
         {
@@ -233,7 +236,7 @@ namespace Arqus
         async void OnConnectionStarted()
         {
             // Connect to IP
-            bool success = networkConnection.Connect(IPAddress, Password);
+            bool success = connection.Connect(IPAddress, Password);
 
             if (!success)
             {
@@ -246,13 +249,11 @@ namespace Arqus
             //networkConnection.Dispose();
 
             // Send connection instance to settings service
-            SettingsService.Initialize(networkConnection);
+            SettingsService.Initialize();
+            CameraStore.GenerateCameras();
 
             // Connection was successfull          
-            // Begin streaming 
-            await navigationService.NavigateAsync("CameraPage");
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage"));
         }
-
-      
     }
 }

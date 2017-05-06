@@ -1,4 +1,6 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
+using Arqus.Services.MobileCenterService;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -15,8 +17,7 @@ namespace Arqus
     public class CameraPageViewModel : BindableBase, INavigationAware
     {
         private INavigationService navigationService;
-
-        private CameraState cameraState;
+        
         private CameraPage cameraPageModel;
 
         private CameraSettingsDrawer settingsDrawer;
@@ -58,8 +59,8 @@ namespace Arqus
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
-            SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));            
-            
+            SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
+
             // NOTE: This couples the ViewModel to the Urho View
             // maybe it's a better idea to create a service which
             // handles selection. If there is a good way to inject
@@ -72,16 +73,14 @@ namespace Arqus
             MessagingCenter.Subscribe<QTMEventListener>(this, 
                 MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(), 
                 UpdateCameraSettings);
-
-            cameraState = CameraStore.State;
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.State.ID);            
+            
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.CurrentCamera.ID);            
 
             // Create camera settings array
             cameraSettings = new List<CameraSettings>();
-
             // Get latest camera settings
             tempGeneralSettings = SettingsService.GetCameraSettings();
-                        
+
             // Create each camera settings object with a camera id
             for (int i = 1; i <= SettingsService.GetCameraCount(); i++)
             {
@@ -99,7 +98,7 @@ namespace Arqus
             }                        
 
             // Create Camera Settings Drawer object
-            settingsDrawer = new CameraSettingsDrawer(this, CameraStore.State, cameraSettings[CameraStore.State.ID - 1]);
+            settingsDrawer = new CameraSettingsDrawer(this, cameraSettings[CameraStore.CurrentCamera.ID - 1]);
 
             // Reset flag
             qtmUpdatedSettingValue = false;
@@ -107,12 +106,14 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
+            MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
+
             try
             {
-                NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
+                NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
 
                 if (navigationMode == NavigationMode.Back)
-                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED.ToString());
+                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
             }
             catch (Exception e)
             {
@@ -122,36 +123,28 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-
+            MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingCenter.Send(Application.Current, MessageSubject.CONNECTED.ToString());
+            MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Poop = "poop" });
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
         {
-            cameraState.ID = cameraID;
+            CameraStore.SetCurrentCamera(cameraID);
             UpdateCameraSettings(this);
         }
-        
+
         private void SetCameraMode(CameraMode mode)
         {           
-            // Change camera state mode
-            cameraState.Mode = mode;
-
             // Set the mode
-            SetCameraMode();
+            MobileCenterService.TrackEvent(GetType().Name, "SetCameraMode " + mode.ToString());
+            CameraStore.CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
-            SwitchDrawers(cameraState.Mode);
-        }
-
-        private async void SetCameraMode()
-        {
-            await SettingsService.SetCameraMode(cameraState.ID, cameraState.Mode);
-            MessagingCenter.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + cameraState.ID, cameraState.Mode);
+            SwitchDrawers(CameraStore.CurrentCamera.Mode);
         }
 
         public CameraSettingsDrawer GetSettingsDrawer()
@@ -167,7 +160,7 @@ namespace Arqus
         private void UpdateCameraSettings(Object sender)
         {
             qtmUpdatedSettingValue = true;
-            int camIndex = cameraState.ID - 1;
+            int camIndex = CameraStore.CurrentCamera.ID - 1;
 
             // Get new camera settings            
             tempGeneralSettings = SettingsService.GetCameraSettings();
@@ -226,15 +219,15 @@ namespace Arqus
 
             // Check for stream mode
             // Send the value to QTM and then update local structure
-            if (cameraState.Mode == CameraMode.ModeVideo)
+            if (CameraStore.CurrentCamera.Mode == CameraMode.ModeVideo)
             {
-                cameraSettings[cameraState.ID - 1].VideoExposure = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
+                cameraSettings[CameraStore.CurrentCamera.ID - 1].VideoExposure = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
             }
             else
             {
-                cameraSettings[cameraState.ID - 1].MarkerExposure = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
+                cameraSettings[CameraStore.CurrentCamera.ID - 1].MarkerExposure = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
             }
         }*/
 
@@ -257,21 +250,21 @@ namespace Arqus
 
             // Check for stream mode
             // Send the value to QTM and then update local structure
-            if (cameraState.Mode == CameraMode.ModeVideo)
+            if (CameraStore.CurrentCamera.Mode == CameraMode.ModeVideo)
             {
-                cameraSettings[cameraState.ID - 1].VideoFlash = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(cameraState.ID, Constants.VIDEO_FLASH_PACKET_STRING, (float)args.NewValue);                
+                cameraSettings[CameraStore.CurrentCamera.ID - 1].VideoFlash = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.VIDEO_FLASH_PACKET_STRING, (float)args.NewValue);                
             }
             else
             {
-                cameraSettings[cameraState.ID - 1].MarkerThreshold = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(cameraState.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, (float)args.NewValue);                
+                cameraSettings[CameraStore.CurrentCamera.ID - 1].MarkerThreshold = (float)args.NewValue;
+                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, (float)args.NewValue);                
             }
         }*/
 
-        private async void SendCameraSettingValue(string setting, double value)
+        private void SendCameraSettingValue(string setting, double value)
         {
-            await SettingsService.SetCameraSettings(CameraStore.State.ID, setting, (float)value);
+            SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, setting, (float)value);
         }
 
         // Command handlers for cammera settings     
@@ -312,7 +305,7 @@ namespace Arqus
                     SetProperty(ref markerExposureSliderMax, value);
             }
         }
-        
+
         public double MarkerThresholdSliderValue
         {
             get { return markerThresholdSliderValue; }
@@ -438,7 +431,7 @@ namespace Arqus
             videoDrawerFrame = cameraPageModel.GetVideoDrawerFrame();
 
             // Switch them drawers now
-            SwitchDrawers(cameraState.Mode);
+            SwitchDrawers(CameraStore.CurrentCamera.Mode);
         }
 
         private void SwitchDrawers(CameraMode mode)

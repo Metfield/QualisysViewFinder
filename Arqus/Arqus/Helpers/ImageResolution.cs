@@ -2,26 +2,16 @@
 
 namespace Arqus.Helpers
 {
-    public class ImageResolution
+    public class ImageResolution : Resolution
     {
-        public int Width { private set; get; }
-        public int Height { private set; get; }
 
-        public ImageResolution(int width, int height)
-        {
-           
-            Width = width;
-            Height = height;
-
-            Debug.WriteLine("Widht " + Width.ToString());
-            Debug.WriteLine("Height " + Height.ToString());
-        }
+        public ImageResolution(int width, int height) : base(width, height) { }
 
         public float PixelAspectRatio
         {
             get
             {
-                return (float) Width / (float) Height;
+                return Width / (float) Height;
             }
         }
 
@@ -32,5 +22,6 @@ namespace Arqus.Helpers
                 return Width * Height;
             }
         }
-    }
+    }  
+
 }

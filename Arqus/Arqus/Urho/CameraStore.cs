@@ -4,25 +4,11 @@ using Arqus.Visualization;
 using System.Linq;
 using System.Collections.Generic;
 using QTMRealTimeSDK.Settings;
+using Arqus.Helpers;
+using Arqus.DataModels;
 
 namespace Arqus
 {
-    /// <summary>
-    /// Object that holds the state of the currently selected camera
-    /// </summary>
-    public class CameraState
-    {
-        public int ID { get; set; }
-        public CameraMode Mode { get; set; }
-
-        public int NumCams{ get; set; }
-        
-        public CameraState(int id, CameraMode mode)
-        {
-            ID = id;
-            Mode = mode;
-        }
-    }
 
     /// <summary>
     /// Camera store that handles retreival of up-to-date cameras and the current 
@@ -30,13 +16,11 @@ namespace Arqus
     /// </summary>
     class CameraStore
     {        
-        // TODO: Initialize this depending on the first cameras current mode when connecting to the QTM host
-        public static CameraState State = new CameraState(1, CameraMode.ModeMarker);
-        static QTMNetworkConnection connection = new QTMNetworkConnection();
+        public static Camera CurrentCamera;
+        public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
-
-
+        
 
         /// <summary>
         /// Name: GenerateCameraScreens
@@ -46,57 +30,51 @@ namespace Arqus
         /// ImageCameras recieved from the QTM host.
         /// </summary>
         /// <returns></returns>
-        public static List<CameraScreen> GenerateCameraScreens()
+        public static bool GenerateCameras()
         {
-            List<CameraScreen> cameraScreens = new List<CameraScreen>();
+            Cameras = new Dictionary<int, Camera>();
             CameraScreen.ResetScreenCounter();
             
-            List<SettingsGeneralCameraSystem> cameraSettings = SettingsService.GetCameraSettings();
-            List<ImageCamera> imageSettings = SettingsService.GetImageCameraSettings();
+            List<SettingsGeneralCameraSystem> cameraSettingsList = SettingsService.GetCameraSettings();
+            List<ImageCamera> imageCameraSettingsList = SettingsService.GetImageCameraSettings();
 
-            State.NumCams = imageSettings.Count;
-
-            foreach (ImageCamera imageCamera in imageSettings)
+            foreach (ImageCamera imageCameraSettings in imageCameraSettingsList)
             {
-                CameraMode cameraMode = cameraSettings.Where(camera => camera.CameraId == imageCamera.CameraID).First().Mode;
+                SettingsGeneralCameraSystem cameraSettings = cameraSettingsList
+                    .Where(c => c.CameraId == imageCameraSettings.CameraID)
+                    .First();
 
-                if(!imageCamera.Enabled && cameraMode != CameraMode.ModeMarker)
-                    SetCameraMode(cameraMode, imageCamera.CameraID);
+                if(!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
+                    SettingsService.SetCameraMode(imageCameraSettings.CameraID, cameraSettings.Mode);
 
-                bool isImageMode = cameraMode != CameraMode.ModeMarker;
+                bool isImageMode = cameraSettings.Mode != CameraMode.ModeMarker;
 
-                CameraScreen screen = new CameraScreen(
-                    imageCamera.CameraID, 
-                    imageCamera.Width, 
-                    imageCamera.Height, 
-                    isImageMode
-                    );
-
-                cameraScreens.Add(screen);
-
+                ImageResolution imageResolution = new ImageResolution(imageCameraSettings.Width / 4, imageCameraSettings.Height / 4);
+                Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings.Mode, cameraSettings.MarkerResolution, imageResolution, cameraSettings.Model, cameraSettings.Orientation);
+                Cameras.Add(camera.ID, camera);
+                
                 // Make sure that the current settings are reflected in the state of the application
                 // The state of the QTM host should always have precedence unless expliciltly told to
                 // change settings
-                if (imageCamera.CameraID == State.ID)
-                    State.Mode = cameraMode;
-                
+                if (CurrentCamera == null)
+                    CurrentCamera = camera;
             }
 
-            return cameraScreens;
+            return true;
         }
 
-        public static async void SetCameraMode(CameraMode mode, int id)
+        public static List<CameraScreen> GenerateCameraScreens(Urho.Node cameraNode)
         {
-            await SettingsService.SetCameraMode(id, mode);
+            return Cameras.Values.Select(camera => new CameraScreen(camera, cameraNode)).ToList();
         }
 
-        public static async void SetCameraMode(CameraMode mode)
+        public static void SetCurrentCamera(int id)
         {
-            bool success = await SettingsService.SetCameraMode(State.ID, mode);
-
-            if (success)
-                State.Mode = mode;
+            CurrentCamera.Deselect();
+            CurrentCamera = Cameras[id];
+            CurrentCamera.Select();
         }
+        
 
         // TODO: Look over this later
         /*static void RefreshCameraAndScreen()

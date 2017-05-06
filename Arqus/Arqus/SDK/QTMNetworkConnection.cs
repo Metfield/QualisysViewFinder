@@ -6,113 +6,63 @@ using Arqus.Helpers;
 using System.Diagnostics;
 using QTMRealTimeSDK.Settings;
 using System.Net;
-using Prism.Navigation;
-using Xamarin.Forms;
-using System.Threading.Tasks;
-using QTMRealTimeSDK.Data;
-
+using QTMRealTimeSDK.Data;
 namespace Arqus
-{
+{
     public class QTMNetworkConnection : IDisposable
     {
         public static string Version { get; private set; }
 
-        private static string _ipAddress;
-        private static string _password;
-        private static readonly object controlLock = new object();
-        
-        private RTProtocol protocol;
-        public RTProtocol Protocol
-        {
-            get { return protocol; }
-            set { protocol = value; }
-        }
-        
-        
-        public QTMNetworkConnection(string ipAddress)
-        {
-            Protocol = new RTProtocol();
+        private static string ipAddress;
+        private static string password;
 
-            if(!Protocol.IsConnected())
-                Connect(ipAddress, _password);
-        }
-
-        /// <summary>
-        /// NOTE: This should only be used when an intial connection has already been made
-        /// This might not be a good approach?
-        /// </summary>
+        private bool hasControl = false;
+        private static readonly object controlLock = new object();        
+        public static RTProtocol Master { get; set; }
+        public RTProtocol Protocol { get; private set; }
+        
         public QTMNetworkConnection()
         {
             Protocol = new RTProtocol();
-
-            // If an ipAddress is already set make a connection attempt
-            // since this is assumed to be the default use case
-            if (!Protocol.IsConnected() && _ipAddress != null)
-            {
-                if (!Connect(_ipAddress, _password))
-                    Debug.WriteLine("UNABLE TO CONNECT TO QTM");
-            }
+            Connect();
         }
-
-        /// <summary>
-        /// Set the IpAddress property of the object instance and makes a connection attempt
-        /// </summary>
-        /// <returns>boolean indicating success or failure</returns>
-        public bool Connect(string ipAddress, string password = "")
+
+        public QTMNetworkConnection(int port)
         {
-            if(IsValidIPv4(ipAddress))
-            {
-                _ipAddress = ipAddress;
-                _password = password;
-                bool response = Connect();
-                return response;
-            }
-
-            return false;
-        }
-
-
+            Protocol = new RTProtocol();
+            Connect(port);
+        }
         /// <summary>
         /// Attempts to connect to a QTM host
         /// </summary>
         /// <returns>boolean indicating success or failure</returns>
-        public bool Connect()
+        public bool Connect(string ipAddress, string password = "")
         {
-            if (!Protocol.Connect(_ipAddress, 0))
+            lock(controlLock)
             {
-                return false;
-            }
-
-            // Make a check to determine wether the password is correct
-            // and that the object instance can take control and thereby
-            // send commands and/or update settings
-           /* if (!CheckControl())
-            {
-                return false;
-            }                           <= redundant */
-
-            string ver;
-            Protocol.GetQTMVersion(out ver);
-            Version = ver;
-
-            // Try to assume control from beginning
-            TakeControl();
-
-            return true;
-        }
-
+                QTMNetworkConnection.ipAddress = ipAddress;
+                QTMNetworkConnection.password = password;
+            }            
+            return Connect();
+        }        
         /// <summary>
-        /// Checks to determine if object instance can take control
+        /// Attempts to connect to a QTM host
         /// </summary>
-        /// <returns>true if the instance is able to take control</returns>
-        private bool CheckControl()
-        {
-            if (!TakeControl())
-                return false;
-
-            return ReleaseControl();
-        }
-
+        /// <returns>boolean indicating success or failure</returns>
+        public bool Connect(int port = -1)
+        {
+            if(IsValidIPv4(ipAddress))
+            {
+                if (Protocol.Connect(ipAddress, port))
+                {
+                    string ver;
+                    Protocol.GetQTMVersion(out ver);
+                    Version = ver;
+                    return true;
+                }
+            }
+            return false;
+        }
         /// <summary>
         /// Takes control of the QTM host
         /// 
@@ -121,61 +71,60 @@ namespace Arqus
         /// <returns>true if the client took control</returns>
         private bool TakeControl()
         {
-            bool success = Protocol.TakeControl(_password);
+            if (hasControl)
+                return true;
 
-            if(!success)
+            if (Master != null)
+                Master.ReleaseControl();
+            
+            if (!Protocol.TakeControl(password))
             {
                 string response = Protocol.GetErrorString();
-                //SharedProjects.Notification.Show("Slave mode", response);
                 Debug.WriteLine("Error: " + response);
+                return false;
             }
 
-            //SharedProjects.Notification.Show("Success!", "Master connection established");
-            return success;
-        }
+            Master = Protocol;
+            hasControl = true;
 
+            return true;
+        }        
         /// <summary>
         /// Releases the control for the current client
         /// </summary>
         /// <returns>true if the client released control</returns>
         private bool ReleaseControl()
         {
-            bool success = Protocol.ReleaseControl();
-
+            bool success = Master.ReleaseControl();
             if(!success)
             {
                 string response = Protocol.GetErrorString();
                 Debug.WriteLine("Error: " + response);
             }
-
             return success;
-        }
-
+        }
+        
         /// <summary>
         /// End Connection
         /// </summary>
         public void Disconnect()
         {
-            protocol.Disconnect();
-        }
-
+            Protocol.Disconnect();
+        }
+
         /// <summary>
         /// Makes sure ipAddress string is a valid IPv4
         /// </summary>
         /// <param name="ipString">Holds QTM instance IP address</param>
         /// <returns></returns>
-        public static bool IsValidIPv4(string ipString)
-        {
+        public static bool IsValidIPv4(string ipString)
+        {
             // Check for null string
             if (ipString == null)
-                return false;
-
-            // Check if it's made of four elements
-            if (ipString.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Length != 4)
-                return false;
-
-            IPAddress address;
-
+                return false;
+            // Check if it's made of four elements
+            if (ipString.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries).Length != 4)                return false;            
+            IPAddress address;            
             // Check if this is a valid IP address
             if (System.Net.IPAddress.TryParse(ipString, out address))
             {
@@ -183,107 +132,119 @@ namespace Arqus
                 if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                 {
                     return true;
-                }
-            }
-
+                }
+            }            
             // TODO: Check if address is in LAN and in a valid range!
-
-            return false;
-        }
-
+            return false;
+        }
         public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
             try
             {
                 if (Protocol.DiscoverRTServers(port))
                 {
-                    Debug.WriteLine(string.Format("QTM Servers: {0}", protocol.DiscoveryResponses.Count));
+                    Debug.WriteLine(string.Format("QTM Servers: {0}", Protocol.DiscoveryResponses.Count));
                 }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-            }
-
+            }
             return Protocol.DiscoveryResponses.ToList();
         }
 
+        PacketType packet;
+
         public List<ImageCamera> GetImageSettings()
         {
-            PacketType packet;
-            protocol.ReceiveRTPacket(out packet);
-            var imageSettings = protocol.GetImageSettings();
-            return imageSettings ? protocol.ImageSettings.cameraList : null;
-        }
-
+            Protocol.ReceiveRTPacket(out packet);
+            var imageSettings = Protocol.GetImageSettings();
+            return imageSettings ? Protocol.ImageSettings.Cameras: null;
+        }
+
         public IEnumerable<ImageResolution> GetAllCameraResolutions()
         {
             return GetImageSettings().Select(camera => new ImageResolution(camera.Width, camera.Height));
-        }
-
+        }
+        
         public ImageResolution GetCameraResolution(int cameraID)
         {
             ImageCamera camera = GetImageSettings().Where(c => c.CameraID == cameraID).First();
             return new ImageResolution(camera.Width, camera.Height);
-        }
-
+        }
+
         public bool SetCameraMode(int id, string mode)
         {
-
-            string packetString = Packet.Camera(id, mode);
-
+            string packetString = Packet.Camera(id, mode);            
             bool success;
 
-            /*lock (controlLock)
+            lock (controlLock)
             {
-                TakeControl();*/
+                TakeControl();
                 success = Protocol.SendXML(packetString);
-                /*ReleaseControl();
-            }*/
-
-            if (success && IsImage(mode))
-            {
-                SetImageStream(id, true);
             }
-            else if (success)
+
+            if (success)
             {
-                SetImageStream(id, false);
+                SetImageStream(id, IsImage(mode));
             }
             else
             {
-                Debug.WriteLine("Unable to Enable/Disbale image mode");
+                Debug.WriteLine("Unable to Enable/Disable image mode");
+                return false;
             }
 
-
-
-            return success;
-        }
-
+            return true;
+        }        
         public bool SetImageStream(int id, bool enabled)
         {
-            // TODO: This should not be hardcoded, get the image setting and pass the resolution as a parameter instead
-            string packetString = Packet.CameraImage(id, enabled, "1823", "1087");
+            
+            string packetString = Packet.CameraImage(id, enabled);
+            
+
             bool success;
 
-//          lock(controlLock)
-//          {
-//              TakeControl();
+            lock (controlLock)
+            {
+                TakeControl();
                 success = Protocol.SendXML(packetString);
-//              ReleaseControl();
-//          }
+            }
 
             return success;
+        }
+        public bool SetImageResolution(int id, int width, int height)
+        {
+            try
+            {
+                string packetString = Packet.CameraImage(id, width, height);
+                lock (controlLock)
+                {
+                    TakeControl();
+                    return Protocol.SendXML(packetString);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
         }
        
+        public bool SetCameraSettings(int id, string settingsParameter, float value)
+        {
+            // Create XML command
+            string packetString = Packet.SettingsParameter(id, settingsParameter, value);
+            TakeControl();
+            return Protocol.SendXML(packetString);
+        }
 
         private bool IsImage(string mode)
         {
             return mode != "Marker";
-        }
-
+        }        
         public void Dispose()
         {
             Protocol.Dispose();
         }
     }
-}
+}

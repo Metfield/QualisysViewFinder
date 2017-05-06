@@ -30,7 +30,7 @@ namespace Arqus
                 //navigationParams.Add("cameraID", cameraID);
 
                 UrhoSurface.OnPause();
-                MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), navigationParams);
+                MessagingCenterService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), navigationParams);
             });
             */
         }

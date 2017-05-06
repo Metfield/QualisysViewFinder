@@ -1,40 +1,91 @@
-﻿using QTMRealTimeSDK;
+﻿using Arqus.Helpers;
+using Arqus.Service;
+using Arqus.Visualization;
+using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Xamarin.Forms;
 
-namespace Arqus.Pages
+namespace Arqus.DataModels
 {
+    class ElasticsearchCameraEvent
+    {
+        public string OldMode { get; set; }
+        public string NewMode { get; set; }
+        public int ID { get; set; }
+    }
+
     class Camera
     {
         // public properties
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public QTMRealTimeSDK.Settings.Resolution MarkerResolution { get; private set; }
+        public ImageResolution ImageResolution { get; private set; }
+        public CameraMode Mode { get; set; }
+        public CameraModel Model { get; private set; }
+        public int Orientation { get; set; }
 
         // private variables
         private int id;
+        public int ID { get; private set; }
         private CameraMode currentMode;
 
-        public Camera(int id, int width, int height)
+        public Camera(int id, CameraMode mode, QTMRealTimeSDK.Settings.Resolution markerResolution, ImageResolution imageResolution, CameraModel model, int orientation)
         {
-            this.id = id;
-
-            Width = width;
-            Height = height;
+            ID = id;
+            Mode = mode;
+            Model = model;
+            Orientation = orientation;
+            ImageResolution = imageResolution;
+            MarkerResolution = markerResolution;
+            
+            SettingsService.SetImageResolution(ID, ImageResolution.Width, ImageResolution.Height);
         }
 
         /// <summary>
-        /// Set the stream mode for the camera
+        /// Set the camera stream mode
         /// </summary>
         /// <param name="mode"></param>
-        public void SetStreamMode(CameraMode mode)
+        public void SetMode(CameraMode mode)
         {
             // Update mode if not already running in that mode
-            if(mode != currentMode)
+            if(Mode != mode)
             {
-                       
+                if (SettingsService.SetCameraMode(ID, mode))
+                {
+                    ElasticsearchCameraEvent cameraEvent = new ElasticsearchCameraEvent()
+                    {
+                        OldMode = Mode.ToString(),
+                        NewMode = mode.ToString(),
+                        ID = ID
+                    };
+
+                    Mode = mode;
+
+                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode, payload: cameraEvent);
+                }
             }
         }
         
+        
+        public void Select()
+        {
+            SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber);
+        }
+
+        public void Deselect()
+        {
+            SettingsService.SetLED(ID, SettingsService.LEDMode.Off);
+        }
+        
+        public void Enable()
+        {
+            SettingsService.EnableImageMode(ID, true, ImageResolution.Width, ImageResolution.Height);
+        }
+
+        public void Disable()
+        {
+            SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+        }
     }
 }

@@ -37,7 +37,7 @@ namespace Arqus.Components
         {
             // If an object doesn't exists for the current index we create it
             if (markerSpheres.Count <= index)
-                Add(new MarkerSphere());
+                 Add(new MarkerSphere());
 
             markerSpheres[index].Enabled = true;
             return markerSpheres[index];

@@ -1,11 +1,14 @@
 ﻿using Arqus.Helpers;
 using Arqus.Components;
+using Arqus.DataModels;
 
 using Urho;
 using Urho.Urho2D;
 using Xamarin.Forms;
-using System.Collections.Generic;
 using QTMRealTimeSDK;
+using Arqus.Services;
+using Arqus.Service;
+using System.Diagnostics;
 
 namespace Arqus.Visualization
 {
@@ -19,20 +22,18 @@ namespace Arqus.Visualization
     {
         // General properties
         public int position;
-        public bool IsImageMode { get; set; }
-        public int CameraID { private set; get; }
 
         // private fields
         private bool dirty;
         private Node screenNode;
+        private Node cameraNode;
+        private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
 
+
         // static fields
         static int screenCount;
-
-        public ImageResolution Resolution { private set; get; }
-
         private float scale;
 
         public float Scale
@@ -42,7 +43,7 @@ namespace Arqus.Visualization
             {
                 scale = value;
                 Height = scale;
-                Width = Resolution.PixelAspectRatio * Height;
+                Width = Camera.ImageResolution.PixelAspectRatio * Height;
             }
         }
 
@@ -53,6 +54,8 @@ namespace Arqus.Visualization
         
         private delegate void UpdateDelegate();
         private UpdateDelegate OnUpdateHandler;
+
+        public DataModels.Camera Camera { get; private set; }
 
         // Marker mode properties
         public MarkerSpherePool Pool { set; get; }
@@ -67,12 +70,18 @@ namespace Arqus.Visualization
             } 
         }
 
+
+        public bool IsImageMode()
+        {
+            return Camera.Mode != CameraMode.ModeMarker;
+        }
+
         // Intensity mode properties
         private Texture2D texture;
 
-        private ImageSharp.Color[] imageData;
+        private ImageSharp.PixelFormats.Rgba32[] imageData;
 
-        public ImageSharp.Color[] ImageData
+        public ImageSharp.PixelFormats.Rgba32[] ImageData
         {
             set
             {
@@ -82,11 +91,11 @@ namespace Arqus.Visualization
         }
 
         // TODO: Add initialization for float frameHeight, float frameWidth, float min
-        public CameraScreen(int cameraID, int cameraWidth, int cameraHeight, bool isImageMode)
+        public CameraScreen(DataModels.Camera camera, Node cameraNode)
         {
-            CameraID = cameraID;
-            Resolution = new ImageResolution(cameraWidth, cameraHeight);
-            IsImageMode = isImageMode;
+            Camera = camera;
+            this.cameraNode = cameraNode;
+            urhoCamera = cameraNode.GetComponent<Urho.Camera>();
 
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;
@@ -116,7 +125,8 @@ namespace Arqus.Visualization
 
             // Rotate the camera in the clockwise direction with 90 degrees
             screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            screenNode.Rotate(new Quaternion(0, 90, 0), TransformSpace.Local);
+            // Apply camera orientation and an offset to match the no rotation position with QTM
+            screenNode.Rotate(new Quaternion(0, Camera.Orientation + 90, 0), TransformSpace.Local);
 
             // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
@@ -128,13 +138,13 @@ namespace Arqus.Visualization
 
             texture = new Texture2D();
             texture.SetNumLevels(1);
-            texture.SetSize(Resolution.Width, Resolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            texture.SetSize(Camera.ImageResolution.Width, Camera.ImageResolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
             Material.SetTexture(TextureUnit.Diffuse, texture);
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             imageScreen.SetMaterial(Material);
         
             // Initialize current camera mode
-            SetImageMode(IsImageMode);
+            SetImageMode(IsImageMode());
 
             SubscribeToDataEvents();
         }
@@ -142,28 +152,29 @@ namespace Arqus.Visualization
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            MessagingCenter.Unsubscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
-            MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.Color[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID);
-            MessagingCenter.Unsubscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraID);
+            MessagingCenter.Unsubscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
         }
+        
 
         public void SubscribeToDataEvents()
         {
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, markerData) =>
+            MessagingService.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
             {
-                if(!IsImageMode)
-                    MarkerData = markerData;
+                if(!IsImageMode())
+                    Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenter.Subscribe<CameraStreamService, ImageSharp.Color[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + CameraID, (sender, imageData) =>
-            {
-                if(IsImageMode)
-                    ImageData = imageData;
+            MessagingService.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
+             {
+                if(IsImageMode())
+                    Urho.Application.InvokeOnMain(() => ImageData = imageData);
             });
 
-            MessagingCenter.Subscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + CameraID, (sender, mode) =>
+            MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
                 SetImageMode(mode != CameraMode.ModeMarker);
             });
@@ -171,8 +182,6 @@ namespace Arqus.Visualization
 
         public void SetImageMode(bool enable)
         {
-            IsImageMode = enable;
-
             // Clear the update handler to more predictibly determine which
             // methods will be called during update
             OnUpdateHandler = null;
@@ -190,27 +199,33 @@ namespace Arqus.Visualization
         }
     
         private void CleanImageScreen(){ }
-        private void CleanMarkerScreen() { Pool.Hide(); }
+        private void CleanMarkerScreen() { Urho.Application.InvokeOnMainAsync(() => Pool.Hide());  }
 
         private void SetImageMode()
-        {   
-            markerScreen.Enabled = false;
-            imageScreen.Enabled = true;
+        {
             OnUpdateHandler = OnImageUpdate;
+            Urho.Application.InvokeOnMainAsync(() =>
+            {
+                markerScreen.Enabled = false;
+                imageScreen.Enabled = true;
+            });
         }
 
         private void SetMarkerMode()
         {
-            imageScreen.Enabled = false;
-            markerScreen.Enabled = true;
+            Urho.Application.InvokeOnMainAsync(() =>
+            {
+                imageScreen.Enabled = false;
+                markerScreen.Enabled = true;
+            });
             OnUpdateHandler = OnMarkerUpdate;
         }
         
-        public unsafe bool UpdateMaterialTexture(ImageSharp.Color[] imageData)
+        public unsafe bool UpdateMaterialTexture(ImageSharp.PixelFormats.Rgba32[] imageData)
         {
-            fixed (ImageSharp.Color* bptr = imageData)
+            fixed (ImageSharp.PixelFormats.Rgba32* bptr = imageData)
             {
-                return texture.SetData(0, 0, 0, Resolution.Width, Resolution.Height, bptr);
+                return texture.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
             }
         }
         
@@ -218,8 +233,24 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
+            /*
+            if (screenNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
+            {
+                Camera.Disable();
+                screenNode.Enabled = false;
+            }
+            else if (!screenNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
+            {
+                Camera.Enable();
+                screenNode.Enabled = true;
+            }
+            */
+                
+            
+
             if (dirty && screenNode.Enabled)
             {
+                Debug.WriteLine("Camera Active: " + Camera.ID);
                 dirty = false;
                 OnUpdateHandler?.Invoke();
             }
@@ -235,10 +266,11 @@ namespace Arqus.Visualization
             for (int i = 0; i < markerData.MarkerCount; i++)
             {
                 // Transform from camera coordinates to frame coordinates
-                float adjustedX = DataOperations.ConvertRange(0, Resolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X / 64);
-                float adjustedY = DataOperations.ConvertRange(0, Resolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y / 64);
-                float adjustedScaleX = DataOperations.ConvertRange(0, Resolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX / 64);
-                float adjustedScaleY = DataOperations.ConvertRange(0, Resolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY / 64);
+                // TODO: Add marker resolution to class
+                float adjustedX = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X);
+                float adjustedY = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y);
+                float adjustedScaleX = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX);
+                float adjustedScaleY = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY);
 
                 MarkerSphere sphere = Pool.Get(i);
                 // Set world position with new frame coordinates            

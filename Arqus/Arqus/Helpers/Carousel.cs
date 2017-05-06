@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Arqus.Helpers
+namespace Arqus.Visualization
 {
     public class Position
     {

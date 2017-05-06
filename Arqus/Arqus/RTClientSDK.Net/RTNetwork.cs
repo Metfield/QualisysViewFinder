@@ -271,14 +271,12 @@ namespace QTMRealTimeSDK.Network
         {
             if (mUDPBroadcastClient == null)
                 return false;
+
             try
             {
                 foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    // Added conditional operationalStatus.Unknown.. Fixes bug for some Android devices where 
-                    // servers could not be fetched
-                    // TODO: Find nicer solution...
-                    if (!(nic.OperationalStatus == OperationalStatus.Up || nic.OperationalStatus == OperationalStatus.Unknown))
+                    if (nic.OperationalStatus != OperationalStatus.Up)
                         continue;
                     if (nic.NetworkInterfaceType != 0)
                     {
@@ -304,10 +302,8 @@ namespace QTMRealTimeSDK.Network
             {
                 mErrorCode = ex.SocketErrorCode;
                 mErrorString = ex.Message;
-
                 return false;
             }
-
             return true;
         }
 

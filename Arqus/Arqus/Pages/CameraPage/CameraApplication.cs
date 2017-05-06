@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using Urho;
-using Arqus.Helpers;
 using Arqus.Visualization;
-
-using QTMRealTimeSDK;
-using QTMRealTimeSDK.Settings;
-
 using Xamarin.Forms;
 using Urho.Actions;
+using Arqus.Helpers;
+using Arqus.Service;
 
 namespace Arqus
 {
@@ -56,7 +53,7 @@ namespace Arqus
                 if (Debugger.IsAttached)
                 {
                     // NOTE: This will always activate when switching mode
-                    //Debugger.Break();
+                    Debugger.Break();
                 }
                 e.Handled = true;
             };
@@ -72,23 +69,7 @@ namespace Arqus
             SetupViewport();
         }
 
-
-        private void SetImageData(List<ImageSharp.Color[]> data)
-        {
-            int count = 0;
-
-            foreach (ImageSharp.Color[] image in data)
-            {
-                if (image == null)
-                    break;
-
-                // TODO: Handle video as well
-                if (screenList.Count > count && screenList[count].IsImageMode)
-                    screenList[count].ImageData = image;
-
-                count++;
-            }
-        }
+        
 
         private bool updatingMarkerData;
 
@@ -98,7 +79,7 @@ namespace Arqus
 
             foreach (QTMRealTimeSDK.Data.Camera camera in data)
             {
-                if (screenList.Count > count && !screenList[count].IsImageMode)
+                if (screenList.Count > count && !screenList[count].IsImageMode())
                     screenList[count].MarkerData = camera;
                 count++;
             }
@@ -107,10 +88,12 @@ namespace Arqus
 
         private async void CreateScene()
         {
-            cameraMovementSpeed = 0.001f;
             // Create carousel
             carouselInitialDistance = -70;
-            carousel = new Carousel(300, 8, 0, 0);            
+            // TODO: Fix number of camerascreens
+            carousel = new Carousel(300, 10, 0, 0);
+
+            cameraMovementSpeed = 0.001f;      
 
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
@@ -141,7 +124,9 @@ namespace Arqus
             light.Brightness = 1.3f;
 
             // Initialize marker sphere meshes   
-            InitializeCameras();
+            InitializeCameras(cameraNode);
+
+            
         }
 
 
@@ -149,11 +134,11 @@ namespace Arqus
         /// <summary>
         /// Creates the cameras and attaches markersphers to them
         /// </summary>
-        private void InitializeCameras()
+        private void InitializeCameras(Node cameraNode)
         {
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
-            screenList = CameraStore.GenerateCameraScreens();
+            screenList = CameraStore.GenerateCameraScreens(cameraNode);
            
             foreach (CameraScreen screen in screenList)
             {
@@ -162,7 +147,7 @@ namespace Arqus
                 screen.Scale = 10;
                 screenNode.AddComponent(screen);
 
-                if(screen.CameraID == CameraStore.State.ID)
+                if(screen.Camera.ID == CameraStore.CurrentCamera.ID)
                     carousel.SetFocus(screen.position);
             }
 
@@ -232,7 +217,7 @@ namespace Arqus
         {
             List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
             CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
-            Debug.WriteLine(focus.CameraID);
+            Debug.WriteLine(focus.Camera.ID);
             carousel.SetFocus(focus.position);
 
             // Make an ease in during snapping
@@ -243,7 +228,7 @@ namespace Arqus
             }
             */
 
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.CameraID);
+            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID, payload: new { });
         }    
 
     }

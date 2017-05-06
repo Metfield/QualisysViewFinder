@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Arqus.Services.MobileCenterService
@@ -11,8 +12,6 @@ namespace Arqus.Services.MobileCenterService
 
     interface IMobileCenterService
     {
-        void Init();
-
-        void TrackEvent();
+        void TrackEvent(string eventName, [CallerMemberNameAttribute]string callerMethod = "");
     }
 }

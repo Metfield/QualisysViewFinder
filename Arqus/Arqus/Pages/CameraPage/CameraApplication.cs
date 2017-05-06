@@ -20,10 +20,12 @@ namespace Arqus
         private Octree octree;
         private Node meshNode;
 
+        private Grid grid;
         private Carousel carousel;
-        private Vector3 cameraOffset;
-        private Position cameraMinPosition;
+        private CameraScreenLayout cameraScreenLayout;
 
+        private Vector3 cameraOffset;
+        
         private float carouselInitialDistance;
 
         float meshScale,
@@ -67,6 +69,14 @@ namespace Arqus
             // Setup messaging wíth the view model to retrieve data
             CreateScene();
             SetupViewport();
+
+            MessagingService.Subscribe<CameraPageViewModel>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender) =>
+            {
+                if (cameraScreenLayout.Equals(carousel))
+                    cameraScreenLayout = grid;
+                else
+                    cameraScreenLayout = carousel;
+            });
         }
 
         
@@ -91,7 +101,6 @@ namespace Arqus
             // Create carousel
             carouselInitialDistance = -70;
             // TODO: Fix number of camerascreens
-            carousel = new Carousel(300, 10, 0, 0);
 
             cameraMovementSpeed = 0.001f;      
 
@@ -111,7 +120,8 @@ namespace Arqus
             camera = cameraNode.CreateComponent<Camera>();
 
             // Arbitrary far clipping plane
-            camera.FarClip = 30.0f;
+            camera.FarClip = 80.0f;
+
             
             // Reposition it..
             cameraNode.Position = new Vector3(0, 0, carouselInitialDistance);
@@ -126,7 +136,12 @@ namespace Arqus
             // Initialize marker sphere meshes   
             InitializeCameras(cameraNode);
 
+            grid = new Grid(new Vector3(0, 0, carouselInitialDistance + 10), screenList.Count, 2, camera);
+            carousel = new Carousel(300, 8, 0, 0);
             
+            cameraScreenLayout = carousel;
+
+            cameraScreenLayout.Select(CameraStore.CurrentCamera.ID);
         }
 
 
@@ -146,9 +161,6 @@ namespace Arqus
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
                 screen.Scale = 10;
                 screenNode.AddComponent(screen);
-
-                if(screen.Camera.ID == CameraStore.CurrentCamera.ID)
-                    carousel.SetFocus(screen.position);
             }
 
         }
@@ -164,8 +176,7 @@ namespace Arqus
             
             foreach (var screen in screenList)
             {
-                Position coordinates = carousel.GetCoordinatesForPosition(screen.position);
-                screen.Node.SetWorldPosition(new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y));
+                cameraScreenLayout.SetCameraScreenPosition(screen);
             }
         }
 
@@ -192,7 +203,7 @@ namespace Arqus
                 if (camera.Node.Position.Z == carouselInitialDistance)
                 {
                     // We want to scroll 
-                    carousel.Offset += eventArgs.DX * cameraMovementSpeed;
+                    cameraScreenLayout.Offset += eventArgs.DX * cameraMovementSpeed;
                 }                
                 else
                 {
@@ -218,7 +229,7 @@ namespace Arqus
             List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
             CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
             Debug.WriteLine(focus.Camera.ID);
-            carousel.SetFocus(focus.position);
+            cameraScreenLayout.Select(focus.position);
 
             // Make an ease in during snapping
             /*foreach (var screen in screenList)

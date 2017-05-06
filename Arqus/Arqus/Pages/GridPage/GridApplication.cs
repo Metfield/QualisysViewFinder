@@ -35,7 +35,7 @@ namespace Arqus
         Vector3 gridPosition;
         float gridMovementSpeed;
         Vector3 gridViewOrigin;
-        private GridViewComponent gridView;
+        private Grid gridView;
 
         int gridFrameHeight;
         int gridNumColumns;
@@ -121,14 +121,7 @@ namespace Arqus
             // HACK: Arbitrary values (for now)
             gridViewOrigin = new Vector3(-20.7f, 85, 0);
             camera.Node.Position = new Vector3(0, 0, -173);
-
-            // Create gridView.. HACKed height, column number 
-            gridView = new GridViewComponent(gridViewOrigin, gridFrameHeight, gridNumColumns, new Urho.Color(0.215f, 0.301f, 0.337f));
-            gridView.Padding = gridFramePadding;
-
-            // Add node to scene, along with gridview component
-            gridViewNode = scene.CreateChild("gridView");
-            gridViewNode.AddComponent(gridView);
+            
         }
 
         // Called on every tick

@@ -9,6 +9,12 @@
              x:Class="Arqus.CameraPage">
     
     <ContentPage.ToolbarItems>
+        <ToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" >
+            <ToolbarItem.Icon>
+                <OnPlatform x:TypeArguments="FileImageSource"
+                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
+            </ToolbarItem.Icon>
+        </ToolbarItem>
         <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}" >
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"

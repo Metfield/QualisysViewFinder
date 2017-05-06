@@ -17,7 +17,7 @@ namespace Arqus.DataModels
         public int ID { get; set; }
     }
 
-    class Camera
+    public class Camera
     {
         // public properties
         public QTMRealTimeSDK.Settings.Resolution MarkerResolution { get; private set; }
@@ -39,8 +39,8 @@ namespace Arqus.DataModels
             Orientation = orientation;
             ImageResolution = imageResolution;
             MarkerResolution = markerResolution;
-            
-            SettingsService.SetImageResolution(ID, ImageResolution.Width, ImageResolution.Height);
+
+            SettingsService.EnableImageMode(ID, Mode != CameraMode.ModeMarker, ImageResolution.Width, ImageResolution.Height);
         }
 
         /// <summary>

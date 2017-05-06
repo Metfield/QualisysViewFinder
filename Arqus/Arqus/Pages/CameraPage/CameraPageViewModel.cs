@@ -43,6 +43,8 @@ namespace Arqus
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand OnAppearingCommand { get; set; }
 
+        public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
+
         private CameraMode currentMode;
 
         public CameraMode CurrentMode
@@ -60,6 +62,11 @@ namespace Arqus
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
+
+            SetCameraScreenLayoutCommand = new DelegateCommand(() =>
+            {
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
+            });
 
             // NOTE: This couples the ViewModel to the Urho View
             // maybe it's a better idea to create a service which

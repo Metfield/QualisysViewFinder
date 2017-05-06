@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Urho;
 
 namespace Arqus.Visualization
 {
-    public class Position
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
 
-        public Position(double x, double y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-
-    public class Carousel
+    public class Carousel : CameraScreenLayout
     {        
         public double Radius
         {
@@ -31,40 +21,28 @@ namespace Arqus.Visualization
             set { length = value; }
         }
 
-        public int ItemCount { get; set; }
-        public float Offset { get; set; }
+        public override int ItemCount { get; set; }
+        public override float Offset { get; set; }
         public int PivotX { get; set; }
         public int PivotY { get; set; }
 
         public float Min { get; set; }
 
-        private int focus;
+        private int selected;
 
         public Carousel(double length, int itemCount, int pivotX, int pivotY)
         {
             // focus on the first position
-            focus = 0;
+            selected = 0;
             Length = length;
             ItemCount = itemCount;
 
             // Set center pivot of the carousel
             PivotX = pivotX;
             PivotY = pivotY;
-
-            // The minimum position without going beyond the center of the focused
-            // item in the carousel
-            Min = (float) GetCoordinatesForPosition(0).Y;
+            
             // Offset the minimum somewhat to emphasize on having at least a small distance from the screen
             Min -= 10;
-        }
-
-        public Position GetCoordinatesForPosition(int position)
-        {
-            double angle = GetAngle(position);
-            double x = Radius * Math.Cos(angle) + PivotX;
-            double y = Radius * Math.Sin(angle) + PivotY;
-
-            return new Position(x, y);
         }
         
 
@@ -73,18 +51,26 @@ namespace Arqus.Visualization
             // if the position we are retrieving an angle for is less
             // than the focused item increment the positional value with the
             // item count to account for how the relate to the focused item
-            if (position < focus)
+            if (position < selected)
                 position += ItemCount;
 
-            position -= focus;
+            position -= selected;
 
             return (2 * Math.PI / (float) ItemCount) * (float) position + Offset - Math.PI/2;
         }
 
-        public void SetFocus(int focus)
+        public override void Select(int id)
         {
-            this.focus = focus;
+            selected = id;
             Offset = 0;
-        }                
+        }
+
+        public override void SetCameraScreenPosition(CameraScreen screen)
+        {
+            double angle = GetAngle(screen.position);
+            double x = Radius * Math.Cos(angle) + PivotX;
+            double y = Radius * Math.Sin(angle) + PivotY;
+            screen.Node.SetWorldPosition(new Vector3((float)x, 0, (float)y));
+        }
     }
 }

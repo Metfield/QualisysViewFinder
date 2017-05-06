@@ -55,7 +55,8 @@ namespace Arqus.Services
 
         }
 
-        RTPacket packet;
+
+
         /// <summary>
         /// Description: Streams data in the same frequency as the initiated stream
         /// with the QTM server. If it manages to process packets faster that expected
@@ -67,6 +68,7 @@ namespace Arqus.Services
             {
                 PacketType packetType;
                 connection.Protocol.ReceiveRTPacket(out packetType);
+                
                 // Make sure this is a data packet
                 if (packetType == PacketType.PacketData)
                 {

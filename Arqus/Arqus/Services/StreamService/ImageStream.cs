@@ -22,7 +22,7 @@ namespace Arqus.Services
         private JpegDecoder decoder = new JpegDecoder();
         private long lastDecodeTimestamp;
 
-        protected override void RetrieveDataAsync(RTPacket packet)
+        protected override async void RetrieveDataAsync(RTPacket packet)
         {
             var data = packet.GetImageData();
             
@@ -32,19 +32,20 @@ namespace Arqus.Services
                 {
                     if (cameraImage.ImageData != null && cameraImage.ImageData.Length > 0)
                     {
-                        if(limiter > 24)
-                           return;
+                        if (limiter > 10)
+                            return;
 
-                        Task.Run(() =>
+                        await Task.Run(() =>
                         {
                             lock (streamLock)
                             {
                                 limiter++;
                             }
 
-
                             long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
                             ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
+
                             if (timestamp > lastDecodeTimestamp)
                             {
                                 lastDecodeTimestamp = timestamp;
@@ -55,13 +56,10 @@ namespace Arqus.Services
                             {
                                 limiter--;
                             }
-
                         });
-                        
                     }
                 }
             }
-            //data.Clear();
         }
         
     }

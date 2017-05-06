@@ -49,7 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MessengingCenterService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
@@ -69,6 +69,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml.cs">
       <DependentUpon>QTMServerList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\NodeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">

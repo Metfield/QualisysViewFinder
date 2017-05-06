@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using QTMRealTimeSDK;
 using Arqus.Services;
 using Arqus.Service;
+using System.Diagnostics;
 
 namespace Arqus.Visualization
 {
@@ -25,12 +26,14 @@ namespace Arqus.Visualization
         // private fields
         private bool dirty;
         private Node screenNode;
+        private Node cameraNode;
+        private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
 
+
         // static fields
         static int screenCount;
-
         private float scale;
 
         public float Scale
@@ -88,9 +91,12 @@ namespace Arqus.Visualization
         }
 
         // TODO: Add initialization for float frameHeight, float frameWidth, float min
-        public CameraScreen(DataModels.Camera camera) {
+        public CameraScreen(DataModels.Camera camera, Node cameraNode)
+        {
             Camera = camera;
-            
+            this.cameraNode = cameraNode;
+            urhoCamera = cameraNode.GetComponent<Urho.Camera>();
+
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;
 
@@ -150,24 +156,25 @@ namespace Arqus.Visualization
             MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
             MessagingCenter.Unsubscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
         }
+        
 
         public void SubscribeToDataEvents()
         {
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenterService.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
+            MessagingService.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
             {
                 if(!IsImageMode())
                     Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingCenterService.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
+            MessagingService.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
              {
                 if(IsImageMode())
                     Urho.Application.InvokeOnMain(() => ImageData = imageData);
             });
 
-            MessagingCenterService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
+            MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
                 SetImageMode(mode != CameraMode.ModeMarker);
             });
@@ -226,8 +233,24 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
+            /*
+            if (screenNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
+            {
+                Camera.Disable();
+                screenNode.Enabled = false;
+            }
+            else if (!screenNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
+            {
+                Camera.Enable();
+                screenNode.Enabled = true;
+            }
+            */
+                
+            
+
             if (dirty && screenNode.Enabled)
             {
+                Debug.WriteLine("Camera Active: " + Camera.ID);
                 dirty = false;
                 OnUpdateHandler?.Invoke();
             }

@@ -9,6 +9,13 @@ using Xamarin.Forms;
 
 namespace Arqus.DataModels
 {
+    class ElasticsearchCameraEvent
+    {
+        public string OldMode { get; set; }
+        public string NewMode { get; set; }
+        public int ID { get; set; }
+    }
+
     class Camera
     {
         // public properties
@@ -31,23 +38,54 @@ namespace Arqus.DataModels
             Orientation = orientation;
             ImageResolution = imageResolution;
             MarkerResolution = markerResolution;
+            
+            SettingsService.SetImageResolution(ID, ImageResolution.Width, ImageResolution.Height);
         }
 
         /// <summary>
         /// Set the camera stream mode
         /// </summary>
         /// <param name="mode"></param>
-        public void SetCameraMode(CameraMode mode)
+        public void SetMode(CameraMode mode)
         {
             // Update mode if not already running in that mode
             if(Mode != mode)
             {
                 if (SettingsService.SetCameraMode(ID, mode))
+                {
+                    ElasticsearchCameraEvent cameraEvent = new ElasticsearchCameraEvent()
+                    {
+                        OldMode = Mode.ToString(),
+                        NewMode = mode.ToString(),
+                        ID = ID
+                    };
+
                     Mode = mode;
 
-                MessagingCenterService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
+                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode, payload: cameraEvent);
+                }
             }
         }
         
+        
+        public void Select()
+        {
+            SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber);
+        }
+
+        public void Deselect()
+        {
+            SettingsService.SetLED(ID, SettingsService.LEDMode.Off);
+        }
+        
+        public void Enable()
+        {
+            SettingsService.EnableImageMode(ID, true, ImageResolution.Width, ImageResolution.Height);
+        }
+
+        public void Disable()
+        {
+            SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+        }
     }
 }

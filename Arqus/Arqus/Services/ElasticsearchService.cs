@@ -12,6 +12,7 @@ namespace Arqus.Services
     {
         public string Name;
         public string Message { get; set; }
+        public object Payload { get; set; }
         public DateTime Date { get; set; }
 
         public ElasticEvent()

@@ -27,8 +27,8 @@ namespace Arqus.Services
                 {
                     if(camera.MarkerData2D.Length > 0)
                     {
-                        MessagingCenterService.Send(this, MessageSubject.STREAM_DATA_SUCCESS + id, camera, false);
-                    }
+                        MessagingService.Send(this, MessageSubject.STREAM_DATA_SUCCESS + id, camera, track: false);
+                    }   
                     id++;
                 }
             }

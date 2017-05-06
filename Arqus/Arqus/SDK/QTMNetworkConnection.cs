@@ -212,6 +212,23 @@ namespace Arqus
 
             return success;
         }
+        public bool SetImageResolution(int id, int width, int height)
+        {
+            try
+            {
+                string packetString = Packet.CameraImage(id, width, height);
+                lock (controlLock)
+                {
+                    TakeControl();
+                    return Protocol.SendXML(packetString);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
+        }
        
         public bool SetCameraSettings(int id, string settingsParameter, float value)
         {

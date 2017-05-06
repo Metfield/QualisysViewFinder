@@ -88,10 +88,12 @@ namespace Arqus
 
         private async void CreateScene()
         {
-            cameraMovementSpeed = 0.001f;
             // Create carousel
             carouselInitialDistance = -70;
-            carousel = new Carousel(300, 8, 0, 0);            
+            // TODO: Fix number of camerascreens
+            carousel = new Carousel(300, 10, 0, 0);
+
+            cameraMovementSpeed = 0.001f;      
 
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
@@ -122,7 +124,9 @@ namespace Arqus
             light.Brightness = 1.3f;
 
             // Initialize marker sphere meshes   
-            InitializeCameras();
+            InitializeCameras(cameraNode);
+
+            
         }
 
 
@@ -130,11 +134,11 @@ namespace Arqus
         /// <summary>
         /// Creates the cameras and attaches markersphers to them
         /// </summary>
-        private void InitializeCameras()
+        private void InitializeCameras(Node cameraNode)
         {
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
-            screenList = CameraStore.GenerateCameraScreens();
+            screenList = CameraStore.GenerateCameraScreens(cameraNode);
            
             foreach (CameraScreen screen in screenList)
             {
@@ -224,7 +228,7 @@ namespace Arqus
             }
             */
 
-            MessagingCenterService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID);
+            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID, payload: new { });
         }    
 
     }

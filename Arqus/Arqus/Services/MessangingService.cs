@@ -18,7 +18,7 @@ namespace Arqus.Service
     }
 
 
-    public static class MessagingCenterService
+    public static class MessagingService
 	{
 
         public static void Subscribe<TSender>(this object subscriber, string message, Action<TSender> action, bool track = true) where TSender : class
@@ -37,29 +37,30 @@ namespace Arqus.Service
             MessagingCenter.Subscribe(subscriber, message, action);
         }
 
-        public static void Send<TSender>(this TSender sender, string message, bool track = true) where TSender : class
+        public static void Send<TSender>(this TSender sender, string message, object payload = null, bool track = true) where TSender : class
         {
             if (track)
-                TrackEvent(sender.GetType().Name, message);
+                TrackEvent(sender.GetType().Name, message, payload);
 
             MessagingCenter.Send<TSender>(sender, message);
         }
 
-        public static void Send<TSender, TArgs>(this TSender sender, string message, TArgs args, bool track = true) where TSender : class
+        public static void Send<TSender, TArgs>(this TSender sender, string message, TArgs args, object payload = null, bool track = true) where TSender : class
         {
             if (track)
-                TrackEvent(sender.GetType().Name, message);
+                TrackEvent(sender.GetType().Name, message, payload);
 
             MessagingCenter.Send<TSender, TArgs>(sender, message, args);
         }
 
-        private static void TrackEvent(string name, string message)
+        private static void TrackEvent(string name, string message, object payload = null)
         {
 
             var elasticEvent = new ElasticEvent
             {
                 Name = name,
-                Message = message
+                Message = message,
+                Payload = payload
             };
 
             ElasticsearchService.TrackEvent(elasticEvent);

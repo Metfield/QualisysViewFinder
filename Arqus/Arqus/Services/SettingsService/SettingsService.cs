@@ -38,9 +38,14 @@ namespace Arqus
             }
         }
 
-        public static bool EnableImageMode(int id, bool enabled)
+        public static bool EnableImageMode(int id, bool enabled, int width, int height)
         {
-            return connection.Protocol.SendXML(Packet.CameraImage(id, enabled));
+            return connection.Protocol.SendXML(Packet.CameraImage(id, enabled, width, height));
+        }
+
+        public static bool SetImageResolution(int id, int width, int height)
+        {
+            return connection.SetImageResolution(id, width, height);
         }
 
         public static void Initialize()
@@ -111,14 +116,7 @@ namespace Arqus
             connection.Protocol.GetImageSettings();
             return connection.Protocol.ImageSettings.Cameras;
         }
-        private static readonly string port = "7979";
-        private static string baseUrl = "http://{0}:{1}/api/experimental/{2}";
-        static HttpClient client = new HttpClient();
 
-        public static void Dispose()
-        {
-            connection.Dispose();
-        }
 
         // Used for capping the rate with which QTM will be notified
         // of camera settings changes
@@ -150,5 +148,49 @@ namespace Arqus
                 return false;
             }
         }
+
+        public enum LEDMode
+        {
+            On,
+            Off,
+            Pulsing
+        }
+
+        public enum LEDColor
+        {
+            Green,
+            Amber,
+            All
+        }
+
+        public static async Task<bool> SetLED(int id, LEDMode mode, LEDColor color = LEDColor.All)
+        {
+            try
+            {
+                string commandResponse;
+                string command = string.Format("Led {0} {1} {2}", id, mode.ToString(), color.ToString());
+
+                bool response = await Task.Run(() => 
+                {
+                    bool res = connection.Protocol.SendCommandExpectCommandResponse(command, out commandResponse);
+                    Debug.WriteLine(commandResponse);
+                    return res;
+                });
+                
+                return response;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                return false;
+            }
+            
+        }
+
+        public static void Dispose()
+        {
+            connection.Dispose();
+        }
+
     }
 }

@@ -65,8 +65,8 @@ namespace Arqus
             // handles selection. If there is a good way to inject
             // the settings service into the Urho view that might
             // be a better way to go about it..
-            MessagingCenterService.Subscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION, OnCameraSelection);
-            MessagingCenterService.Subscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED, UpdateCameraSettings);
+            MessagingService.Subscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION, OnCameraSelection);
+            MessagingService.Subscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED, UpdateCameraSettings);
                 
             // Create camera settings array
             cameraSettings = new List<CameraSettings>();
@@ -122,7 +122,7 @@ namespace Arqus
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingCenterService.Send(Application.Current, MessageSubject.CONNECTED);
+            MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Poop = "poop" });
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -141,7 +141,7 @@ namespace Arqus
 
             // Set the mode
             MobileCenterService.TrackEvent(GetType().Name, "SetCameraMode " + mode.ToString());
-            CameraStore.CurrentCamera.SetCameraMode(mode);
+            CameraStore.CurrentCamera.SetMode(mode);
         }
 
         /// <summary>

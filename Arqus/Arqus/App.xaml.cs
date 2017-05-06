@@ -21,12 +21,12 @@ namespace Arqus
 
             cameraService = new CameraStreamService();
 
-            MessagingCenterService.Subscribe<Application>(this, MessageSubject.CONNECTED, (sender) =>
+            MessagingService.Subscribe<Application>(this, MessageSubject.CONNECTED, (sender) =>
             {
                 OnConnected();
             });
 
-            MessagingCenterService.Subscribe<Application>(this, MessageSubject.DISCONNECTED, (sender) =>
+            MessagingService.Subscribe<Application>(this, MessageSubject.DISCONNECTED, (sender) =>
             {
                 OnDisconnected();
             });

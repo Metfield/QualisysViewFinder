@@ -12,24 +12,21 @@ namespace Arqus.Helpers
     public static class Packet
     {
 
-        public static string CameraImage(int id, bool enabled, string format = "JPG")
+        public static string CameraImage(int id, bool enabled)
         {
             string packet = @"<QTM_Settings>
                 <Image>
                     <Camera>
                         <ID>{0}</ID>
                         <Enabled>{1}</Enabled>
-                        <Format>{2}</Format>
-                        <Width>912</Width>
-                        <Height>544</Height>
                     </Camera>
                 </Image>
             </QTM_Settings>";
 
-            return FormatStringToXML(string.Format(packet, id, enabled, format));
+            return FormatStringToXML(string.Format(packet, id, enabled));
         }
 
-        public static string CameraImage(int id, bool enabled, string width, string height, string format = "JPG")
+        public static string CameraImage(int id, bool enabled, int width, int height, string format = "JPG")
         {
             string packet = @"<QTM_Settings>
                 <Image>
@@ -44,6 +41,22 @@ namespace Arqus.Helpers
             </QTM_Settings>";
             
             return FormatStringToXML(string.Format(packet, id, enabled, format, width, height));
+        }
+
+        public static string CameraImage(int id, int width, int height)
+        {
+            string packet = @"<QTM_Settings>
+                <Image>
+                    <Camera>
+                        <ID>{0}</ID>
+                        <Width>{1}</Width>
+                        <Height>{2}</Height>
+                    </Camera>
+                </Image>
+            </QTM_Settings>";
+
+            return FormatStringToXML(string.Format(packet, id, width, height));
+
         }
 
         public static string Camera(int id, string mode)

@@ -68,7 +68,7 @@ namespace Arqus
 
                 bool isImageMode = cameraSettings.Mode != CameraMode.ModeMarker;
 
-                ImageResolution imageResolution = new ImageResolution(912, 544);
+                ImageResolution imageResolution = new ImageResolution(imageCameraSettings.Width / 4, imageCameraSettings.Height / 4);
                 Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings.Mode, cameraSettings.MarkerResolution, imageResolution, cameraSettings.Model, cameraSettings.Orientation);
                 Cameras.Add(camera.ID, camera);
                 
@@ -82,14 +82,16 @@ namespace Arqus
             return true;
         }
 
-        public static List<CameraScreen> GenerateCameraScreens()
+        public static List<CameraScreen> GenerateCameraScreens(Urho.Node cameraNode)
         {
-            return Cameras.Values.Select(camera => new CameraScreen(camera)).ToList();
+            return Cameras.Values.Select(camera => new CameraScreen(camera, cameraNode)).ToList();
         }
 
         public static void SetCurrentCamera(int id)
         {
+            CurrentCamera.Deselect();
             CurrentCamera = Cameras[id];
+            CurrentCamera.Select();
         }
         
 

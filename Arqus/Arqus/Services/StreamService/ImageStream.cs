@@ -8,6 +8,7 @@ using Xamarin.Forms;
 using System.Drawing;
 using ImageSharp.Formats;
 using Arqus.Service;
+using System.Diagnostics;
 
 namespace Arqus.Services
 {
@@ -19,6 +20,7 @@ namespace Arqus.Services
         private readonly object streamLock = new object();
 
         private JpegDecoder decoder = new JpegDecoder();
+        private long lastDecodeTimestamp;
 
         protected override void RetrieveDataAsync(RTPacket packet)
         {
@@ -34,23 +36,28 @@ namespace Arqus.Services
                            return;
 
                         Task.Run(() =>
-                       {
-                           lock (streamLock)
-                           {
-                               limiter++;
-                           }
-
-                           long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                        {
+                            lock (streamLock)
+                            {
+                                limiter++;
+                            }
 
 
-                           ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
-                           MessagingCenterService.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData.Pixels, false);
+                            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                            ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
+                            if (timestamp > lastDecodeTimestamp)
+                            {
+                                lastDecodeTimestamp = timestamp;
+                                MessagingService.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData.Pixels, track: false);
+                            }
 
-                           lock (streamLock)
-                           {
-                               limiter--;
-                           }
-                       });
+                            lock (streamLock)
+                            {
+                                limiter--;
+                            }
+
+                        });
+                        
                     }
                 }
             }

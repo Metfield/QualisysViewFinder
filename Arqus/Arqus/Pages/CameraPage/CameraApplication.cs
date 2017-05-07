@@ -73,9 +73,15 @@ namespace Arqus
             MessagingService.Subscribe<CameraPageViewModel>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender) =>
             {
                 if (cameraScreenLayout.Equals(carousel))
+                {
+                    camera.FarClip = 100.0f;
                     cameraScreenLayout = grid;
+                }
                 else
+                {
+                    camera.FarClip = 50.0f;
                     cameraScreenLayout = carousel;
+                }
             });
         }
 
@@ -102,10 +108,11 @@ namespace Arqus
             carouselInitialDistance = -70;
             // TODO: Fix number of camerascreens
 
-            cameraMovementSpeed = 0.001f;      
+            cameraMovementSpeed = 0.01f;      
 
             // Subscribe to touch event
             Input.SubscribeToTouchMove(OnTouched);
+            Input.SubscribeToTouchBegin(OnTouchBegan);
             Input.SubscribeToTouchEnd(OnTouchReleased);
             
             // Create new scene
@@ -120,7 +127,7 @@ namespace Arqus
             camera = cameraNode.CreateComponent<Camera>();
 
             // Arbitrary far clipping plane
-            camera.FarClip = 80.0f;
+            camera.FarClip = 100.0f;
 
             
             // Reposition it..
@@ -136,8 +143,8 @@ namespace Arqus
             // Initialize marker sphere meshes   
             InitializeCameras(cameraNode);
 
-            grid = new Grid(new Vector3(0, 0, carouselInitialDistance + 10), screenList.Count, 2, camera);
-            carousel = new Carousel(300, 8, 0, 0);
+            grid = new Grid(screenList.Count, 2, camera);
+            carousel = new Carousel(screenList.Count, camera);
             
             cameraScreenLayout = carousel;
 
@@ -165,6 +172,19 @@ namespace Arqus
 
         }
 
+        int tapTouchID;
+        float tapTimeStamp;
+
+        // TODO: Get paper or something to justify this time
+        float tapTimeMargin = 0.1f;
+
+        public void OnTouchBegan(TouchBeginEventArgs eventArgs)
+        {
+            // Fill out variables for tap gesture
+            tapTouchID = eventArgs.TouchID;
+            tapTimeStamp = Time.ElapsedTime;
+        }
+        
 
         // Called every frame
         protected override void OnUpdate(float timeStep)
@@ -188,6 +208,48 @@ namespace Arqus
         {
             Renderer renderer = Renderer;
             renderer.SetViewport(0, new Viewport(Context, scene, camera, null));
+        }
+
+
+        /// <summary>
+        /// Casts camera ray from the viewport's coordinates
+        /// </summary>
+        /// <param name="x">Touch X Coordinate - raw (not normalized)</param>
+        /// <param name="y">Touch Y Coordinate - raw (not normalized)</param>
+        void CastTouchRay(int x, int y)
+        {
+            // Shoot from camera to grid view
+            float rayDistance = camera.FarClip;
+
+            // Create ray with normalized screen coordinates
+            Ray camRay = camera.GetScreenRay((float)x / Graphics.Width, (float)y / Graphics.Height);
+
+            // Cast the ray looking for 3D geometry (our grid screen planes) and store result in variable
+            RayQueryResult? rayResult = octree.RaycastSingle(camRay, RayQueryLevel.Triangle, rayDistance, DrawableFlags.Geometry, uint.MaxValue);
+
+            // Check if there was a hit
+            if (rayResult.HasValue)
+            {
+                // Get node
+                Node screenNode = rayResult.Value.Node;
+
+                // Check if it's a screen node
+                // TODO: Add a public dictionary or query class for name?
+                if (screenNode.Name == "screenNode")
+                {
+                    // Get selected camera ID 
+                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
+
+                    Debug.WriteLine("HELHELO: " + cameraID);
+                    
+                    cameraScreenLayout = carousel;
+                    camera.FarClip = 50.0f;
+                    carousel.Select(cameraID);
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID, payload: new { });
+
+                }
+            }
         }
 
         /// <summary>
@@ -231,6 +293,21 @@ namespace Arqus
             Debug.WriteLine(focus.Camera.ID);
             cameraScreenLayout.Select(focus.position);
 
+
+
+            // Return if this is not our original tap finger
+            if (eventArgs.TouchID != tapTouchID)
+                return;
+
+            // Get delta time
+            float dt = Time.ElapsedTime - tapTimeStamp;
+
+            // If it is lesser than our tap margin, it is a tap
+            if (dt < tapTimeMargin)
+            {
+                CastTouchRay(eventArgs.X, eventArgs.Y);
+            }
+
             // Make an ease in during snapping
             /*foreach (var screen in screenList)
             {
@@ -240,6 +317,7 @@ namespace Arqus
             */
 
             MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID, payload: new { });
+            
         }    
 
     }

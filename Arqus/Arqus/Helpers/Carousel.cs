@@ -23,23 +23,23 @@ namespace Arqus.Visualization
 
         public override int ItemCount { get; set; }
         public override float Offset { get; set; }
-        public int PivotX { get; set; }
-        public int PivotY { get; set; }
+        public double PivotX { get; set; }
+        public double PivotY { get; set; }
 
         public float Min { get; set; }
 
         private int selected;
 
-        public Carousel(double length, int itemCount, int pivotX, int pivotY)
+        public Carousel(int itemCount, Camera camera)
         {
             // focus on the first position
             selected = 0;
-            Length = length;
+            Length = itemCount * 30;
             ItemCount = itemCount;
 
             // Set center pivot of the carousel
-            PivotX = pivotX;
-            PivotY = pivotY;
+            PivotX = 0;
+            PivotY = camera.Node.Position.Z + Radius + 20;
             
             // Offset the minimum somewhat to emphasize on having at least a small distance from the screen
             Min -= 10;

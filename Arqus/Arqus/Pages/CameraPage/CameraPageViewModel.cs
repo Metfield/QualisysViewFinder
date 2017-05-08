@@ -16,6 +16,8 @@ namespace Arqus
 {
     public class CameraPageViewModel : BindableBase, INavigationAware
     {
+        private bool isGridLayoutActive;
+
         private INavigationService navigationService;
         
         private CameraPage cameraPageModel;
@@ -44,15 +46,7 @@ namespace Arqus
         public DelegateCommand OnAppearingCommand { get; set; }
 
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
-
-        private CameraMode currentMode;
-
-        public CameraMode CurrentMode
-        {
-            get { return currentMode; }
-            set { SetProperty(ref currentMode, value); }
-        }
-
+        
         Frame videoDrawerFrame, markerDrawerFrame;
 
         public CameraPageViewModel(INavigationService navigationService)
@@ -64,9 +58,25 @@ namespace Arqus
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
-            {
+            {    
+                // Hide/show drawer according to mode
+                // We don't want to show any drawers in grid mode
+                if(isGridLayoutActive)
+                {
+                    isGridLayoutActive = false;
+                    ShowDrawer();
+                }
+                else
+                {
+                    isGridLayoutActive = true;
+                    HideDrawer();
+                }                    
+
                 MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
             });
+
+            // We're starting with carousel mode
+            isGridLayoutActive = false;
 
             // NOTE: This couples the ViewModel to the Urho View
             // maybe it's a better idea to create a service which
@@ -140,8 +150,25 @@ namespace Arqus
 
         private void OnCameraSelection(Object sender, int cameraID)
         {
+            // Set current camera
             CameraStore.SetCurrentCamera(cameraID);
+
+            // Update camera settings and drawer
             UpdateCameraSettings(this);
+            
+            // Check if camera selection was done through grid mode
+            if (isGridLayoutActive)
+            {
+                isGridLayoutActive = false;
+
+                // Invoke on main thread to avoid exception
+                Device.BeginInvokeOnMainThread(() => SwitchDrawers(CameraStore.CurrentCamera.Mode));
+
+                return;
+            }
+
+            // Switch drawer mode
+            SwitchDrawers(CameraStore.CurrentCamera.Mode);
         }
 
         private void SetCameraMode(CameraMode mode)
@@ -420,6 +447,23 @@ namespace Arqus
 
                     break;
             }
+        }
+
+        /// <summary>
+        /// Hides all drawers
+        /// </summary>
+        private void HideDrawer()
+        {
+            videoDrawerFrame.IsVisible = false;
+            markerDrawerFrame.IsVisible = false;
+        }
+
+        /// <summary>
+        /// Shows current drawer
+        /// </summary>
+        private void ShowDrawer()
+        {
+            SwitchDrawers(CameraStore.CurrentCamera.Mode);
         }
 
         string markerExposureValueString, markerThresholdValueString,

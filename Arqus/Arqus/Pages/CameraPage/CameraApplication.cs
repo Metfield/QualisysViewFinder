@@ -307,6 +307,10 @@ namespace Arqus
             {
                 CastTouchRay(eventArgs.X, eventArgs.Y);
             }
+            else
+            {
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID, payload: new { });
+            }
 
             // Make an ease in during snapping
             /*foreach (var screen in screenList)
@@ -315,10 +319,6 @@ namespace Arqus
                 screen.Node.RunActionsAsync(new EaseElasticIn( new MoveTo( 1000, new Vector3((float)coordinates.X, screen.Node.Position.Y, (float)coordinates.Y))));
             }
             */
-
-            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID, payload: new { });
-            
         }    
-
     }
 }

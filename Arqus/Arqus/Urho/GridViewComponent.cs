@@ -42,7 +42,10 @@ namespace Arqus
         }
         
 
-        public override void Select(int id){ }
+        public override void Select(int id)
+        {
+            Selection = id;
+        }
 
         public override void SetCameraScreenPosition(CameraScreen screen)
         {

@@ -26,10 +26,11 @@ namespace Arqus
             ((CameraPageViewModel)BindingContext).SetModelReference(this);
         }
 
-        protected override void OnDisappearing()
+        protected override async void OnDisappearing()
         {
-            currentApplication.Exit();
+            await currentApplication.Exit();
             UrhoSurface.OnDestroy();
+            await Task.Delay(250);
             base.OnDisappearing();
         }        
 

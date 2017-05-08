@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:Arqus"
+             
              xmlns:ui="clr-namespace:Arqus.UI"
+             xmlns:local="clr-namespace:Arqus"
              x:Class="Arqus.ConnectionPage"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
@@ -10,50 +11,50 @@
              NavigationPage.HasNavigationBar="False" >
 
 
-    <ScrollView>
-        <StackLayout VerticalOptions="FillAndExpand" >
+    <StackLayout VerticalOptions="FillAndExpand" >
 
-            <Image Source="Drawable/arqus_logo_medium.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="100"/>
-            <Label Text="ARQUS" FontSize="Large" HorizontalOptions="Center" TextColor="Black" Margin="0, 0, 0, 10"/>
+        <Image Source="Drawable/arqus_logo_medium.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="100"/>
+        <Label Text="ARQUS" FontSize="Large" HorizontalOptions="Center" TextColor="Black" Margin="0, 0, 0, 10"/>
 
-            <StackLayout  
-            VerticalOptions="Start" 
-            HorizontalOptions="CenterAndExpand" 
-            Orientation="Horizontal">
+        <StackLayout  
+        VerticalOptions="Start" 
+        HorizontalOptions="CenterAndExpand" 
+        Orientation="Horizontal">
 
-                <ui:JiggleButton Text="Discover"
-                        Style="{StaticResource primaryButton}"
-                        Command="{Binding ConnectionModeDiscoveryCommand}"/>
+            <ui:JiggleButton Text="Discover"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectionModeDiscoveryCommand}"/>
 
-                <ui:JiggleButton Text="Manually"
-                        Style="{StaticResource primaryButton}"
-                        Command="{Binding ConnectionModeManuallyCommand}"/>
+            <ui:JiggleButton Text="Manually"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectionModeManuallyCommand}"/>
 
-
-            </StackLayout>
-
-            <StackLayout IsVisible="{Binding IsDiscovery}" VerticalOptions="StartAndExpand">
-
-                <local:QTMServerList x:Name="qtmListView" />
-                
-            </StackLayout>
-
-            <StackLayout IsVisible="{Binding IsManually}" 
-                     VerticalOptions="StartAndExpand" 
-                     HorizontalOptions="Center" 
-                     WidthRequest="300" >
-
-                <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
-                <Entry Placeholder="Password" Text="{Binding Password}" />
-
-                <ui:JiggleButton Text="Connect"
-                        Style="{StaticResource primaryButton}"
-                        Command="{Binding ConnectCommand}" />
-
-            </StackLayout>
 
         </StackLayout>
 
-    </ScrollView>
-    
+        <StackLayout  IsVisible="{Binding IsDiscovery}"
+                      VerticalOptions="StartAndExpand"
+                      HorizontalOptions="Center" 
+                      WidthRequest="300">
+
+            <local:QTMServerList x:Name="qtmListView" />
+
+        </StackLayout>
+
+        <StackLayout IsVisible="{Binding IsManually}" 
+                    VerticalOptions="StartAndExpand" 
+                    HorizontalOptions="Center" 
+                    WidthRequest="300" >
+
+            <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
+            <Entry Placeholder="Password" Text="{Binding Password}" />
+
+            <ui:JiggleButton Text="Connect"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectCommand}" />
+
+        </StackLayout>
+
+    </StackLayout>
+
 </ContentPage>

@@ -49,6 +49,7 @@ namespace Arqus
             base.OnStart();
             MobileCenterService.Init();
         }
+        
 
         protected void OnConnected()
         {
@@ -58,7 +59,7 @@ namespace Arqus
         protected void OnDisconnected()
         {
             cameraService.Dispose();
-            //SettingsService.Dispose();
+            SettingsService.Dispose();
         }
         
     }

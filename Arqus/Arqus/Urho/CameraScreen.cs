@@ -9,6 +9,7 @@ using QTMRealTimeSDK;
 using Arqus.Services;
 using Arqus.Service;
 using System.Diagnostics;
+using Urho.Gui;
 
 namespace Arqus.Visualization
 {
@@ -25,8 +26,11 @@ namespace Arqus.Visualization
 
         // private fields
         private bool dirty;
-        private Node screenNode;
+        private Node root;
         private Node cameraNode;
+        private Node labelNode;
+        private Node screenNode;
+        private Text3D label;
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
@@ -114,12 +118,15 @@ namespace Arqus.Visualization
         public override void OnAttachedToNode(Node node)
         {
             base.OnAttachedToNode(node);
-            
+
             // Create screen Node, scale it accordingly and rotate it so it faces camera
-            screenNode = node.CreateChild("screenNode");
+            
+            root = node.CreateChild("screenNode");
+            screenNode = root.CreateChild();
 
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, screenNode);
+
 
             screenNode.Scale = new Vector3(Height, 1, Width);
 
@@ -142,7 +149,14 @@ namespace Arqus.Visualization
             Material.SetTexture(TextureUnit.Diffuse, texture);
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             imageScreen.SetMaterial(Material);
-        
+
+            labelNode = root.CreateChild();
+            label = labelNode.CreateComponent<Text3D>();
+            labelNode.Position = new Vector3(0.3f, 0.1f, 0.4f);
+            label.Text = Camera.ID.ToString();
+            label.SetFont(CoreAssets.Fonts.AnonymousPro, 60);
+            label.TextEffect = TextEffect.Stroke;
+
             // Initialize current camera mode
             SetImageMode(IsImageMode());
 
@@ -152,9 +166,9 @@ namespace Arqus.Visualization
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            MessagingCenter.Unsubscribe<CameraStreamService, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
-            MessagingCenter.Unsubscribe<CameraStreamService, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
-            MessagingCenter.Unsubscribe<CameraPageViewModel, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
         }
         
 
@@ -248,7 +262,6 @@ namespace Arqus.Visualization
 
             if (dirty && screenNode.Enabled)
             {
-                Debug.WriteLine("Camera Active: " + Camera.ID);
                 dirty = false;
                 OnUpdateHandler?.Invoke();
             }

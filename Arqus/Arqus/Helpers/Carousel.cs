@@ -27,13 +27,12 @@ namespace Arqus.Visualization
         public double PivotY { get; set; }
 
         public float Min { get; set; }
-
-        private int selected;
+        
 
         public Carousel(int itemCount, Camera camera)
         {
             // focus on the first position
-            selected = 0;
+            Selection = 0;
             Length = itemCount * 30;
             ItemCount = itemCount;
 
@@ -51,17 +50,17 @@ namespace Arqus.Visualization
             // if the position we are retrieving an angle for is less
             // than the focused item increment the positional value with the
             // item count to account for how the relate to the focused item
-            if (position < selected)
+            if (position < Selection)
                 position += ItemCount;
 
-            position -= selected;
+            position -= Selection;
 
             return (2 * Math.PI / (float) ItemCount) * (float) position + Offset - Math.PI/2;
         }
 
         public override void Select(int id)
         {
-            selected = id;
+            Selection = id;
             Offset = 0;
         }
 

@@ -23,7 +23,6 @@ namespace Arqus.Services
 
         // Variables to handle packets
         protected QTMNetworkConnection connection;
-        static int streamCount;
 
         protected Stream(ComponentType type, int frequency)
         {
@@ -34,6 +33,7 @@ namespace Arqus.Services
 
         public void StartStream()
         {
+
             if (!streaming)
             {
                 streaming = true;
@@ -52,7 +52,6 @@ namespace Arqus.Services
         {
             streaming = false;
             connection.Protocol.StreamFramesStop();
-
         }
 
 
@@ -83,7 +82,7 @@ namespace Arqus.Services
         public void Dispose()
         {
             StopStream();
-            connection.Protocol.Dispose();
+            connection.Dispose();
         }
         
     }

@@ -1,6 +1,5 @@
 ﻿<ListView xmlns="http://xamarin.com/schemas/2014/forms"
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            xmlns:local="clr-namespace:Arqus"
             x:Class="Arqus.QTMServerList"
             SeparatorColor="#101010"
             HorizontalOptions="FillAndExpand"
@@ -11,6 +10,7 @@
             IsRefreshing="{Binding IsRefreshing}"
             HasUnevenRows="true"
           >
+   
 
   <ListView.ItemTemplate>
     <DataTemplate>

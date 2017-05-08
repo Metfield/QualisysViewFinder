@@ -41,9 +41,6 @@ namespace Arqus.Services
             try
             {
                 var result = client.Index(elasticEvent);
-
-                if (result.IsValid)
-                    Debug.WriteLine("Success");
             }
             catch (Exception e)
             {

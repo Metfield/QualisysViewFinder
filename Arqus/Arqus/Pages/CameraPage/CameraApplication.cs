@@ -54,7 +54,6 @@ namespace Arqus
             {
                 if (Debugger.IsAttached)
                 {
-                    // NOTE: This will always activate when switching mode
                     Debugger.Break();
                 }
                 e.Handled = true;
@@ -105,15 +104,15 @@ namespace Arqus
         private async void CreateScene()
         {
             // Create carousel
-            carouselInitialDistance = -70;
+            carouselInitialDistance = -80;
             // TODO: Fix number of camerascreens
 
             cameraMovementSpeed = 0.01f;      
 
             // Subscribe to touch event
-            Input.SubscribeToTouchMove(OnTouched);
-            Input.SubscribeToTouchBegin(OnTouchBegan);
-            Input.SubscribeToTouchEnd(OnTouchReleased);
+            Input.TouchMove += OnTouched;
+            Input.TouchBegin += OnTouchBegan;
+            Input.TouchEnd += OnTouchReleased;
             
             // Create new scene
             scene = new Scene();
@@ -127,7 +126,7 @@ namespace Arqus
             camera = cameraNode.CreateComponent<Camera>();
 
             // Arbitrary far clipping plane
-            camera.FarClip = 100.0f;
+            camera.FarClip = 50.0f;
 
             
             // Reposition it..
@@ -239,14 +238,10 @@ namespace Arqus
                 {
                     // Get selected camera ID 
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
-
-                    Debug.WriteLine("HELHELO: " + cameraID);
                     
-                    cameraScreenLayout = carousel;
                     camera.FarClip = 50.0f;
-                    carousel.Select(cameraID);
-
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), cameraID, payload: new { });
+                    cameraScreenLayout = carousel;
+                    cameraScreenLayout.Select(cameraID);
 
                 }
             }
@@ -288,10 +283,7 @@ namespace Arqus
 
         void OnTouchReleased(TouchEndEventArgs eventArgs)
         {
-            List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
-            CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
-            Debug.WriteLine(focus.Camera.ID);
-            cameraScreenLayout.Select(focus.position);
+            
 
 
 
@@ -307,6 +299,15 @@ namespace Arqus
             {
                 CastTouchRay(eventArgs.X, eventArgs.Y);
             }
+            else
+            {
+                List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
+                CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
+                cameraScreenLayout.Select(focus.position);
+            }
+
+
+            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, cameraScreenLayout.Selection, payload: new { });
 
             // Make an ease in during snapping
             /*foreach (var screen in screenList)
@@ -316,8 +317,7 @@ namespace Arqus
             }
             */
 
-            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), focus.Camera.ID, payload: new { });
-            
+
         }    
 
     }

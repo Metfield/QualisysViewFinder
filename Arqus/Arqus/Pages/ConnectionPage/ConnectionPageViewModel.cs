@@ -1,10 +1,12 @@
 ﻿using Arqus.Connection;
+using Arqus.Services;
 using Arqus.Services.MobileCenterService;
 using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -50,12 +52,37 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
+            ElasticsearchService.TrackEvent(new ElasticEvent()
+            {
+                Name = "ConnectionPageViewModel",
+                Message = "Connection Session Start"
+            });
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
+            ElasticsearchService.TrackEvent(new ElasticEvent()
+            {
+                Name = "ConnectionPageViewModel",
+                Message = "Connection Session End"
+            });
+
+
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
+
+            try
+            {
+                NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
+
+                if (navigationMode == NavigationMode.Back)
+                    connection.Dispose();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+
         }
         
 
@@ -167,46 +194,43 @@ namespace Arqus
             get{ return isRefreshing; }
         }
 
-        ObservableCollection<QTMServer> qtmServers;
+        IEnumerable<QTMServer> qtmServers;
 
         /// <summary>
         /// The list of running QTMServers on the network
         /// </summary>
-        public ObservableCollection<QTMServer> QTMServers{ private set; get; }
+        public IEnumerable<QTMServer> QTMServers
+        {
+            set { if (SetProperty(ref qtmServers, value)) IsRefreshing = false; }
+            get { return qtmServers; }
+        }
 
         /// <summary>
         /// Makes a discovery of nearby QTM Servers and updates the known locations accordingly
         /// During the discovery the list will be in a refresh state
         /// </summary>
-        public IEnumerable<QTMServer> LoadQTMServersAsync()
+        public Task<IEnumerable<QTMServer>> LoadQTMServersAsync()
         {
-            // BUG: The application will crash upon a second refresh
-            // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-            List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
+            return Task.Run(() =>{
+                // BUG: The application will crash upon a second refresh
+                // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
+                List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
 
 
-            return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
-                        server.HostName,
-                        server.Port.ToString(),
-                        server.InfoText,
-                        server.CameraCount.ToString())
-                        ); ;
+                return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
+                            server.HostName,
+                            server.Port.ToString(),
+                            server.InfoText,
+                            server.CameraCount.ToString())
+                            );
+            });
         }
+            
 
         public async void LoadQTMServers()
         {
             IsRefreshing = true;
-            IEnumerable<QTMServer> servers = LoadQTMServersAsync();
-            
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                foreach (var server in servers)
-                {
-                    QTMServers.Add(server);
-                }
-            });
-
-            IsRefreshing = false;
+            QTMServers = await LoadQTMServersAsync();
         }
 
 

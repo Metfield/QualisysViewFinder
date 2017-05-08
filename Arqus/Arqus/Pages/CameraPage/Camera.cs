@@ -14,7 +14,7 @@ namespace Arqus.DataModels
     {
         public string OldMode { get; set; }
         public string NewMode { get; set; }
-        public int ID { get; set; }
+        public int CameraID { get; set; }
     }
 
     public class Camera
@@ -63,7 +63,7 @@ namespace Arqus.DataModels
                     {
                         OldMode = Mode.ToString(),
                         NewMode = mode.ToString(),
-                        ID = ID
+                        CameraID = ID
                     };
 
                     Mode = mode;

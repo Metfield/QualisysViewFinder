@@ -5,6 +5,7 @@ using QTMRealTimeSDK;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace Arqus.DataModels
@@ -16,7 +17,7 @@ namespace Arqus.DataModels
         public int ID { get; set; }
     }
 
-    class Camera
+    public class Camera
     {
         // public properties
         public QTMRealTimeSDK.Settings.Resolution MarkerResolution { get; private set; }
@@ -38,8 +39,8 @@ namespace Arqus.DataModels
             Orientation = orientation;
             ImageResolution = imageResolution;
             MarkerResolution = markerResolution;
-            
-            SettingsService.SetImageResolution(ID, ImageResolution.Width, ImageResolution.Height);
+
+            SettingsService.EnableImageMode(ID, Mode != CameraMode.ModeMarker, ImageResolution.Width, ImageResolution.Height);
         }
 
         /// <summary>
@@ -53,6 +54,11 @@ namespace Arqus.DataModels
             {
                 if (SettingsService.SetCameraMode(ID, mode))
                 {
+                    if (mode != CameraMode.ModeMarker)
+                        Enable();
+                    else
+                        Disable();
+
                     ElasticsearchCameraEvent cameraEvent = new ElasticsearchCameraEvent()
                     {
                         OldMode = Mode.ToString(),
@@ -70,12 +76,12 @@ namespace Arqus.DataModels
         
         public void Select()
         {
-            SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber);
+            Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
         }
 
         public void Deselect()
         {
-            SettingsService.SetLED(ID, SettingsService.LEDMode.Off);
+            Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.Off));
         }
         
         public void Enable()

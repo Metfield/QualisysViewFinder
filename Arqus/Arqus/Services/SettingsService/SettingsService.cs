@@ -167,17 +167,9 @@ namespace Arqus
         {
             try
             {
-                string commandResponse;
-                string command = string.Format("Led {0} {1} {2}", id, mode.ToString(), color.ToString());
-
-                bool response = await Task.Run(() => 
-                {
-                    bool res = connection.Protocol.SendCommandExpectCommandResponse(command, out commandResponse);
-                    Debug.WriteLine(commandResponse);
-                    return res;
-                });
                 
-                return response;
+                bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
+                return false;
             }
             catch (Exception e)
             {

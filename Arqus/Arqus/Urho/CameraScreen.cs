@@ -18,7 +18,7 @@ namespace Arqus.Visualization
     /// It is not meant to be used inside an urho application in its own but rather employ one of the
     /// visualization techniques such as Grid or Carousel.
     /// </summary>
-    internal class CameraScreen : Component
+    public class CameraScreen : Component
     {
         // General properties
         public int position;
@@ -102,7 +102,7 @@ namespace Arqus.Visualization
 
             // Set position in relation to the number of cameras that are already initialized
             // so the screens can be positioned accordingly
-            position = screenCount;
+            position = screenCount + 1;
             screenCount++;
         }
         
@@ -233,7 +233,6 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
-            /*
             if (screenNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
             {
                 Camera.Disable();
@@ -244,7 +243,6 @@ namespace Arqus.Visualization
                 Camera.Enable();
                 screenNode.Enabled = true;
             }
-            */
                 
             
 

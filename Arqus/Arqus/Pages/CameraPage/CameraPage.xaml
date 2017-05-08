@@ -45,13 +45,19 @@
             <!-- Marker-specific drawer -->
             <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False">
                 <StackLayout VerticalOptions="StartAndExpand">
-                    <Label Text="Marker Exposure"/>
+                    <StackLayout HorizontalOptions="Fill">
+                        <Label Text="Marker Exposure" HorizontalOptions="Start"/>
+                        <Label Text="{Binding MarkerExposureValueLabel}" HorizontalOptions="End"/>
+                    </StackLayout>
+                        
                     <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerExposureSliderMax}" 
                                                      Minimum="{Binding MarkerExposureSliderMin}"
                                                      Value="{Binding MarkerExposureSliderValue}"/>
-
-                    <Label Text="Marker Threshold"/>
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
+                    <StackLayout HorizontalOptions="Fill">
+                        <Label Text="Marker Threshold"/>
+                        <Label Text="{Binding MarkerThresholdValueLabel}" HorizontalOptions="End"/>
+                    </StackLayout>
+                <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
                                                      Minimum="{Binding MarkerThresholdSliderMin}"
                                                      Value="{Binding MarkerThresholdSliderValue}"/>
                 </StackLayout>
@@ -60,12 +66,18 @@
             <!-- Video-specific drawer -->
             <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False">
                 <StackLayout VerticalOptions="StartAndExpand">
-                    <Label Text="Video Exposure"/>
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding VideoExposureSliderMax}" 
+                    <StackLayout HorizontalOptions="Fill">
+                        <Label Text="Video Exposure"/>
+                        <Label Text="{Binding VideoExposureValueLabel}" HorizontalOptions="End"/>
+                    </StackLayout>
+                <Slider HorizontalOptions="Fill" Maximum="{Binding VideoExposureSliderMax}" 
                                                      Minimum="{Binding VideoExposureSliderMin}"
                                                      Value="{Binding VideoExposureSliderValue}" />
-                    <Label Text="Video Flash"/>
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding VideoFlashSliderMax}" 
+                    <StackLayout HorizontalOptions="Fill">
+                        <Label Text="Video Flash"/>
+                        <Label Text="{Binding VideoFlashValueLabel}" HorizontalOptions="End"/>
+                    </StackLayout>
+        <Slider HorizontalOptions="Fill" Maximum="{Binding VideoFlashSliderMax}" 
                                                      Minimum="{Binding VideoFlashSliderMin}"
                                                      Value="{Binding VideoFlashSliderValue}" />
                 </StackLayout>

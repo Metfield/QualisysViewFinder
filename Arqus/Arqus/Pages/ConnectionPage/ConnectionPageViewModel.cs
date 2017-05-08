@@ -238,7 +238,7 @@ namespace Arqus
         public DelegateCommand ConnectCommand { private set;  get; }
 
 
-        private string ipAddress = "192.168.10.179";
+        private string ipAddress = "192.168.10.168";
 
         public string IPAddress
         {
@@ -265,7 +265,8 @@ namespace Arqus
             if (!success)
             {
                 // There was an error with the connection
-                SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
+                //SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
+                Debug.Print("Attention: There was a connection error, please check IP and pass");
                 return;
             }
 

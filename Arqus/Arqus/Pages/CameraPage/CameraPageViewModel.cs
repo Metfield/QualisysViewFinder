@@ -199,72 +199,10 @@ namespace Arqus
                         videoFlashSliderMax,
                         videoFlashSliderMin;
 
-
-        /// <summary>
-        /// Will be called from CameraPage.xaml.cs 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /*public async void OnFirstSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
-        {
-            // Only update value if it was set by UI, not by QTM
-            if (qtmUpdatedSettingValue || (args.NewValue > 1))
-            {
-                qtmUpdatedSettingValue = false;
-                return;
-            }
-
-            // Set UI update flag
-            uiUpdatedSettingValue = true;
-
-            // Check for stream mode
-            // Send the value to QTM and then update local structure
-            if (CameraStore.CurrentCamera.Mode == CameraMode.ModeVideo)
-            {
-                cameraSettings[CameraStore.CurrentCamera.ID - 1].VideoExposure = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.VIDEO_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
-            }
-            else
-            {
-                cameraSettings[CameraStore.CurrentCamera.ID - 1].MarkerExposure = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.MARKER_EXPOSURE_PACKET_STRING, (float)args.NewValue);                
-            }
-        }*/
-
-        /// <summary>
-        /// Will be called from CameraPage.xaml.cs 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-       /* public async void OnSecondSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
-        {            
-            // Only update value if it was set by UI, not by QTM
-            if (qtmUpdatedSettingValue || (args.NewValue > 1))
-            {
-                qtmUpdatedSettingValue = false;
-                return;
-            }
-
-            // Set UI update flag
-            uiUpdatedSettingValue = true;
-
-            // Check for stream mode
-            // Send the value to QTM and then update local structure
-            if (CameraStore.CurrentCamera.Mode == CameraMode.ModeVideo)
-            {
-                cameraSettings[CameraStore.CurrentCamera.ID - 1].VideoFlash = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.VIDEO_FLASH_PACKET_STRING, (float)args.NewValue);                
-            }
-            else
-            {
-                cameraSettings[CameraStore.CurrentCamera.ID - 1].MarkerThreshold = (float)args.NewValue;
-                await SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, Constants.MARKER_THRESHOLD_PACKET_STRING, (float)args.NewValue);                
-            }
-        }*/
-
         private void SendCameraSettingValue(string setting, double value)
         {
-            SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, setting, (float)value);
+            // Run this on separate thread to keep UI responsive
+            Task.Run(() => SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, setting, (float)value));
         }
 
         // Command handlers for cammera settings     
@@ -276,6 +214,9 @@ namespace Arqus
                 if (markerExposureSliderValue != value)
                 {
                     SetProperty(ref markerExposureSliderValue, value);
+
+                    // Set label value                    
+                    MarkerExposureValueLabel = Convert.ToInt32(value).ToString();                        
 
                     // Send it to QTM if value was set locally
                     if (!qtmUpdatedSettingValue)
@@ -314,6 +255,9 @@ namespace Arqus
                 if (markerThresholdSliderValue != value)
                 {
                     SetProperty(ref markerThresholdSliderValue, value);
+
+                    // Set label value                    
+                    MarkerThresholdValueLabel = Convert.ToInt32(value).ToString(); 
 
                     // Send it to QTM if value was set locally
                     if (!qtmUpdatedSettingValue)
@@ -354,11 +298,18 @@ namespace Arqus
                 {
                     SetProperty(ref videoExposureSliderValue, value);
 
+                    // Set label value                    
+                    VideoExposureValueLabel = Convert.ToInt32(value).ToString();
+
                     // Send it to QTM if value was set locally
                     if (!qtmUpdatedSettingValue)
                     {
                         SendCameraSettingValue(Constants.VIDEO_EXPOSURE_PACKET_STRING, value);
-                    }
+                    }   
+
+                    // Flash time cannot be greater than video exposure
+                    if (videoExposureSliderValue < videoFlashSliderValue)
+                        VideoFlashSliderValue = videoExposureSliderValue;
                 }
             }
         }
@@ -388,9 +339,18 @@ namespace Arqus
             get { return videoFlashSliderValue; }
             set
             {
+                // Flash time cannot be greater than video exposure
+                if(value > videoExposureSliderValue)
+                {
+                    value = videoExposureSliderValue;
+                }
+
                 if (videoFlashSliderValue != value)
                 {
                     SetProperty(ref videoFlashSliderValue, value);
+                    
+                    // Set label value                    
+                    VideoFlashValueLabel = Convert.ToInt32(value).ToString();
 
                     // Send it to QTM if value was set locally
                     if (!qtmUpdatedSettingValue)
@@ -452,6 +412,49 @@ namespace Arqus
                     videoDrawerFrame.IsVisible = true;
 
                     break;
+            }
+        }
+
+        string markerExposureValueString, markerThresholdValueString,
+               videoExposureValueString, videoFlashValueString;
+
+        public string MarkerExposureValueLabel
+        {
+            get { return markerExposureValueString; }
+            set
+            {
+                if (markerExposureValueString != value)
+                    SetProperty(ref markerExposureValueString, value);
+            }
+        }
+
+        public string MarkerThresholdValueLabel
+        {
+            get { return markerThresholdValueString; }
+            set
+            {
+                if (markerThresholdValueString != value)
+                    SetProperty(ref markerThresholdValueString, value);
+            }
+        }
+
+        public string VideoExposureValueLabel
+        {
+            get { return videoExposureValueString; }
+            set
+            {
+                if (videoExposureValueString != value)
+                    SetProperty(ref videoExposureValueString, value);
+            }
+        }
+
+        public string VideoFlashValueLabel
+        {
+            get { return videoFlashValueString; }
+            set
+            {
+                if (videoFlashValueString != value)
+                    SetProperty(ref videoFlashValueString, value);
             }
         }
     }

@@ -26,10 +26,10 @@ namespace Arqus.Visualization
 
         // private fields
         private bool dirty;
-        private Node root;
+        private Node screenNode;
         private Node cameraNode;
         private Node labelNode;
-        private Node screenNode;
+        private Node markerScreenNode;
         private Text3D label;
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
@@ -121,12 +121,11 @@ namespace Arqus.Visualization
 
             // Create screen Node, scale it accordingly and rotate it so it faces camera
             
-            root = node.CreateChild("screenNode");
-            screenNode = root.CreateChild();
+            screenNode = node.CreateChild("screenNode");
 
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, screenNode);
-
+            
 
             screenNode.Scale = new Vector3(Height, 1, Width);
 
@@ -150,11 +149,12 @@ namespace Arqus.Visualization
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             imageScreen.SetMaterial(Material);
 
-            labelNode = root.CreateChild();
+            labelNode = screenNode.CreateChild();
             label = labelNode.CreateComponent<Text3D>();
-            labelNode.Position = new Vector3(0.3f, 0.1f, 0.4f);
+            labelNode.Rotate(new Quaternion(90, 90, 180), TransformSpace.World);
+            labelNode.Position = new Vector3(0.3f, 0.01f, 0.4f);
             label.Text = Camera.ID.ToString();
-            label.SetFont(CoreAssets.Fonts.AnonymousPro, 60);
+            label.SetFont(CoreAssets.Fonts.AnonymousPro, 14);
             label.TextEffect = TextEffect.Stroke;
 
             // Initialize current camera mode

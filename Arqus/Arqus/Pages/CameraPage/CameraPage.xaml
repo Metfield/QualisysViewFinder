@@ -3,36 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
+             xmlns:ui="clr-namespace:Arqus.UI"
              Title="Camera Page"
              prism:ViewModelLocator.AutowireViewModel="True"
              xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"             
              x:Class="Arqus.CameraPage">
-    
+
     <ContentPage.ToolbarItems>
-        <ToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" >
+       
+        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
+                                Android="drawable-hdpi/ic_grid_on_black_24dp.png"/>
             </ToolbarItem.Icon>
-        </ToolbarItem>
-        <ToolbarItem Command="{Binding SetCameraModeToMarkerCommand}" >
+        </ui:BindableToolbarItem>
+        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
+                                Android="drawable-hdpi/ic_view_carousel_black_24dp.png"/>
             </ToolbarItem.Icon>
-        </ToolbarItem>
-        <ToolbarItem Command="{Binding SetCameraModeToVideoCommand}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_camera_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-        <ToolbarItem Command="{Binding SetCameraModeToIntensityCommand}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_exposure_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
+        </ui:BindableToolbarItem>
     </ContentPage.ToolbarItems>
 
     <StackLayout VerticalOptions="FillAndExpand">
@@ -84,29 +74,42 @@
             </Frame>
         </StackLayout>
 
+
+        <Grid VerticalOptions="End">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <BoxView Color="{StaticResource primaryColor}" Grid.ColumnSpan="3" Grid.Row="0"/>
+
+            <Image  Source="drawable-hdpi/ic_grain_black_24dp.png" Grid.Row="0" Grid.Column="0">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer
+                Command="{Binding SetCameraModeToMarkerCommand}"  />
+                </Image.GestureRecognizers>
+            </Image>
+            <Image Source="drawable-hdpi/ic_camera_black_24dp.png" Grid.Row="0" Grid.Column="1">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer
+                Command="{Binding SetCameraModeToVideoCommand}"  />
+                </Image.GestureRecognizers>
+            </Image>
+            <Image  Source="drawable-hdpi/ic_exposure_black_24dp.png" Grid.Row="0" Grid.Column="2">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer
+                    Command="{Binding SetCameraModeToIntensityCommand}"  />
+                </Image.GestureRecognizers>
+            </Image>
+        </Grid>
+
     </StackLayout>
 
-    <!--
-    <StackLayout VerticalOptions="End" IsVisible="{Binding isDetailed}">
-        <Image Command="{Binding SetCameraModeToMarkerCommand}" >
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_grain_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </Image>
-        <ToolbarItem Command="{Binding SetCameraModeToVideoCommand}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_camera_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-        <ToolbarItem Command="{Binding SetCameraModeToIntensityCommand}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_exposure_black_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
-    </StackLayout>
-    -->
 
 </ContentPage>

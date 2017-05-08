@@ -40,7 +40,7 @@ namespace Arqus
 
         public static bool EnableImageMode(int id, bool enabled, int width, int height)
         {
-            return connection.Protocol.SendXML(Packet.CameraImage(id, enabled, width, height));
+            return connection.SetImageStream(id, enabled, width, height);
         }
 
         public static bool SetImageResolution(int id, int width, int height)

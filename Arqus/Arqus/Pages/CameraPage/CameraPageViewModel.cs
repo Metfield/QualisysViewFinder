@@ -18,6 +18,18 @@ namespace Arqus
     {
         private bool isGridLayoutActive;
 
+        public bool IsGridLayoutActive
+        {
+            get
+            {
+                return isGridLayoutActive;
+            }
+            set
+            {
+                SetProperty(ref isGridLayoutActive, value);
+            }
+        }
+
         private INavigationService navigationService;
         
         private CameraPage cameraPageModel;
@@ -45,8 +57,27 @@ namespace Arqus
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand OnAppearingCommand { get; set; }
 
+        public static Dictionary<string, string> Icon = new Dictionary<string, string>()
+        {
+            { "grid", "drawable-hdpi/ic_grid_on_black_24dp.png" },
+            { "carousel", "drawable-hdpi/ic_view_carousel_black_24dp.png" }
+        };
+
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
-        
+        private string cameraScreenLayoutIcon = Icon["grid"];
+        public string CameraScreenLayoutIcon
+        {
+            get
+            {
+                return cameraScreenLayoutIcon;
+            }
+            set
+            {
+                SetProperty(ref cameraScreenLayoutIcon, value);
+            }
+        }
+
+
         Frame videoDrawerFrame, markerDrawerFrame;
 
         public CameraPageViewModel(INavigationService navigationService)
@@ -63,12 +94,14 @@ namespace Arqus
                 // We don't want to show any drawers in grid mode
                 if(isGridLayoutActive)
                 {
-                    isGridLayoutActive = false;
+                    IsGridLayoutActive = false;
+                    CameraScreenLayoutIcon = Icon["carousel"];
                     ShowDrawer();
                 }
                 else
                 {
-                    isGridLayoutActive = true;
+                    IsGridLayoutActive = true;
+                    CameraScreenLayoutIcon = Icon["grid"];
                     HideDrawer();
                 }                    
 
@@ -168,7 +201,7 @@ namespace Arqus
             }
 
             // Switch drawer mode
-            SwitchDrawers(CameraStore.CurrentCamera.Mode);
+            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CameraStore.CurrentCamera.Mode));
         }
 
         private void SetCameraMode(CameraMode mode)

@@ -94,6 +94,13 @@ namespace Arqus
             if (!Protocol.TakeControl(password))
             {
                 string response = Protocol.GetErrorString();
+
+                if(response.Contains("is already master"))
+                {
+                    Master = Protocol;
+                    return true;
+                }
+
                 Debug.WriteLine("Error: " + response);
                 return false;
             }
@@ -225,10 +232,10 @@ namespace Arqus
         }
         
 
-        public bool SetImageStream(int id, bool enabled)
+        public bool SetImageStream(int id, bool enabled, int width, int height)
         {
             
-            string packetString = Packet.CameraImage(id, enabled);
+            string packetString = Packet.CameraImage(id, enabled, width, height);
             
 
             bool success;
@@ -296,6 +303,7 @@ namespace Arqus
         
         public void Dispose()
         {
+            Protocol.ReleaseControl();
             Protocol.Dispose();
         }
     }

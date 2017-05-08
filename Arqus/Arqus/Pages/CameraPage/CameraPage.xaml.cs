@@ -28,7 +28,7 @@ namespace Arqus
 
         protected override async void OnDisappearing()
         {
-            await currentApplication.Exit();
+            //await currentApplication.Exit();
             UrhoSurface.OnDestroy();
             await Task.Delay(250);
             base.OnDisappearing();

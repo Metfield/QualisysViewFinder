@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SettingsSlider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />

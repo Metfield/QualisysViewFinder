@@ -10,9 +10,10 @@
 
             <Style x:Key="primaryButton" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="#2196F3" />
-
             </Style>
             <!--Definition of the Color palette-->
+
+            <Color x:Key="primaryColor">#2196F3</Color>
             
             <!--Value Converters-->
             <helpers:InverseBoolConverter x:Key="InverseBoolConverter" />

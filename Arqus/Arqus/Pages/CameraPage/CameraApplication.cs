@@ -15,6 +15,8 @@ namespace Arqus
 {
     public class CameraApplication : Urho.Application
     {
+        private CameraStreamService cameraStreamService;
+
         private Camera camera;
         private Scene scene;
         private Octree octree;
@@ -81,11 +83,18 @@ namespace Arqus
                     camera.FarClip = 50.0f;
                     cameraScreenLayout = carousel;
                 }
-            });
+            });            cameraStreamService = new CameraStreamService();            cameraStreamService.Start();
         }
-
-        
-
+        protected override void OnDeleted()
+        {
+            cameraStreamService.Dispose();
+            base.OnDeleted();
+        }
+
+
+
+
+
         private bool updatingMarkerData;
 
         private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
@@ -146,7 +155,6 @@ namespace Arqus
             carousel = new Carousel(screenList.Count, camera);
             
             cameraScreenLayout = carousel;
-
             cameraScreenLayout.Select(CameraStore.CurrentCamera.ID);
         }
 

@@ -30,7 +30,7 @@
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
         
         <!-- Drawers layout -->
-        <StackLayout VerticalOptions="End" IsEnabled="True" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
+        <StackLayout VerticalOptions="End" IsEnabled="True" >
             
             <!-- Marker-specific drawer -->
             <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0">

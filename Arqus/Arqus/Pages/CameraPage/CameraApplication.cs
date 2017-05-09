@@ -456,34 +456,22 @@ namespace Arqus
 
 
             // Cast the ray looking for 3D geometry (our grid screen planes) and store result in variable
-
             RayQueryResult? rayResult = octree.RaycastSingle(camRay, RayQueryLevel.Triangle, rayDistance, DrawableFlags.Geometry, uint.MaxValue);
-
-
-
+            
             // Check if there was a hit
-
             if (rayResult.HasValue)
-
             {
-
                 // Get node
-
                 Node screenNode = rayResult.Value.Node;
-
-
-
+                
                 // Check if it's a screen node
-
                 // TODO: Add a public dictionary or query class for name?
-
                 if (screenNode.Name == "screenNode")
-
                 {
 
                     // Get selected camera ID 
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
-
+                    
                     camera.FarClip = 50.0f;
                     cameraScreenLayout = carousel;
                     cameraScreenLayout.Select(cameraID);
@@ -506,11 +494,9 @@ namespace Arqus
         /// <param name="eventArgs"></param>
 
         void OnTouched(TouchMoveEventArgs eventArgs)
-
         {
 
-            if (Input.NumTouches == 1)
-
+            if (Input.NumTouches == 1 && cameraScreenLayout != grid)
             {
 
                 // Check if we are panning or just scrolling the carousel 
@@ -525,14 +511,10 @@ namespace Arqus
 
                     cameraScreenLayout.Offset += eventArgs.DX * cameraMovementSpeed;
 
-                }                
-
+                }      
                 else
-
                 {
-
                     // We want to Pan
-
                     camera.Pan(eventArgs.DX, eventArgs.DY, cameraMovementSpeed * 5, carouselInitialDistance);
 
                 }
@@ -541,7 +523,7 @@ namespace Arqus
 
 
 
-            if (Input.NumTouches >= 2)
+            if (Input.NumTouches >= 2 && cameraScreenLayout != grid)
 
             {
 
@@ -566,13 +548,7 @@ namespace Arqus
 
 
         void OnTouchReleased(TouchEndEventArgs eventArgs)
-
         {
-
-            
-
-
-
 
 
 
@@ -593,15 +569,11 @@ namespace Arqus
 
             // If it is lesser than our tap margin, it is a tap
 
-            if (dt < tapTimeMargin)
-
+            if (dt < tapTimeMargin && cameraScreenLayout == grid)
             {
-
                 CastTouchRay(eventArgs.X, eventArgs.Y);
-
             }
-
-            else
+            else if(cameraScreenLayout == carousel)
             {
                 List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
                 CameraScreen focus = screenList[distance.IndexOf(distance.Min())];

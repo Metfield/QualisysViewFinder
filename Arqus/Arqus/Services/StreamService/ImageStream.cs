@@ -9,6 +9,7 @@ using System.Drawing;
 using ImageSharp.Formats;
 using Arqus.Service;
 using System.Diagnostics;
+using Arqus.Visualization;
 
 namespace Arqus.Services
 {
@@ -22,7 +23,7 @@ namespace Arqus.Services
         private JpegDecoder decoder = new JpegDecoder();
         private long lastDecodeTimestamp;
 
-        protected override async void RetrieveDataAsync(RTPacket packet)
+        protected override void RetrieveDataAsync(RTPacket packet)
         {
             var data = packet.GetImageData();
             
@@ -35,28 +36,39 @@ namespace Arqus.Services
                         if (limiter > 10)
                             return;
 
-                        await Task.Run(() =>
+                        try
                         {
-                            lock (streamLock)
+
+                            if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID)
                             {
-                                limiter++;
+
+                                Task.Run(() =>
+                                {
+                                    lock (streamLock)
+                                    {
+                                        limiter++;
+                                    }
+
+                                    long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                                    ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
+
+                                    if (timestamp > lastDecodeTimestamp)
+                                    {
+                                        lastDecodeTimestamp = timestamp;
+                                        Urho.Application.InvokeOnMain(() => CameraStore.CurrentCamera.Parent.UpdateMaterialTexture(imageData.Pixels));
+                                    }
+                                    lock (streamLock)
+                                    {
+                                        limiter--;
+                                    }
+                                });
                             }
-
-                            long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-                            ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
-
-                            if (timestamp > lastDecodeTimestamp)
-                            {
-                                lastDecodeTimestamp = timestamp;
-                                MessagingService.Send(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + cameraImage.CameraID, imageData.Pixels, track: false);
-                            }
-
-                            lock (streamLock)
-                            {
-                                limiter--;
-                            }
-                        });
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine(e);
+                            Debugger.Break();
+                        }
                     }
                 }
             }

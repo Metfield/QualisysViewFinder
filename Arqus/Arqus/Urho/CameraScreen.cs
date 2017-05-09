@@ -98,6 +98,7 @@ namespace Arqus.Visualization
         public CameraScreen(DataModels.Camera camera, Node cameraNode)
         {
             Camera = camera;
+            Camera.Parent = this;
             this.cameraNode = cameraNode;
             urhoCamera = cameraNode.GetComponent<Urho.Camera>();
 
@@ -237,6 +238,7 @@ namespace Arqus.Visualization
         
         public unsafe bool UpdateMaterialTexture(ImageSharp.PixelFormats.Rgba32[] imageData)
         {
+
             fixed (ImageSharp.PixelFormats.Rgba32* bptr = imageData)
             {
                 return texture.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
@@ -259,8 +261,8 @@ namespace Arqus.Visualization
             }
                 
             
-
-            if (dirty && screenNode.Enabled)
+            // 
+            if (screenNode.Enabled && dirty)
             {
                 dirty = false;
                 OnUpdateHandler?.Invoke();
@@ -298,7 +300,7 @@ namespace Arqus.Visualization
 
         private void OnImageUpdate()
         {
-            if(imageData != null)
+          if(imageData != null)
                 UpdateMaterialTexture(imageData);
         }        
         

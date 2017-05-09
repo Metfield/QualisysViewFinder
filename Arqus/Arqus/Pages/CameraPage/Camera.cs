@@ -26,10 +26,9 @@ namespace Arqus.DataModels
         public CameraModel Model { get; private set; }
         public int Orientation { get; set; }
 
-        // private variables
-        private int id;
+        public CameraScreen Parent { get; set; }
+        
         public int ID { get; private set; }
-        private CameraMode currentMode;
 
         public Camera(int id, CameraMode mode, QTMRealTimeSDK.Settings.Resolution markerResolution, ImageResolution imageResolution, CameraModel model, int orientation)
         {
@@ -54,10 +53,6 @@ namespace Arqus.DataModels
             {
                 if (SettingsService.SetCameraMode(ID, mode))
                 {
-                    if (mode != CameraMode.ModeMarker)
-                        Enable();
-                    else
-                        Disable();
 
                     ElasticsearchCameraEvent cameraEvent = new ElasticsearchCameraEvent()
                     {
@@ -76,11 +71,15 @@ namespace Arqus.DataModels
         
         public void Select()
         {
+            if(Mode != CameraMode.ModeMarker)
+                Enable();
+
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
         }
 
         public void Deselect()
         {
+            Disable();
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.Off));
         }
         
@@ -91,7 +90,7 @@ namespace Arqus.DataModels
 
         public void Disable()
         {
-            //SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+            SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
         }
     }
 }

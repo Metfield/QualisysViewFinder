@@ -15,8 +15,7 @@ namespace Arqus
         public List<CameraScreen> screens;
         List<ImageCamera> cameras;
         Node gridNode;
-
-        // Implement dynamic changes hier
+        
         public int Columns { get; set; }
         public float Padding { get; set; }
         public Vector3 Origin { get; set; }
@@ -32,12 +31,11 @@ namespace Arqus
          */
         public Grid(int itemCount, int columns, Urho.Camera camera)
         {
-            // Fill column number
             Columns = columns;
             this.camera = camera;
-            
             ItemCount = itemCount;
 
+            // TODO: Handle offset when panning
             Offset = 0;
         }
         
@@ -53,10 +51,10 @@ namespace Arqus
             float FrustrumHeight = distance * camera.HalfViewSize;
             float FrustrumWidth = FrustrumHeight * camera.AspectRatio;
 
-            float margin = 5;
+            float margin = 2;
             // Something is off with this algorithm as they are not being centered fully....
-            float x = -FrustrumWidth + ( ((Columns - 1) - screen.position % Columns)) * FrustrumWidth * 2 / (float) Columns + screen.Width / 2 + FrustrumWidth / (Columns * 2);
-            float y = FrustrumHeight - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin) - screen.Height / 2;
+            float x = -FrustrumWidth + ( ((Columns - 1) - screen.position % Columns)) * FrustrumWidth * 2 / Columns + FrustrumWidth / Columns;
+            float y = FrustrumHeight - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin) - screen.Height / 2 - margin;
             
 
             // We need a small offset or the will not be seen by the camera

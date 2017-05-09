@@ -91,7 +91,7 @@ namespace Arqus.DataModels
 
         public void Disable()
         {
-            SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+            //SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
         }
     }
 }

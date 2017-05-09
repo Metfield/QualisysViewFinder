@@ -18,8 +18,7 @@ namespace Arqus
         protected override void OnInitialized()
         {
             InitializeComponent();
-
-            //cameraService = new CameraStreamService();
+            
 
             MessagingService.Subscribe<Application>(this, MessageSubject.CONNECTED, (sender) =>
             {
@@ -53,12 +52,10 @@ namespace Arqus
 
         protected void OnConnected()
         {
-            //cameraService.Start();
         }
 
         protected void OnDisconnected()
         {
-            //cameraService.Dispose();
             SettingsService.Dispose();
         }
         

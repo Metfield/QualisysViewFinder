@@ -75,7 +75,7 @@
         </StackLayout>
 
 
-        <Grid VerticalOptions="End">
+        <Grid VerticalOptions="End" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />

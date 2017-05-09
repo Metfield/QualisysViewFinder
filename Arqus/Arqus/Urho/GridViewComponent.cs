@@ -48,13 +48,13 @@ namespace Arqus
         public override void SetCameraScreenPosition(CameraScreen screen)
         {
             float distance = 70;
-            float FrustrumHeight = distance * camera.HalfViewSize;
-            float FrustrumWidth = FrustrumHeight * camera.AspectRatio;
+            float halfHeight = distance * camera.HalfViewSize;
+            float halfWidth = halfHeight * camera.AspectRatio;
 
             float margin = 2;
             // Something is off with this algorithm as they are not being centered fully....
-            float x = -FrustrumWidth + ( ((Columns - 1) - screen.position % Columns)) * FrustrumWidth * 2 / Columns + FrustrumWidth / Columns;
-            float y = FrustrumHeight - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin) - screen.Height / 2 - margin;
+            float x = -halfWidth + ( ((Columns - 1) - screen.position % Columns)) * halfWidth * 2 / Columns + halfWidth / Columns;
+            float y = halfHeight - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin) - screen.Height / 2 - margin;
             
 
             // We need a small offset or the will not be seen by the camera

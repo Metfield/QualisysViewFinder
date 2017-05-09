@@ -30,10 +30,10 @@
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
         
         <!-- Drawers layout -->
-        <StackLayout VerticalOptions="End" IsEnabled="True">
+        <StackLayout VerticalOptions="End" IsEnabled="True" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
             
             <!-- Marker-specific drawer -->
-            <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False">
+            <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0">
                 <StackLayout VerticalOptions="StartAndExpand">
                     <StackLayout HorizontalOptions="Fill">
                         <Label Text="Marker Exposure" HorizontalOptions="Start"/>
@@ -54,7 +54,7 @@
             </Frame>
 
             <!-- Video-specific drawer -->
-            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False">
+            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0">
                 <StackLayout VerticalOptions="StartAndExpand">
                     <StackLayout HorizontalOptions="Fill">
                         <Label Text="Video Exposure"/>
@@ -72,7 +72,7 @@
                                                      Value="{Binding VideoFlashSliderValue}" />
                 </StackLayout>
             </Frame>
-        </StackLayout>
+            </StackLayout>
 
 
         <Grid VerticalOptions="End" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">

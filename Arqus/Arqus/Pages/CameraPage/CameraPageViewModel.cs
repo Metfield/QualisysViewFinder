@@ -77,7 +77,7 @@ namespace Arqus
             }
         }
 
-
+        // TODO: Decouple the View from the ViewModel
         Frame videoDrawerFrame, markerDrawerFrame;
 
         public CameraPageViewModel(INavigationService navigationService)
@@ -95,13 +95,11 @@ namespace Arqus
                 if(isGridLayoutActive)
                 {
                     IsGridLayoutActive = false;
-                    CameraScreenLayoutIcon = Icon["carousel"];
                     ShowDrawer();
                 }
                 else
                 {
                     IsGridLayoutActive = true;
-                    CameraScreenLayoutIcon = Icon["grid"];
                     HideDrawer();
                 }                    
 
@@ -190,9 +188,9 @@ namespace Arqus
             UpdateCameraSettings(this);
             
             // Check if camera selection was done through grid mode
-            if (isGridLayoutActive)
+            if (IsGridLayoutActive)
             {
-                isGridLayoutActive = false;
+                IsGridLayoutActive = false;
 
                 // Invoke on main thread to avoid exception
                 Device.BeginInvokeOnMainThread(() => SwitchDrawers(CameraStore.CurrentCamera.Mode));

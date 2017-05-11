@@ -7,33 +7,71 @@
              Title="Camera Page"
              prism:ViewModelLocator.AutowireViewModel="True"
              xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"             
-             x:Class="Arqus.CameraPage">
+             x:Class="Arqus.CameraPage" >
 
     <ContentPage.ToolbarItems>
        
         <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_grid_on_black_24dp.png"/>
+                                Android="drawable-hdpi/ic_grid_on_white_24dp.png"/>
             </ToolbarItem.Icon>
         </ui:BindableToolbarItem>
         <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_view_carousel_black_24dp.png"/>
+                                Android="drawable-hdpi/ic_view_carousel_white_24dp.png"/>
             </ToolbarItem.Icon>
         </ui:BindableToolbarItem>
     </ContentPage.ToolbarItems>
 
-    <StackLayout VerticalOptions="FillAndExpand">
-        
+    <StackLayout VerticalOptions="FillAndExpand" Margin="0">
+
+
+        <Frame BackgroundColor="#212121" Padding="5" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
+            <Grid VerticalOptions="End">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+
+                <Image  Source="drawable-hdpi/ic_grain_white_24dp.png" Grid.Row="0" Grid.Column="0">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+                Command="{Binding SetCameraModeToMarkerCommand}"  />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Image Source="drawable-hdpi/ic_camera_white_24dp.png" Grid.Row="0" Grid.Column="1">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+                Command="{Binding SetCameraModeToVideoCommand}"  />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Image  Source="drawable-hdpi/ic_exposure_white_24dp.png" Grid.Row="0" Grid.Column="2">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer
+                    Command="{Binding SetCameraModeToIntensityCommand}"  />
+                    </Image.GestureRecognizers>
+                </Image>
+            </Grid>
+        </Frame>
+
+
         <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
-        
-        <!-- Drawers layout -->
-        <StackLayout VerticalOptions="End" IsEnabled="True" >
+
+
+    <!-- Drawers layout -->
+        <StackLayout VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0">
             
             <!-- Marker-specific drawer -->
-            <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0">
+            <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="End" BackgroundColor="#424242" IsVisible="False" Margin="0" CornerRadius="0" >
                 <StackLayout VerticalOptions="StartAndExpand">
                     <StackLayout HorizontalOptions="Fill">
                         <Label Text="Marker Exposure" HorizontalOptions="Start"/>
@@ -54,7 +92,7 @@
             </Frame>
 
             <!-- Video-specific drawer -->
-            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0">
+            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0" CornerRadius="0">
                 <StackLayout VerticalOptions="StartAndExpand">
                     <StackLayout HorizontalOptions="Fill">
                         <Label Text="Video Exposure"/>
@@ -75,41 +113,6 @@
             </StackLayout>
 
 
-        <Grid VerticalOptions="End" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <BoxView Color="{StaticResource primaryColor}" Grid.ColumnSpan="3" Grid.Row="0"/>
-
-            <Image  Source="drawable-hdpi/ic_grain_black_24dp.png" Grid.Row="0" Grid.Column="0">
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer
-                Command="{Binding SetCameraModeToMarkerCommand}"  />
-                </Image.GestureRecognizers>
-            </Image>
-            <Image Source="drawable-hdpi/ic_camera_black_24dp.png" Grid.Row="0" Grid.Column="1">
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer
-                Command="{Binding SetCameraModeToVideoCommand}"  />
-                </Image.GestureRecognizers>
-            </Image>
-            <Image  Source="drawable-hdpi/ic_exposure_black_24dp.png" Grid.Row="0" Grid.Column="2">
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer
-                    Command="{Binding SetCameraModeToIntensityCommand}"  />
-                </Image.GestureRecognizers>
-            </Image>
-        </Grid>
-
     </StackLayout>
-
 
 </ContentPage>

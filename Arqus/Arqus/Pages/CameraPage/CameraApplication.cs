@@ -420,7 +420,7 @@ namespace Arqus
 
             Renderer renderer = Renderer;
             Viewport viewport = new Viewport(Context, scene, camera, null);
-            viewport.SetClearColor(Urho.Color.Gray);
+            viewport.SetClearColor(Urho.Color.FromHex("#303030"));
 
             renderer.SetViewport(0, viewport);
             

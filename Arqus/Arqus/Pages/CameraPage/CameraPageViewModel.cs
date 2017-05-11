@@ -89,21 +89,24 @@ namespace Arqus
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
-            {    
+            {
+                string cameraScreenLayout;
                 // Hide/show drawer according to mode
                 // We don't want to show any drawers in grid mode
                 if(isGridLayoutActive)
                 {
+                    cameraScreenLayout = "carousel";
                     IsGridLayoutActive = false;
                     ShowDrawer();
                 }
                 else
                 {
+                    cameraScreenLayout = "grid";
                     IsGridLayoutActive = true;
                     HideDrawer();
                 }                    
 
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, payload: new { cameraScreenLayout });
             });
 
             // We're starting with carousel mode
@@ -176,7 +179,7 @@ namespace Arqus
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Poop = "poop" });
+            MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Navigate = "OnNavigatingTo" });
         }
 
         private void OnCameraSelection(Object sender, int cameraID)

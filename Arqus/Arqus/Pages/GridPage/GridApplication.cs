@@ -208,7 +208,7 @@ namespace Arqus
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
 
                     // Start Camera view.
-                    MessagingService.Send(Xamarin.Forms.Application.Current, MessageSubject.SET_CAMERA_SELECTION, cameraID, payload: new { Poop = "poop" });
+                    MessagingService.Send(Xamarin.Forms.Application.Current, MessageSubject.SET_CAMERA_SELECTION, cameraID, payload: new { CameraID = cameraID });
                     //this.Stop();
                 }
             }

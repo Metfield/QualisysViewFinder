@@ -48,7 +48,7 @@ namespace Arqus
                 NavigationMode navigationMode = (NavigationMode)parameters["__NavigationMode"];
 
                 if ( navigationMode == NavigationMode.Back)
-                    MessagingService.Send(Application.Current, MessageSubject.DISCONNECTED.ToString(), new { Poop = "poop" });
+                    MessagingService.Send(Application.Current, MessageSubject.DISCONNECTED.ToString(), payload: new { Navigate = "OnNavigatedFrom - Back" });
             }
             catch (Exception e)
             {

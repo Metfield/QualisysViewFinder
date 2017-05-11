@@ -65,14 +65,23 @@ namespace Arqus.Services
         {
             while(streaming)
             {
-                PacketType packetType;
-                connection.Protocol.ReceiveRTPacket(out packetType);
-                
-                // Make sure this is a data packet
-                if (packetType == PacketType.PacketData)
+                try
                 {
-                    RetrieveDataAsync(connection.Protocol.GetRTPacket());
+                    PacketType packetType;
+                    connection.Protocol.ReceiveRTPacket(out packetType);
+
+                    // Make sure this is a data packet
+                    if (packetType == PacketType.PacketData)
+                    {
+                        RetrieveDataAsync(connection.Protocol.GetRTPacket());
+                    }
                 }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                    Debugger.Break();
+                }
+                
             }
         }
         

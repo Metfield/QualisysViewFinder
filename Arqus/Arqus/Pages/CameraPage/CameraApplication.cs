@@ -216,7 +216,6 @@ namespace Arqus
         private async void CreateScene()
 
         {
-
             // Create carousel
 
             carouselInitialDistance = -80;
@@ -225,7 +224,7 @@ namespace Arqus
 
 
 
-            cameraMovementSpeed = 0.01f;      
+            cameraMovementSpeed = 0.005f;      
 
 
 
@@ -258,7 +257,7 @@ namespace Arqus
             Node cameraNode = scene.CreateChild("camera");
 
             camera = cameraNode.CreateComponent<Camera>();
-
+            
 
 
             // Arbitrary far clipping plane
@@ -420,9 +419,11 @@ namespace Arqus
         {
 
             Renderer renderer = Renderer;
+            Viewport viewport = new Viewport(Context, scene, camera, null);
+            viewport.SetClearColor(Urho.Color.Gray);
 
-            renderer.SetViewport(0, new Viewport(Context, scene, camera, null));
-
+            renderer.SetViewport(0, viewport);
+            
         }
 
 

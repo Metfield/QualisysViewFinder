@@ -10,6 +10,7 @@ using Arqus.Services;
 using Arqus.Service;
 using System.Diagnostics;
 using Urho.Gui;
+using System;
 
 namespace Arqus.Visualization
 {
@@ -82,6 +83,7 @@ namespace Arqus.Visualization
 
         // Intensity mode properties
         private Texture2D texture;
+        private Texture2D markerTexture;
 
         private ImageSharp.PixelFormats.Rgba32[] imageData;
 
@@ -116,6 +118,7 @@ namespace Arqus.Visualization
             screenCount = 0;
         }
 
+        CustomGeometry geom;
         public override void OnAttachedToNode(Node node)
         {
             base.OnAttachedToNode(node);
@@ -125,7 +128,7 @@ namespace Arqus.Visualization
             screenNode = node.CreateChild("screenNode");
 
             // Initialize marker sphere pool with arbitrary number of spheres
-            Pool = new MarkerSpherePool(20, screenNode);
+            Pool = new MarkerSpherePool(20, Node);
             
 
             screenNode.Scale = new Vector3(Height, 1, Width);
@@ -137,7 +140,7 @@ namespace Arqus.Visualization
 
             // Create marker screen node and its plane
             markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(new Urho.Color(0.215f, 0.301f, 0.337f), true));
+            markerScreen.SetMaterial(Material.FromColor(Urho.Color.Black, true));
 
             // Create intensity plane, its material and assign it
             imageScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
@@ -149,6 +152,9 @@ namespace Arqus.Visualization
             Material.SetTexture(TextureUnit.Diffuse, texture);
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             imageScreen.SetMaterial(Material);
+
+
+            
 
             labelNode = screenNode.CreateChild();
             label = labelNode.CreateComponent<Text3D>();
@@ -274,28 +280,57 @@ namespace Arqus.Visualization
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used
             int lastUsedInArray = 0;
-            
+
+
             // Iterate through the marker array, transform and draw spheres
             for (int i = 0; i < markerData.MarkerCount; i++)
             {
                 // Transform from camera coordinates to frame coordinates
                 // TODO: Add marker resolution to class
-                float adjustedX = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, -0.5f, 0.5f, markerData.MarkerData2D[i].X);
-                float adjustedY = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, -0.5f, 0.5f, markerData.MarkerData2D[i].Y);
-                float adjustedScaleX = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, 0, 1, markerData.MarkerData2D[i].DiameterX);
-                float adjustedScaleY = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, 0, 1, markerData.MarkerData2D[i].DiameterY);
+                float x = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, -Width / 2, Width/2, markerData.MarkerData2D[i].X);
+                float y = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
+                float width = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
+                float height = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
 
-                MarkerSphere sphere = Pool.Get(i);
+                CustomGeometry geom = Pool.Get(i);
+                geom.BeginGeometry(0, PrimitiveType.TriangleFan);  
+                geom.DefineVertex(new Vector3(x, y, 0));
+                geom.SetMaterial(Urho.Material.FromColor(Urho.Color.White, true));
+
+
+                for (int k = 0; k <= 40; k++)
+                {
+                    float a = x + (width * (float)Math.Sin(k * 2 * Math.PI / 40));
+                    float b = y + (height * (float)Math.Cos(k * 2 * Math.PI / 40));
+                   
+                    if(a > Width/2)
+                        a = Width / 2;
+                    else if(a < -Width/2)
+                        a = -Width / 2;
+
+                    if (b > Height / 2)
+                        b = Height / 2;
+                    else if (b < -Height / 2)
+                        b = -Height / 2;
+
+                    geom.DefineVertex(new Vector3(a, b, 0));
+                    geom.DefineColor(Urho.Color.White);
+                }
+
+                geom.Commit();
+
+                /*
                 // Set world position with new frame coordinates            
                 sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
                 sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
+                */
 
                 // Last element will set this variable
                 lastUsedInArray = i;
             }
 
             // Hide the markers which were not used on this frame
-            Pool.HideUnused(lastUsedInArray);
+            //Pool.HideUnused(lastUsedInArray);
         }
 
         private void OnImageUpdate()

@@ -23,21 +23,20 @@ namespace Arqus.Components
 
             for(int index = 0; index < count; index++)
             {
-                Add(new MarkerSphere());
+                Add(root.CreateComponent<MarkerSphere>());
             }
         }
 
         public void Add(MarkerSphere sphereNode)
         {
             markerSpheres.Add(sphereNode);
-            root.AddChild(sphereNode);
         }
 
         public MarkerSphere Get(int index)
         {
             // If an object doesn't exists for the current index we create it
             if (markerSpheres.Count <= index)
-                 Add(new MarkerSphere());
+                 Add(root.CreateComponent<MarkerSphere>());
 
             markerSpheres[index].Enabled = true;
             return markerSpheres[index];

@@ -11,7 +11,7 @@ namespace Arqus.Visualization
     /// <summary>
     /// Marker node with an attached sphere component
     /// </summary>
-    public class MarkerSphere : Node
+    public class MarkerSphere : CustomGeometry
     {
         public Color SphereColor { get; set; }
 
@@ -24,11 +24,11 @@ namespace Arqus.Visualization
             Enabled = false;
 
             // HACK: Arbitrary number of 0.1 makes sense right now
-            SetScale(0.1f);
+            //SetScale(0.1f);
 
             // Create sphere component and attach it 
-            Sphere sphereComponent = CreateComponent<Sphere>();
-            sphereComponent.SetMaterial(Material.FromColor(SphereColor, true));
-        }
+            SetMaterial(Material.FromColor(SphereColor, true));
+            DefineGeometry(ID, PrimitiveType.TriangleFan, 40, true, true, false, false);
+        }   
     }
 }

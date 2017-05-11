@@ -65,7 +65,7 @@ namespace Arqus
                             //continue;
                         }
 
-                        MessagingService.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED, payload: new { Poop = "poop" });
+                        MessagingService.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED, payload: new { });
                         ignoreNextPacket = true;
                     }
                 }

@@ -28,7 +28,6 @@ namespace Arqus.Visualization
 
             // Create sphere component and attach it 
             SetMaterial(Material.FromColor(SphereColor, true));
-            DefineGeometry(ID, PrimitiveType.TriangleFan, 40, true, true, false, false);
         }   
     }
 }

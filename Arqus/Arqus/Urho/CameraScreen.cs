@@ -27,7 +27,7 @@ namespace Arqus.Visualization
 
         // private fields
         private bool dirty;
-        private Node screenNode;
+        private Node backdropNode;
         private Node cameraNode;
         private Node labelNode;
         private Node markerScreenNode;
@@ -118,32 +118,37 @@ namespace Arqus.Visualization
             screenCount = 0;
         }
 
+        Node markerSphereNode;
+        Node screenNode;
+        
         CustomGeometry geom;
         public override void OnAttachedToNode(Node node)
         {
             base.OnAttachedToNode(node);
 
             // Create screen Node, scale it accordingly and rotate it so it faces camera
-            
             screenNode = node.CreateChild("screenNode");
+            markerSphereNode = node.CreateChild("markerSphereNode"); 
+            backdropNode = node.CreateChild("backdrop");
 
             // Initialize marker sphere pool with arbitrary number of spheres
-            Pool = new MarkerSpherePool(20, Node);
+            Pool = new MarkerSpherePool(20, markerSphereNode);
             
+            backdropNode.Scale = new Vector3(Height, 1, Width);
 
-            screenNode.Scale = new Vector3(Height, 1, Width);
 
             // Rotate the camera in the clockwise direction with 90 degrees
-            screenNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            backdropNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
             // Apply camera orientation and an offset to match the no rotation position with QTM
-            screenNode.Rotate(new Quaternion(0, Camera.Orientation + 90, 0), TransformSpace.Local);
+            backdropNode.Rotate(new Quaternion(0, 90 - Camera.Orientation, 0), TransformSpace.Local);
+            markerSphereNode.Rotate(new Quaternion(0, 0, -Camera.Orientation), TransformSpace.Local);
 
             // Create marker screen node and its plane
-            markerScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            markerScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
             markerScreen.SetMaterial(Material.FromColor(Urho.Color.Black, true));
 
             // Create intensity plane, its material and assign it
-            imageScreen = screenNode.CreateComponent<Urho.Shapes.Plane>();
+            imageScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
             Material = new Material();
 
             texture = new Texture2D();
@@ -158,10 +163,13 @@ namespace Arqus.Visualization
 
             labelNode = screenNode.CreateChild();
             label = labelNode.CreateComponent<Text3D>();
-            labelNode.Rotate(new Quaternion(90, 90, 180), TransformSpace.World);
-            labelNode.Position = new Vector3(0.3f, 0.01f, 0.4f);
+
+            if(Camera.Orientation == 0)
+                labelNode.Position = new Vector3(Width/2 - 0.5f, -Height/2 + 1f, -0.1f);
+            else
+                labelNode.Position = new Vector3(Height / 2 - 0.5f, -Width / 2 + 1f, -0.1f);
             label.Text = Camera.ID.ToString();
-            label.SetFont(CoreAssets.Fonts.AnonymousPro, 14);
+            label.SetFont(CoreAssets.Fonts.AnonymousPro, 100);
             label.TextEffect = TextEffect.Stroke;
 
             // Initialize current camera mode
@@ -255,20 +263,20 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
-            if (screenNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
+            if (backdropNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
             {
                 Camera.Disable();
-                screenNode.Enabled = false;
+                backdropNode.Enabled = false;
             }
-            else if (!screenNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
+            else if (!backdropNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
             {
                 Camera.Enable();
-                screenNode.Enabled = true;
+                backdropNode.Enabled = true;
             }
                 
             
             // 
-            if (screenNode.Enabled && dirty)
+            if (backdropNode.Enabled && dirty)
             {
                 dirty = false;
                 OnUpdateHandler?.Invoke();
@@ -291,9 +299,10 @@ namespace Arqus.Visualization
                 float y = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
                 float width = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
                 float height = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
-
+                
                 CustomGeometry geom = Pool.Get(i);
                 geom.BeginGeometry(0, PrimitiveType.TriangleFan);  
+
                 geom.DefineVertex(new Vector3(x, y, 0));
                 geom.SetMaterial(Urho.Material.FromColor(Urho.Color.White, true));
 
@@ -330,7 +339,7 @@ namespace Arqus.Visualization
             }
 
             // Hide the markers which were not used on this frame
-            //Pool.HideUnused(lastUsedInArray);
+            Pool.HideUnused(lastUsedInArray);
         }
 
         private void OnImageUpdate()

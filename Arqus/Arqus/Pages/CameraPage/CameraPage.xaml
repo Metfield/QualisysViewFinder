@@ -92,7 +92,7 @@
             </Frame>
 
             <!-- Video-specific drawer -->
-            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="Gray" IsVisible="False" Margin="0" CornerRadius="0">
+            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="#424242" IsVisible="False" Margin="0" CornerRadius="0">
                 <StackLayout VerticalOptions="StartAndExpand">
                     <StackLayout HorizontalOptions="Fill">
                         <Label Text="Video Exposure"/>

@@ -44,9 +44,9 @@ namespace Arqus
 
 
 
-        private Grid grid;
+        private GridScreenLayout grid;
 
-        private Carousel carousel;
+        private CarouselScreenLayout carousel;
 
         private CameraScreenLayout cameraScreenLayout;
 
@@ -294,9 +294,9 @@ namespace Arqus
 
 
 
-            grid = new Grid(screenList.Count, 2, camera);
+            grid = new GridScreenLayout(screenList.Count, 2, camera);
 
-            carousel = new Carousel(screenList.Count, camera);
+            carousel = new CarouselScreenLayout(screenList.Count, camera);
 
             
 
@@ -467,7 +467,7 @@ namespace Arqus
                 
                 // Check if it's a screen node
                 // TODO: Add a public dictionary or query class for name?
-                if (screenNode.Name == "screenNode")
+                if (screenNode.Name == "backdrop")
                 {
 
                     // Get selected camera ID 

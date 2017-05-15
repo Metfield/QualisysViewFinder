@@ -42,24 +42,33 @@
                 </Grid.ColumnDefinitions>
 
 
-                <Image  Source="drawable-hdpi/ic_grain_white_24dp.png" Grid.Row="0" Grid.Column="0">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer
+                <StackLayout Grid.Row="0" Grid.Column="0">
+                    <Image  Source="drawable-hdpi/ic_grain_white_24dp.png" VerticalOptions="Start" >
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer
                 Command="{Binding SetCameraModeToMarkerCommand}"  />
-                    </Image.GestureRecognizers>
-                </Image>
-                <Image Source="drawable-hdpi/ic_camera_white_24dp.png" Grid.Row="0" Grid.Column="1">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <Label Text="Marker" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
+                </StackLayout>
+                <StackLayout Grid.Row="0" Grid.Column="1" >
+                    <Image Source="drawable-hdpi/ic_camera_white_24dp.png" VerticalOptions="Start">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer
                 Command="{Binding SetCameraModeToVideoCommand}"  />
-                    </Image.GestureRecognizers>
-                </Image>
-                <Image  Source="drawable-hdpi/ic_exposure_white_24dp.png" Grid.Row="0" Grid.Column="2">
-                    <Image.GestureRecognizers>
-                        <TapGestureRecognizer
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <Label Text="Video" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
+                </StackLayout>
+                <StackLayout Grid.Row="0" Grid.Column="2">
+                    <Image  Source="drawable-hdpi/ic_exposure_white_24dp.png" VerticalOptions="Start">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer
                     Command="{Binding SetCameraModeToIntensityCommand}"  />
-                    </Image.GestureRecognizers>
-                </Image>
+                        </Image.GestureRecognizers>
+                    </Image>
+                    <Label Text="Intensity" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center" />
+                </StackLayout>
             </Grid>
         </Frame>
 

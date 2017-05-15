@@ -12,7 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CameraSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\JiggleButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraSettingsDrawer.cs" />
@@ -34,13 +34,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\GridViewComponent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Carousel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CarouselScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
       <DependentUpon>CameraPage.xaml</DependentUpon>
       <SubType>Code</SubType>

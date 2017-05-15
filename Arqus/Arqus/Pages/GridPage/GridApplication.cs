@@ -35,7 +35,7 @@ namespace Arqus
         Vector3 gridPosition;
         float gridMovementSpeed;
         Vector3 gridViewOrigin;
-        private Grid gridView;
+        private GridScreenLayout gridView;
 
         int gridFrameHeight;
         int gridNumColumns;

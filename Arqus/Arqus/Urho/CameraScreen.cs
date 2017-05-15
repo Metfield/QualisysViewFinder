@@ -275,7 +275,6 @@ namespace Arqus.Visualization
             }
                 
             
-            // 
             if (backdropNode.Enabled && dirty)
             {
                 dirty = false;

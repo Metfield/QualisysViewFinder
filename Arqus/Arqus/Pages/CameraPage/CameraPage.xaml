@@ -25,10 +25,11 @@
         </ui:BindableToolbarItem>
     </ContentPage.ToolbarItems>
 
-    <StackLayout VerticalOptions="FillAndExpand" Margin="0">
+    
+    <StackLayout Margin="0" Style="{StaticResource Background}">
 
 
-        <Frame BackgroundColor="#212121" Padding="5" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
+        <Frame Style="{StaticResource AppBar}" Padding="5" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
             <Grid VerticalOptions="End">
 
                 <Grid.RowDefinitions>
@@ -49,7 +50,7 @@
                 Command="{Binding SetCameraModeToMarkerCommand}"  />
                         </Image.GestureRecognizers>
                     </Image>
-                    <Label Text="Marker" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
+                    <Label Text="Marker" Style="{StaticResource SecondaryText}" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="1" >
                     <Image Source="drawable-hdpi/ic_camera_white_24dp.png" VerticalOptions="Start">
@@ -58,7 +59,7 @@
                 Command="{Binding SetCameraModeToVideoCommand}"  />
                         </Image.GestureRecognizers>
                     </Image>
-                    <Label Text="Video" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
+                    <Label Text="Video" Style="{StaticResource SecondaryText}" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
                 </StackLayout>
                 <StackLayout Grid.Row="0" Grid.Column="2">
                     <Image  Source="drawable-hdpi/ic_exposure_white_24dp.png" VerticalOptions="Start">
@@ -67,7 +68,7 @@
                     Command="{Binding SetCameraModeToIntensityCommand}"  />
                         </Image.GestureRecognizers>
                     </Image>
-                    <Label Text="Intensity" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center" />
+                    <Label Text="Intensity" Style="{StaticResource SecondaryText}" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center" />
                 </StackLayout>
             </Grid>
         </Frame>
@@ -80,46 +81,54 @@
         <StackLayout VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0">
             
             <!-- Marker-specific drawer -->
-            <Frame x:Name="markerDrawer" HorizontalOptions="Fill" VerticalOptions="End" BackgroundColor="#424242" IsVisible="False" Margin="0" CornerRadius="0" >
-                <StackLayout VerticalOptions="StartAndExpand">
-                    <StackLayout HorizontalOptions="Fill">
-                        <Label Text="Marker Exposure" HorizontalOptions="Start"/>
-                        <Label Text="{Binding MarkerExposureValueLabel}" HorizontalOptions="End"/>
-                    </StackLayout>
-                        
-                    <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerExposureSliderMax}" 
+            <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" Margin="0" CornerRadius="0" >
+                <StackLayout>
+                    <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
+
+                        <StackLayout HorizontalOptions="Fill">
+                            <Label Text="Marker Exposure" HorizontalOptions="Start"/>
+                            <Label Text="{Binding MarkerExposureValueLabel}" HorizontalOptions="End"/>
+                        </StackLayout>
+
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerExposureSliderMax}" 
                                                      Minimum="{Binding MarkerExposureSliderMin}"
                                                      Value="{Binding MarkerExposureSliderValue}"/>
-                    <StackLayout HorizontalOptions="Fill">
-                        <Label Text="Marker Threshold"/>
-                        <Label Text="{Binding MarkerThresholdValueLabel}" HorizontalOptions="End"/>
-                    </StackLayout>
-                <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
+
+                        <StackLayout HorizontalOptions="Fill">
+                            <Label Text="Marker Threshold"/>
+                            <Label Text="{Binding MarkerThresholdValueLabel}" HorizontalOptions="End"/>
+                        </StackLayout>
+
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
                                                      Minimum="{Binding MarkerThresholdSliderMin}"
                                                      Value="{Binding MarkerThresholdSliderValue}"/>
-                </StackLayout>
-            </Frame>
-
-            <!-- Video-specific drawer -->
-            <Frame x:Name="videoDrawer" HorizontalOptions="Fill" VerticalOptions="FillAndExpand" BackgroundColor="#424242" IsVisible="False" Margin="0" CornerRadius="0">
-                <StackLayout VerticalOptions="StartAndExpand">
-                    <StackLayout HorizontalOptions="Fill">
-                        <Label Text="Video Exposure"/>
-                        <Label Text="{Binding VideoExposureValueLabel}" HorizontalOptions="End"/>
                     </StackLayout>
-                <Slider HorizontalOptions="Fill" Maximum="{Binding VideoExposureSliderMax}" 
+
+                    <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
+
+                        <StackLayout HorizontalOptions="Fill">
+                            <Label Text="Video Exposure"/>
+                            <Label Text="{Binding VideoExposureValueLabel}" HorizontalOptions="End"/>
+                        </StackLayout>
+
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding VideoExposureSliderMax}" 
                                                      Minimum="{Binding VideoExposureSliderMin}"
                                                      Value="{Binding VideoExposureSliderValue}" />
-                    <StackLayout HorizontalOptions="Fill">
-                        <Label Text="Video Flash"/>
-                        <Label Text="{Binding VideoFlashValueLabel}" HorizontalOptions="End"/>
-                    </StackLayout>
-        <Slider HorizontalOptions="Fill" Maximum="{Binding VideoFlashSliderMax}" 
+
+                        <StackLayout HorizontalOptions="Fill">
+                            <Label Text="Video Flash"/>
+                            <Label Text="{Binding VideoFlashValueLabel}" HorizontalOptions="End"/>
+                        </StackLayout>
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding VideoFlashSliderMax}" 
                                                      Minimum="{Binding VideoFlashSliderMin}"
                                                      Value="{Binding VideoFlashSliderValue}" />
+                    </StackLayout>
+
                 </StackLayout>
+                
             </Frame>
-            </StackLayout>
+
+        </StackLayout>
 
 
     </StackLayout>

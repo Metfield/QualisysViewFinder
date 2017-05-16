@@ -23,7 +23,7 @@ namespace Arqus
             currentApplication = await StartUrhoApp();                      
 
             // Set model reference
-            ((CameraPageViewModel)BindingContext).SetModelReference(this);
+            //((CameraPageViewModel)BindingContext).SetModelReference(this);
         }
 
         protected override async void OnDisappearing()
@@ -40,14 +40,5 @@ namespace Arqus
             return markerApplication;
         }
         
-        public Frame GetMarkerDrawerFrame()
-        {
-            return markerDrawer;
-        }
-
-        public Frame GetVideoDrawerFrame()
-        {
-            return videoDrawer;
-        }
     }
 }

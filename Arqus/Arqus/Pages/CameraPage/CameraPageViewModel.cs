@@ -57,25 +57,8 @@ namespace Arqus
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand OnAppearingCommand { get; set; }
 
-        public static Dictionary<string, string> Icon = new Dictionary<string, string>()
-        {
-            { "grid", "drawable-hdpi/ic_grid_on_black_24dp.png" },
-            { "carousel", "drawable-hdpi/ic_view_carousel_black_24dp.png" }
-        };
-
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
-        private string cameraScreenLayoutIcon = Icon["grid"];
-        public string CameraScreenLayoutIcon
-        {
-            get
-            {
-                return cameraScreenLayoutIcon;
-            }
-            set
-            {
-                SetProperty(ref cameraScreenLayoutIcon, value);
-            }
-        }
+
 
         // TODO: Decouple the View from the ViewModel
         Frame videoDrawerFrame, markerDrawerFrame;
@@ -103,7 +86,6 @@ namespace Arqus
                 {
                     cameraScreenLayout = "grid";
                     IsGridLayoutActive = true;
-                    HideDrawer();
                 }                    
 
                 MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, payload: new { cameraScreenLayout });
@@ -146,13 +128,17 @@ namespace Arqus
 
                 // Add object to list
                 cameraSettings.Add(camSettings);
-            }                        
+            }
+            
 
             // Create Camera Settings Drawer object
             settingsDrawer = new CameraSettingsDrawer(this, cameraSettings[CameraStore.CurrentCamera.ID - 1]);
 
             // Reset flag
             qtmUpdatedSettingValue = false;
+
+            // Switch them drawers now
+            SwitchDrawers(CameraStore.CurrentCamera.Mode);
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -272,6 +258,7 @@ namespace Arqus
             // Run this on separate thread to keep UI responsive
             Task.Run(() => SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, setting, (float)value));
         }
+
 
         // Command handlers for cammera settings     
         public double MarkerExposureSliderValue
@@ -448,18 +435,27 @@ namespace Arqus
                     SetProperty(ref videoFlashSliderMax, value);
             }
         }
+        
 
-        public void SetModelReference(CameraPage _ref)
+        private bool isMarkerMode;
+        public bool IsMarkerMode
         {
-            // Set reference to model
-            cameraPageModel = _ref;
+            get
+            {
+                return isMarkerMode;
+            }
+            set
+            {
+                SetProperty(ref isMarkerMode, value);
+            }
+        }
 
-            // Copy drawer references
-            markerDrawerFrame = cameraPageModel.GetMarkerDrawerFrame();
-            videoDrawerFrame = cameraPageModel.GetVideoDrawerFrame();
+        private bool isVideoMode;
 
-            // Switch them drawers now
-            SwitchDrawers(CameraStore.CurrentCamera.Mode);
+        public bool IsVideoMode
+        {
+            get { return isVideoMode; }
+            set { SetProperty(ref isVideoMode, value); }
         }
 
         private void SwitchDrawers(CameraMode mode)
@@ -469,28 +465,20 @@ namespace Arqus
                 case CameraMode.ModeMarker:
                 case CameraMode.ModeMarkerIntensity:
 
-                    videoDrawerFrame.IsVisible = false;
-                    markerDrawerFrame.IsVisible = true;
+                    IsVideoMode = false;
+                    IsMarkerMode = true;
                                         
                     break;
 
                 case CameraMode.ModeVideo:
 
-                    markerDrawerFrame.IsVisible = false;
-                    videoDrawerFrame.IsVisible = true;
+                    IsMarkerMode = false;
+                    IsVideoMode = true;
 
                     break;
             }
         }
-
-        /// <summary>
-        /// Hides all drawers
-        /// </summary>
-        private void HideDrawer()
-        {
-            videoDrawerFrame.IsVisible = false;
-            markerDrawerFrame.IsVisible = false;
-        }
+        
 
         /// <summary>
         /// Shows current drawer

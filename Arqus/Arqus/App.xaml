@@ -15,6 +15,37 @@
 
             <Color x:Key="primaryColor">#2196F3</Color>
             
+            
+            
+            <!-- Component themes -->
+            <Style x:Key="AppBar" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#212121" />
+            </Style>
+
+            <Style x:Key="Card" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#424242" />
+            </Style>
+
+            <Style x:Key="Background" TargetType="StackLayout">
+                <Setter Property="BackgroundColor" Value="#303030" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+            </Style>
+
+            <Style x:Key="PrimaryText" TargetType="Label">
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <Style x:Key="SecondaryText" TargetType="Label">
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="Opacity" Value="0.7" />
+            </Style>
+
+            <Style x:Key="DisabledText" TargetType="Label">
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="Opacity" Value="0.5" />
+            </Style>
+
             <!--Value Converters-->
             <helpers:InverseBoolConverter x:Key="InverseBoolConverter" />
             

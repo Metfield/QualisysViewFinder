@@ -8,7 +8,6 @@ using Prism.Navigation;
 using Prism.Services;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,14 +28,16 @@ namespace Arqus
 
         private IUnityContainer container;
         private INavigationService navigationService;
+        private INotification notificationService;
 
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
-            IPageDialogService pageDialogService)
+            INotification notifaction)
         {
             this.container = container;
             this.navigationService = navigationService;
+            this.notificationService = notifaction;
 
             connection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;
@@ -47,7 +48,6 @@ namespace Arqus
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
             ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
 
-            
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -259,26 +259,35 @@ namespace Arqus
         /// </summary>
         async void OnConnectionStarted()
         {
-            // Connect to IP
-            bool success = connection.Connect(IPAddress, Password);
-
-            if (!success)
+            try
             {
-                // There was an error with the connection
-                //SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
-                Debug.Print("Attention: There was a connection error, please check IP and pass");
-                return;
+
+                // Connect to IP
+                bool success = connection.Connect(IPAddress, Password);
+
+                if (!success)
+                {
+                    // There was an error with the connection
+                    //SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
+                    notificationService.Show("Attention: There was a connection error, please check IP and pass");
+                    return;
+                }
+
+                // 
+                //networkConnection.Dispose();
+
+                // Send connection instance to settings service
+                SettingsService.Initialize();
+                CameraStore.GenerateCameras();
+
+                // Connection was successfull          
+                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage"));
             }
-
-            // 
-            //networkConnection.Dispose();
-
-            // Send connection instance to settings service
-            SettingsService.Initialize();
-            CameraStore.GenerateCameras();
-
-            // Connection was successfull          
-            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage"));
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                notificationService.Show("Whoopsie daisy!");
+            }
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              xmlns:ui="clr-namespace:Arqus.UI"
-             Title="Camera Page"
-             prism:ViewModelLocator.AutowireViewModel="True"
-             xmlns:b="clr-namespace:Prism.Behaviors;assembly=Prism.Forms"             
+             xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"          
              x:Class="Arqus.CameraPage" >
 
     <ContentPage.ToolbarItems>
@@ -87,47 +85,51 @@
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Exposure" HorizontalOptions="Start"/>
-                            <Label Text="{Binding MarkerExposureValueLabel}" HorizontalOptions="End"/>
+                            <Label BindingContext="{x:Reference Name=markerExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.MarkerExposure.Max}" 
-                                                     Minimum="{Binding CameraSettings.MarkerExposure.Min}"
-                                                     Value="{Binding CameraSettings.MarkerExposure.Current}">
-                            <Slider.Behaviors>
-                                <b:EventToCommandBehavior Command="{Binding SetMarkerExposureCommand}"
-                                                          EventName="ValueChanged"
-                                                          EventArgsConverter="{StaticResource valueChangedEventArgsConverter}" />
-                            </Slider.Behaviors>
-                        </Slider>
+                        <Slider x:Name="markerExposureSlider"
+                                HorizontalOptions="Fill" 
+                                Maximum="{Binding CameraSettings.MarkerExposure.Max}" 
+                                Minimum="{Binding CameraSettings.MarkerExposure.Min}"
+                                Value="{Binding CameraSettings.MarkerExposure.Current}" />
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Threshold"/>
-                            <Label Text="{Binding MarkerThresholdValueLabel}" HorizontalOptions="End"/>
+                            <Label BindingContext="{x:Reference Name=markerThresholdSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.MarkerThreshold.Max}"
-                                                     Minimum="{Binding CameraSettings.MarkerThreshold.Min}"
-                                                     Value="{Binding CameraSettings.MarkerThreshold.Current}"/>
+                        <Slider x:Name="markerThresholdSlider"
+                                HorizontalOptions="Fill" 
+                                Maximum="{Binding CameraSettings.MarkerThreshold.Max}"
+                                Minimum="{Binding CameraSettings.MarkerThreshold.Min}"
+                                Value="{Binding CameraSettings.MarkerThreshold.Current}" />
                     </StackLayout>
 
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Exposure"/>
-                            <Label Text="{Binding VideoExposureValueLabel}" HorizontalOptions="End"/>
+                            <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.VideoExposure.Max}" 
-                                                     Minimum="{Binding CameraSettings.VideoExposure.Min}"
-                                                     Value="{Binding CameraSettings.VideoExposure.Current}" />
+                        <Slider x:Name="videoExposureSlider"
+                                HorizontalOptions="Fill" 
+                                Maximum="{Binding CameraSettings.VideoExposure.Max}" 
+                                Minimum="{Binding CameraSettings.VideoExposure.Min}"
+                                Value="{Binding CameraSettings.VideoExposure.Current}" />
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Flash"/>
-                            <Label Text="{Binding VideoFlashValueLabel}" HorizontalOptions="End"/>
+                            <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.VideoFlashTime.Max}" 
-                                                     Minimum="{Binding CameraSettings.VideoFlashTime.Min}"
-                                                     Value="{Binding CameraSettings.VideoFlashTime.Current}" />
+
+                        <Slider x:Name="videoFlashTimeSlider"
+                                HorizontalOptions="Fill" 
+                                Maximum="{Binding CameraSettings.VideoFlashTime.Max}" 
+                                Minimum="{Binding CameraSettings.VideoFlashTime.Min}"
+                                Value="{Binding CameraSettings.VideoFlashTime.Current}" />
+
                     </StackLayout>
 
                 </StackLayout>

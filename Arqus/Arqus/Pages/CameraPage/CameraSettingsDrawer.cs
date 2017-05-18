@@ -90,31 +90,8 @@ namespace Arqus
         {   
             SetSettings(generalSettings);
 
-            UpdateDrawer();
         }
-
-        private void UpdateDrawer()
-        {
-            // Marker Exposure slider
-            pageViewModel.MarkerExposureSliderMax = markerExposureSlider.Max;
-            pageViewModel.MarkerExposureSliderMin = markerExposureSlider.Min;
-            pageViewModel.MarkerExposureSliderValue = markerExposureSlider.Value;            
-
-            // Marker Threshold slider
-            pageViewModel.MarkerThresholdSliderMax = markerThresholdSlider.Max;
-            pageViewModel.MarkerThresholdSliderMin = markerThresholdSlider.Min;
-            pageViewModel.MarkerThresholdSliderValue = markerThresholdSlider.Value;
-
-            // Video Exposure slider
-            pageViewModel.VideoExposureSliderMax = videoExposureSlider.Max;
-            pageViewModel.VideoExposureSliderMin = videoExposureSlider.Min;
-            pageViewModel.VideoExposureSliderValue = videoExposureSlider.Value;
-
-            // Video Flash slider
-            pageViewModel.VideoFlashSliderMax = videoFlashSlider.Max;
-            pageViewModel.VideoFlashSliderMin = videoFlashSlider.Min;
-            pageViewModel.VideoFlashSliderValue = videoFlashSlider.Value;
-        }
+        
        
     }
 }

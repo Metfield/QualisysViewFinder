@@ -13,7 +13,7 @@ using Arqus.Visualization;
 
 namespace Arqus.Services
 {
-    class ImageStream : Stream<ImageSharp.PixelFormats.Rgba32[]>
+    class ImageStream : Stream<ImageSharp.PixelFormats.RgbaVector>
     {
         int limiter = 0;
         public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency){ }
@@ -50,7 +50,7 @@ namespace Arqus.Services
                                     }
 
                                     long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                                    ImageSharp.Image imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
+                                    ImageSharp.Image<Rgba32> imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
 
                                     if (timestamp > lastDecodeTimestamp)
                                     {

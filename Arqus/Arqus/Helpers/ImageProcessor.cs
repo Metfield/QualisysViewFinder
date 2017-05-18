@@ -8,7 +8,7 @@ namespace Arqus.Helpers
 {
     class ImageProcessor
     {
-        public static ImageSharp.PixelFormats.Rgba32[] DecodeJPG(byte[] data)
+        public static ImageSharp.Rgba32[] DecodeJPG(byte[] data)
         {
             DateTime time = DateTime.UtcNow;
             var img = Image.Load(data);

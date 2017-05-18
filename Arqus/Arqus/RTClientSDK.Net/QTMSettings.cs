@@ -213,10 +213,10 @@ namespace QTMRealTimeSDK.Settings
         public int VideoFrequency;
         /// <summary>Values for camera video exposure, current, min and max</summary>
         [XmlElement("Video_Exposure")]
-        public CameraSetting VideoExposure;
+        public CameraSetting VideoExposure { get; set; }
         /// <summary>Values for camera video flash time, current, min and max</summary>
         [XmlElement("Video_Flash_Time")]
-        public CameraSetting VideoFlashTime;
+        public CameraSetting VideoFlashTime { get; set; }
         /// <summary>Values for camera marker exposure, current, min and max</summary>
         [XmlElement("Marker_Exposure")]
         public CameraSetting MarkerExposure { get; set; }

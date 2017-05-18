@@ -85,9 +85,9 @@ namespace Arqus.Visualization
         private Texture2D texture;
         private Texture2D markerTexture;
 
-        private ImageSharp.PixelFormats.Rgba32[] imageData;
+        private ImageSharp.Rgba32[] imageData;
 
-        public ImageSharp.PixelFormats.Rgba32[] ImageData
+        public ImageSharp.Rgba32[] ImageData
         {
             set
             {
@@ -182,7 +182,7 @@ namespace Arqus.Visualization
         {
             base.Dispose(disposing);
             MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
-            MessagingCenter.Unsubscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<ImageStream, ImageSharp.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
             MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
         }
         
@@ -197,7 +197,7 @@ namespace Arqus.Visualization
             });
 
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingService.Subscribe<ImageStream, ImageSharp.PixelFormats.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
+            MessagingService.Subscribe<ImageStream, ImageSharp.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
              {
                 if(IsImageMode())
                     Urho.Application.InvokeOnMain(() => ImageData = imageData);
@@ -250,10 +250,10 @@ namespace Arqus.Visualization
             OnUpdateHandler = OnMarkerUpdate;
         }
         
-        public unsafe bool UpdateMaterialTexture(ImageSharp.PixelFormats.Rgba32[] imageData)
+        public unsafe bool UpdateMaterialTexture(ImageSharp.Rgba32[] imageData)
         {
 
-            fixed (ImageSharp.PixelFormats.Rgba32* bptr = imageData)
+            fixed (ImageSharp.Rgba32* bptr = imageData)
             {
                 return texture.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
             }

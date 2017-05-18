@@ -9,6 +9,7 @@ using QTMRealTimeSDK;
 using Arqus.Helpers;
 using QTMRealTimeSDK.Settings;
 using System.Threading;
+using System.Linq;
 
 namespace Arqus
 {
@@ -104,6 +105,20 @@ namespace Arqus
             // If the 'try' fails, this will at least return the 
             // last fetched general settings
             return generalSettings;
+        }
+
+        public static SettingsGeneralCameraSystem GetCameraSettings(int id)
+        {
+            try
+            {
+                connection.Protocol.GetGeneralSettings();
+            }
+            catch (Exception e)
+            {
+                Debug.Print("SettingsService::GetCameraSettings Exception!.. " + e.Message);
+            }
+
+            return connection.Protocol.GeneralSettings.CameraSettings.Where(camera => camera.CameraId == id).First();
         }
 
         public static int GetCameraCount()

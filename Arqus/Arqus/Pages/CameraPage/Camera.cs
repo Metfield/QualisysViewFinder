@@ -2,6 +2,7 @@
 using Arqus.Service;
 using Arqus.Visualization;
 using QTMRealTimeSDK;
+using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -68,7 +69,29 @@ namespace Arqus.DataModels
             }
         }
         
-        
+        public enum SettingType
+        {
+            MarkerExposure,
+            MakerThreshold,
+            VideoExposure,
+            VideoFlashTime
+        }
+
+        public SettingsGeneralCameraSystem GetSettings()
+        {
+            return SettingsService.GetCameraSettings(ID);
+
+            /*
+            return new Dictionary<SettingType, SettingsSlider>()
+            {
+                { SettingType.MarkerExposure, new SettingsSlider(settings.MarkerExposure.Min, settings.MarkerExposure.Max, settings.MarkerExposure.Current) },
+                { SettingType.MakerThreshold, new SettingsSlider(settings.MarkerThreshold.Min, settings.MarkerThreshold.Max, settings.MarkerThreshold.Current) },
+                { SettingType.VideoExposure, new SettingsSlider(settings.VideoExposure.Min, settings.VideoExposure.Max, settings.VideoExposure.Current) },
+                { SettingType.VideoFlashTime, new SettingsSlider(settings.VideoFlashTime.Min, settings.VideoFlashTime.Max, settings.VideoFlashTime.Current) }
+            };
+            */
+        }
+
         public void Select()
         {
             if(Mode != CameraMode.ModeMarker)

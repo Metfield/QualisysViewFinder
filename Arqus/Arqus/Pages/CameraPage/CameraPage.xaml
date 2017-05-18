@@ -90,18 +90,24 @@
                             <Label Text="{Binding MarkerExposureValueLabel}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerExposureSliderMax}" 
-                                                     Minimum="{Binding MarkerExposureSliderMin}"
-                                                     Value="{Binding MarkerExposureSliderValue}"/>
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.MarkerExposure.Max}" 
+                                                     Minimum="{Binding CameraSettings.MarkerExposure.Min}"
+                                                     Value="{Binding CameraSettings.MarkerExposure.Current}">
+                            <Slider.Behaviors>
+                                <b:EventToCommandBehavior Command="{Binding SetMarkerExposureCommand}"
+                                                          EventName="ValueChanged"
+                                                          EventArgsConverter="{StaticResource valueChangedEventArgsConverter}" />
+                            </Slider.Behaviors>
+                        </Slider>
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Threshold"/>
                             <Label Text="{Binding MarkerThresholdValueLabel}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding MarkerThresholdSliderMax}"
-                                                     Minimum="{Binding MarkerThresholdSliderMin}"
-                                                     Value="{Binding MarkerThresholdSliderValue}"/>
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.MarkerThreshold.Max}"
+                                                     Minimum="{Binding CameraSettings.MarkerThreshold.Min}"
+                                                     Value="{Binding CameraSettings.MarkerThreshold.Current}"/>
                     </StackLayout>
 
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
@@ -111,17 +117,17 @@
                             <Label Text="{Binding VideoExposureValueLabel}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding VideoExposureSliderMax}" 
-                                                     Minimum="{Binding VideoExposureSliderMin}"
-                                                     Value="{Binding VideoExposureSliderValue}" />
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.VideoExposure.Max}" 
+                                                     Minimum="{Binding CameraSettings.VideoExposure.Min}"
+                                                     Value="{Binding CameraSettings.VideoExposure.Current}" />
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Flash"/>
                             <Label Text="{Binding VideoFlashValueLabel}" HorizontalOptions="End"/>
                         </StackLayout>
-                        <Slider HorizontalOptions="Fill" Maximum="{Binding VideoFlashSliderMax}" 
-                                                     Minimum="{Binding VideoFlashSliderMin}"
-                                                     Value="{Binding VideoFlashSliderValue}" />
+                        <Slider HorizontalOptions="Fill" Maximum="{Binding CameraSettings.VideoFlashTime.Max}" 
+                                                     Minimum="{Binding CameraSettings.VideoFlashTime.Min}"
+                                                     Value="{Binding CameraSettings.VideoFlashTime.Current}" />
                     </StackLayout>
 
                 </StackLayout>

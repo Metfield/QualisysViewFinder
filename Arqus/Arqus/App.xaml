@@ -48,7 +48,9 @@
 
             <!--Value Converters-->
             <helpers:InverseBoolConverter x:Key="InverseBoolConverter" />
-            
+            <helpers:IntToDoubleConverter x:Key="IntToDoubleConverter" />
+            <helpers:ValueChangedEventArgsConverter x:Key="valueChangedEventArgsConverter" />
+
         </ResourceDictionary>
     </prism:PrismApplication.Resources>
 

@@ -8,8 +8,13 @@ namespace Arqus
     {
         public double Min { get; set; }
         public double Max { get; set; }
-
-        // Holds curent value
         public double Value { get; set; }
+
+        public SettingsSlider(double min, double max, double value)
+        {
+            Max = max;
+            Min = min;
+            Value = value;
+        }
     }
 }

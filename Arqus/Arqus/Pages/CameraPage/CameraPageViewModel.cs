@@ -5,6 +5,7 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
 using QTMRealTimeSDK;
+using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -35,7 +36,6 @@ namespace Arqus
         private CameraPage cameraPageModel;
 
         private CameraSettingsDrawer settingsDrawer;
-        private List<CameraSettings> cameraSettings;
 
         // Hold slider min and max values
         private const float SLIDER_MIN = 0.0f,
@@ -56,12 +56,20 @@ namespace Arqus
         public DelegateCommand SetCameraModeToVideoCommand { get; set; }
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand OnAppearingCommand { get; set; }
-
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
+        public Command SetMarkerExposureCommand { get; set; }
+        public void SetMarkerExposure(ValueChangedEventArgs args)
+        {
+            Debug.WriteLine(args);
+        }
 
+        private SettingsGeneralCameraSystem cameraSettings;
 
-        // TODO: Decouple the View from the ViewModel
-        Frame videoDrawerFrame, markerDrawerFrame;
+        public SettingsGeneralCameraSystem CameraSettings
+        {
+            get { return cameraSettings; }
+            set { SetProperty(ref cameraSettings, value); }
+        }
 
         public CameraPageViewModel(INavigationService navigationService)
         {
@@ -70,6 +78,11 @@ namespace Arqus
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
+            SetMarkerExposureCommand = new Command((object value) => 
+            {
+                ValueChangedEventArgs v = value as ValueChangedEventArgs;
+                Debug.WriteLine(v.NewValue);
+            });
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
@@ -110,12 +123,12 @@ namespace Arqus
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.CurrentCamera.ID);            
 
             // Create camera settings array
-            cameraSettings = new List<CameraSettings>();
+            //cameraSettings = new List<CameraSettings>();
             // Get latest camera settings
-            tempGeneralSettings = SettingsService.GetCameraSettings();
+            //tempGeneralSettings = SettingsService.GetCameraSettings();
 
             // Create each camera settings object with a camera id
-            for (int i = 1; i <= SettingsService.GetCameraCount(); i++)
+            /*for (int i = 1; i <= SettingsService.GetCameraCount(); i++)
             {
                 // Create camera settings object
                 CameraSettings camSettings = new CameraSettings(i);
@@ -129,11 +142,13 @@ namespace Arqus
                 // Add object to list
                 cameraSettings.Add(camSettings);
             }
-            
+            */
 
             // Create Camera Settings Drawer object
-            settingsDrawer = new CameraSettingsDrawer(this, cameraSettings[CameraStore.CurrentCamera.ID - 1]);
+            //settingsDrawer = new CameraSettingsDrawer(this, cameraSettings[CameraStore.CurrentCamera.ID - 1]);
 
+            CameraSettings = CameraStore.CurrentCamera.GetSettings();
+        
             // Reset flag
             qtmUpdatedSettingValue = false;
 
@@ -213,6 +228,7 @@ namespace Arqus
         /// <param name="sender"></param>
         private void UpdateCameraSettings(Object sender)
         {
+            /*
             qtmUpdatedSettingValue = true;
             int camIndex = CameraStore.CurrentCamera.ID - 1;
 
@@ -230,6 +246,7 @@ namespace Arqus
                       
             // Reset flag
             qtmUpdatedSettingValue = false;
+            */
         }
 
         /// <summary>

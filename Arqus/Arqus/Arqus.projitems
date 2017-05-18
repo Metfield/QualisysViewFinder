@@ -10,8 +10,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CameraSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\CameraSettingsCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\IntToDoubleConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ValueChangedEventArgsConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />

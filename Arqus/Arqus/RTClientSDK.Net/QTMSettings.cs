@@ -219,10 +219,10 @@ namespace QTMRealTimeSDK.Settings
         public CameraSetting VideoFlashTime;
         /// <summary>Values for camera marker exposure, current, min and max</summary>
         [XmlElement("Marker_Exposure")]
-        public CameraSetting MarkerExposure;
+        public CameraSetting MarkerExposure { get; set; }
         /// <summary>Values for camera marker threshold, current, min and max</summary>
         [XmlElement("Marker_Threshold")]
-        public CameraSetting MarkerThreshold;
+        public CameraSetting MarkerThreshold { get; set; }
         /// <summary>Position of camera</summary>
         [XmlElement("Position")]
         public CameraPosition Position;
@@ -366,13 +366,13 @@ namespace QTMRealTimeSDK.Settings
     {
         /// <summary>Current value</summary>
         [XmlElement("Current")]
-        public int Current;
+        public int Current { get; set; }
         /// <summary>Minimum value</summary>
         [XmlElement("Min")]
-        public int Min;
+        public int Min { get; set; }
         /// <summary>Maximum value</summary>
         [XmlElement("Max")]
-        public int Max;
+        public int Max { get; set; }
     }
 
     /// <summary>Settings regarding post processing actions</summary>

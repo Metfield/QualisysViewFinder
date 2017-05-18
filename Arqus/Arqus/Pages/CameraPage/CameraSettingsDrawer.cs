@@ -59,10 +59,12 @@ namespace Arqus
         /// </summary>
         void CreateSettingSliders()
         {
+            /*
             markerExposureSlider  = new SettingsSlider();
             markerThresholdSlider = new SettingsSlider();
             videoExposureSlider   = new SettingsSlider();
             videoFlashSlider      = new SettingsSlider();
+            */
         }
 
         void SetSettings(CameraSettings generalSettings)
@@ -113,97 +115,6 @@ namespace Arqus
             pageViewModel.VideoFlashSliderMin = videoFlashSlider.Min;
             pageViewModel.VideoFlashSliderValue = videoFlashSlider.Value;
         }
-         
-
-        /// <summary>
-        /// Changes current value on slider and sliders' text
-        /// according to the new stream mode
-        /// </summary>
-        /// <param name="newMode"></param>
-        /// <param name="newCamSettings"></param>
-       /* public void SetDrawerMode(CameraMode newMode)
-        {
-            // Return if it's same mode
-            if (currentMode == newMode)
-                return;
-
-            previousMode = currentMode;
-            currentMode = newMode;
-            
-
-            //pageViewModel.qtmUpdatedSettingValue = true;
-
-            // Assign current sliders based on mode
-            switch (currentMode)
-            {
-                case CameraMode.ModeMarker:
-                case CameraMode.ModeMarkerIntensity:
-
-                    // Return if we were already in similar mode
-                    if (previousMode == CameraMode.ModeMarker ||
-                        previousMode == CameraMode.ModeMarkerIntensity)
-                        return;
-
-                    
-                    // Store previous values
-                    videoExposureSlider.Value = firstSlider.Value;
-                    videoFlashSlider.Value = secondSlider.Value;                    
-
-                    // Set mew sliders and strings for marker mode
-                    pageViewModel.FirstSliderString = Constants.MARKER_EXPOSURE_SLIDER_NAME;
-                    firstSlider = markerExposureSlider;
-
-                    pageViewModel.SecondSliderString = Constants.MARKER_THRESHOLD_SLIDER_NAME;
-                    secondSlider = markerThresholdSlider;
-
-                    break;
-
-                case CameraMode.ModeVideo:
-
-                   
-                    // Store previous values
-                    markerExposureSlider.Value = firstSlider.Value;
-                    markerThresholdSlider.Value = secondSlider.Value;
-                    
-                    // Set mew sliders and strings for video mode
-                    pageViewModel.FirstSliderString = Constants.VIDEO_EXPOSURE_SLIDER_NAME;
-                    firstSlider = videoExposureSlider;
-
-                    pageViewModel.SecondSliderString = Constants.VIDEO_FLASH_SLIDER_NAME;
-                    secondSlider = videoFlashSlider;
-
-                    break;
-            }
-
-            UpdateDrawer();
-
-            //pageViewModel.qtmUpdatedSettingValue = false;
-        }*/
        
-
-        //public async void OnFirstSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
-        public async void OnFirstSliderValueChangedFromUI(double value)
-        {
-          /*  firstSlider.Value = value;
-                        
-            await SettingsService.SetCameraSettings(currentState.ID, IsCurrentModeVideo() ? 
-                                                                        Constants.VIDEO_EXPOSURE_PACKET_STRING :
-                                                                        Constants.MARKER_EXPOSURE_PACKET_STRING, (float)value);*/
-        }
-
-        //public async void OnSecondSliderValueChangedFromUI(object sender, ValueChangedEventArgs args)
-        public async void OnSecondSliderValueChangedFromUI(double value)
-        {
-            /*secondSlider.Value = value;
-
-            await SettingsService.SetCameraSettings(currentState.ID, IsCurrentModeVideo() ?
-                                                                        Constants.VIDEO_FLASH_PACKET_STRING :
-                                                                        Constants.MARKER_THRESHOLD_PACKET_STRING, (float)value);*/
-        }
-
-        private bool IsCurrentModeVideo()
-        {
-            return currentMode == CameraMode.ModeVideo;
-        }
     }
 }

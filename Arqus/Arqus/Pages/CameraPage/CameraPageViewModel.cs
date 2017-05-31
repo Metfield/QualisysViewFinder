@@ -1,4 +1,5 @@
-﻿using Arqus.Helpers;
+﻿using Arqus.DataModels;
+using Arqus.Helpers;
 using Arqus.Service;
 using Arqus.Services.MobileCenterService;
 using Prism.Commands;
@@ -22,11 +23,12 @@ namespace Arqus
         private INavigationService navigationService;
 
         // Keep track if latest value was updated by QTM
-        public bool qtmUpdatedSettingValue = true;
+        public bool updateQTMHost = true;
         
         public CameraPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
+            CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
@@ -59,28 +61,19 @@ namespace Arqus
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
             
-            MessagingCenter.Subscribe<QTMEventListener>(this,
+            MessagingCenter.Subscribe(this,
                 MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(),
-                (QTMEventListener sender) => { CameraSettings = CameraStore.CurrentCamera.GetSettings(); qtmUpdatedSettingValue = true; });
-                
-
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CameraStore.CurrentCamera.ID);
-            CameraSettings = CameraStore.CurrentCamera.GetSettings();
-
-            // Reset flag
-            qtmUpdatedSettingValue = false;
+                (QTMEventListener sender) => CurrentCamera.UpdateSettings());
+            
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
 
             // Switch them drawers now
-            SwitchDrawers(CameraStore.CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Mode);
         }
 
-        
-        public void UpdateSetting(string setting, double value)
+        public void SetCameraSetting(string setting, double value)
         {
-            if (!qtmUpdatedSettingValue)
-                SendCameraSettingValue(setting, value);
-
-            qtmUpdatedSettingValue = false;
+            CurrentCamera.SetSetting(setting, value);
         }
         
 
@@ -115,37 +108,37 @@ namespace Arqus
         {
             // Set current camera
             CameraStore.SetCurrentCamera(cameraID);
-            CameraSettings = CameraStore.CurrentCamera.GetSettings();
-            
+            CurrentCamera = CameraStore.CurrentCamera;
+
             // Check if camera selection was done through grid mode
             if (IsGridLayoutActive)
             {
                 IsGridLayoutActive = false;
 
                 // Invoke on main thread to avoid exception
-                Device.BeginInvokeOnMainThread(() => SwitchDrawers(CameraStore.CurrentCamera.Mode));
+                Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
 
                 return;
             }
 
             // Switch drawer mode
-            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CameraStore.CurrentCamera.Mode));
+            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
         }
 
         private void SetCameraMode(CameraMode mode)
         {
             // Set the mode
             MobileCenterService.TrackEvent(GetType().Name, "SetCameraMode " + mode.ToString());
-            CameraStore.CurrentCamera.SetMode(mode);
+            CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
-            SwitchDrawers(CameraStore.CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Mode);
         }
         
         private void SendCameraSettingValue(string setting, double value)
         {
             // Run this on separate thread to keep UI responsive
-            Task.Run(() => SettingsService.SetCameraSettings(CameraStore.CurrentCamera.ID, setting, (float)value));
+            Task.Run(() => CurrentCamera.SetSetting(setting, value));
         }
 
         public DelegateCommand SetCameraModeToMarkerCommand { get; set; }
@@ -153,14 +146,18 @@ namespace Arqus
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
 
-        private SettingsGeneralCameraSystem cameraSettings;
-
-        public SettingsGeneralCameraSystem CameraSettings
+        private Camera currentCamera;
+        public Camera CurrentCamera
         {
-            get { return cameraSettings; }
-            set { SetProperty(ref cameraSettings, value); }
+            get
+            {
+                return currentCamera;
+            }
+            set
+            {
+                SetProperty(ref currentCamera, value);
+            }
         }
-
 
         private bool isGridLayoutActive;
 
@@ -224,7 +221,7 @@ namespace Arqus
         /// </summary>
         private void ShowDrawer()
         {
-            SwitchDrawers(CameraStore.CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Mode);
         }
 
     }

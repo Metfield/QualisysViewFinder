@@ -10,17 +10,17 @@ namespace Arqus.Helpers
         /// Camera settings DRAWER string constants  
         /// </summary>        
         // Marker mode constants
-        public static string MARKER_EXPOSURE_SLIDER_NAME = "Marker Exposure";
-        public static string MARKER_THRESHOLD_SLIDER_NAME = "Marker Threshold";
+        public const string MARKER_EXPOSURE_SLIDER_NAME = "Marker Exposure";
+        public const string MARKER_THRESHOLD_SLIDER_NAME = "Marker Threshold";
 
         // Video mode constants
-        public static string VIDEO_EXPOSURE_SLIDER_NAME = "Video Exposure";
-        public static string VIDEO_FLASH_SLIDER_NAME = "Video Flash";
+        public const string VIDEO_EXPOSURE_SLIDER_NAME = "Video Exposure";
+        public const string VIDEO_FLASH_SLIDER_NAME = "Video Flash";
 
         // Packet constants
-        public static string MARKER_EXPOSURE_PACKET_STRING = "Marker_Exposure";
-        public static string MARKER_THRESHOLD_PACKET_STRING = "Marker_Threshold";
-        public static string VIDEO_EXPOSURE_PACKET_STRING = "Video_Exposure";
-        public static string VIDEO_FLASH_PACKET_STRING = "Video_Flash_Time";
+        public const string MARKER_EXPOSURE_PACKET_STRING = "Marker_Exposure";
+        public const string MARKER_THRESHOLD_PACKET_STRING = "Marker_Threshold";
+        public const string VIDEO_EXPOSURE_PACKET_STRING = "Video_Exposure";
+        public const string VIDEO_FLASH_PACKET_STRING = "Video_Flash_Time";
     }
 }

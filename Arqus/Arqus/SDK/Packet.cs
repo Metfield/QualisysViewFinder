@@ -73,7 +73,7 @@ namespace Arqus.Helpers
             return FormatStringToXML(string.Format(packet, id, mode));
         }
 
-        public static string SettingsParameter(int id, string parameter, float value)
+        public static string SettingsParameter(int id, string parameter, string value)
         {
             string packet = @"<QTM_Settings>
                 <General>

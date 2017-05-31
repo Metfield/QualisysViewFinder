@@ -107,18 +107,24 @@ namespace Arqus
             return generalSettings;
         }
 
-        public static SettingsGeneralCameraSystem GetCameraSettings(int id)
+        /// <summary>
+        /// Tries to retrieve camera settings
+        /// </summary>
+        /// <param name="id">id of the camera to get settings from</param>
+        /// <returns>camera settings or null in case of failure</returns>
+        public static SettingsGeneralCameraSystem? GetCameraSettings(int id)
         {
             try
             {
-                connection.Protocol.GetGeneralSettings();
+                if(connection.Protocol.GetGeneralSettings())
+                    return connection.Protocol.GeneralSettings.CameraSettings.Where(camera => camera.CameraId == id)?.First();
             }
             catch (Exception e)
             {
-                Debug.Print("SettingsService::GetCameraSettings Exception!.. " + e.Message);
+                Debug.Print("Error: " + e.Message);
             }
 
-            return connection.Protocol.GeneralSettings.CameraSettings.Where(camera => camera.CameraId == id).First();
+            return null;
         }
 
         public static int GetCameraCount()
@@ -133,10 +139,7 @@ namespace Arqus
         }
 
 
-        // Used for capping the rate with which QTM will be notified
-        // of camera settings changes
-        static DateTime timeStamp = DateTime.UtcNow;
-
+        
         /// <summary>
         /// Sends new settings to QTM
         /// </summary>
@@ -144,15 +147,8 @@ namespace Arqus
         /// <param name="settingsParameter">Parameter to send</param>
         /// <param name="value">Parameter's value</param>
         /// <returns>Returns true if successful</returns>
-        public static bool SetCameraSettings(int id, string settingsParameter, float value)
-        {
-            // Wait arbitrary 50 ms to update value
-            if ((DateTime.UtcNow - timeStamp).TotalMilliseconds < 50)
-                return false;
-
-            // Update time stamp
-            timeStamp = DateTime.UtcNow;
-
+        public static bool SetCameraSettings(int id, string settingsParameter, string value)
+        {     
             try
             {
                 return connection.SetCameraSettings(id, settingsParameter, value);

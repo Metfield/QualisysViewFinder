@@ -27,7 +27,7 @@
     <StackLayout Margin="0" Style="{StaticResource Background}">
 
 
-        <Frame Style="{StaticResource AppBar}" Padding="5" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
+        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
             <Grid VerticalOptions="End">
 
                 <Grid.RowDefinitions>
@@ -41,31 +41,33 @@
                 </Grid.ColumnDefinitions>
 
 
-                <StackLayout Grid.Row="0" Grid.Column="0">
-                    <Image  Source="drawable-hdpi/ic_grain_white_24dp.png" VerticalOptions="Start" >
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer
-                Command="{Binding SetCameraModeToMarkerCommand}"  />
-                        </Image.GestureRecognizers>
-                    </Image>
+                <StackLayout Grid.Row="0" Grid.Column="0"
+                             BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer
+                        Command="{Binding SetCameraModeToMarkerCommand}"  />
+                    </StackLayout.GestureRecognizers>
+                    <Image  Source="drawable-hdpi/ic_grain_white_24dp.png" VerticalOptions="Start" />
                     <Label Text="Marker" Style="{StaticResource SecondaryText}" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
                 </StackLayout>
-                <StackLayout Grid.Row="0" Grid.Column="1" >
-                    <Image Source="drawable-hdpi/ic_camera_white_24dp.png" VerticalOptions="Start">
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer
-                Command="{Binding SetCameraModeToVideoCommand}"  />
-                        </Image.GestureRecognizers>
-                    </Image>
+
+                <StackLayout Grid.Row="0" Grid.Column="1" 
+                             BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}">
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding SetCameraModeToVideoCommand}"  />
+                    </StackLayout.GestureRecognizers>
+                    <Image Source="drawable-hdpi/ic_camera_white_24dp.png" VerticalOptions="Start" />
                     <Label Text="Video" Style="{StaticResource SecondaryText}" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center"/>
                 </StackLayout>
-                <StackLayout Grid.Row="0" Grid.Column="2">
-                    <Image  Source="drawable-hdpi/ic_exposure_white_24dp.png" VerticalOptions="Start">
-                        <Image.GestureRecognizers>
-                            <TapGestureRecognizer
-                    Command="{Binding SetCameraModeToIntensityCommand}"  />
-                        </Image.GestureRecognizers>
-                    </Image>
+                
+                <StackLayout Grid.Row="0" Grid.Column="2"
+                             BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}" >
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer
+                            Command="{Binding SetCameraModeToIntensityCommand}"  />
+                    </StackLayout.GestureRecognizers>
+                    <Image  Source="drawable-hdpi/ic_exposure_white_24dp.png" VerticalOptions="Start" />
                     <Label Text="Intensity" Style="{StaticResource SecondaryText}" FontSize="Micro" VerticalOptions="End" HorizontalOptions="Center" />
                 </StackLayout>
             </Grid>
@@ -90,9 +92,9 @@
 
                         <Slider x:Name="markerExposureSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding CameraSettings.MarkerExposure.Max}" 
-                                Minimum="{Binding CameraSettings.MarkerExposure.Min}"
-                                Value="{Binding CameraSettings.MarkerExposure.Current}" />
+                                Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}" 
+                                Minimum="{Binding CurrentCamera.Settings.MarkerExposure.Min}"
+                                Value="{Binding CurrentCamera.Settings.MarkerExposure.Current}" />
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Threshold"/>
@@ -101,9 +103,9 @@
 
                         <Slider x:Name="markerThresholdSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding CameraSettings.MarkerThreshold.Max}"
-                                Minimum="{Binding CameraSettings.MarkerThreshold.Min}"
-                                Value="{Binding CameraSettings.MarkerThreshold.Current}" />
+                                Maximum="{Binding CurrentCamera.Settings.MarkerThreshold.Max}"
+                                Minimum="{Binding CurrentCamera.Settings.MarkerThreshold.Min}"
+                                Value="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" />
                     </StackLayout>
 
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
@@ -115,9 +117,9 @@
 
                         <Slider x:Name="videoExposureSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding CameraSettings.VideoExposure.Max}" 
-                                Minimum="{Binding CameraSettings.VideoExposure.Min}"
-                                Value="{Binding CameraSettings.VideoExposure.Current}" />
+                                Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
+                                Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
+                                Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Flash"/>
@@ -126,9 +128,9 @@
 
                         <Slider x:Name="videoFlashTimeSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding CameraSettings.VideoFlashTime.Max}" 
-                                Minimum="{Binding CameraSettings.VideoFlashTime.Min}"
-                                Value="{Binding CameraSettings.VideoFlashTime.Current}" />
+                                Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
+                                Minimum="{Binding CurrentCamera.Setttings.VideoFlashTime.Min}"
+                                Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
 
                     </StackLayout>
 

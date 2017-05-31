@@ -265,12 +265,12 @@ namespace Arqus.Visualization
 
             if (backdropNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
             {
-                Camera.Disable();
+                Camera.DisableImageMode();
                 backdropNode.Enabled = false;
             }
             else if (!backdropNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
             {
-                Camera.Enable();
+                Camera.EnableImageMode();
                 backdropNode.Enabled = true;
             }
                 
@@ -294,10 +294,10 @@ namespace Arqus.Visualization
             {
                 // Transform from camera coordinates to frame coordinates
                 // TODO: Add marker resolution to class
-                float x = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, -Width / 2, Width/2, markerData.MarkerData2D[i].X);
-                float y = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
-                float width = DataOperations.ConvertRange(0, Camera.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
-                float height = DataOperations.ConvertRange(0, Camera.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
+                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -Width / 2, Width/2, markerData.MarkerData2D[i].X);
+                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
+                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
+                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
                 
                 CustomGeometry geom = Pool.Get(i);
                 geom.BeginGeometry(0, PrimitiveType.TriangleFan);  

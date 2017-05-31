@@ -1,46 +1,40 @@
 ﻿using Arqus.Helpers;
 using Arqus.Service;
 using Arqus.Visualization;
+using Prism.Mvvm;
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Settings;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using Xamarin.Forms;
 
 namespace Arqus.DataModels
 {
-    class ElasticsearchCameraEvent
-    {
-        public string OldMode { get; set; }
-        public string NewMode { get; set; }
-        public int CameraID { get; set; }
-    }
-
-    public class Camera
+    
+    public class Camera : BindableBase
     {
         // public properties
-        public QTMRealTimeSDK.Settings.Resolution MarkerResolution { get; private set; }
         public ImageResolution ImageResolution { get; private set; }
-        public CameraMode Mode { get; set; }
-        public CameraModel Model { get; private set; }
-        public int Orientation { get; set; }
-
+        
         public CameraScreen Parent { get; set; }
         
         public int ID { get; private set; }
+        private CameraMode mode;
+        public CameraMode Mode { get { return mode;  }  set { SetProperty(ref mode, value); } }
+        public int Orientation { get; set; }
+        public SettingsGeneralCameraSystem Settings { get; set; }
+        
 
-        public Camera(int id, CameraMode mode, QTMRealTimeSDK.Settings.Resolution markerResolution, ImageResolution imageResolution, CameraModel model, int orientation)
+        public Camera(int id, SettingsGeneralCameraSystem settings, ImageResolution imageResolution)
         {
             ID = id;
-            Mode = mode;
-            Model = model;
-            Orientation = orientation;
+            // TODO: this is part of the settings
+            Mode = settings.Mode;
+            Settings = settings;
             ImageResolution = imageResolution;
-            MarkerResolution = markerResolution;
 
-            SettingsService.EnableImageMode(ID, Mode != CameraMode.ModeMarker, ImageResolution.Width, ImageResolution.Height);
+            // TODO: this should not have to be done in the constructor
+            if (IsImageMode())
+                EnableImageMode();
         }
 
         /// <summary>
@@ -54,66 +48,88 @@ namespace Arqus.DataModels
             {
                 if (SettingsService.SetCameraMode(ID, mode))
                 {
-
-                    ElasticsearchCameraEvent cameraEvent = new ElasticsearchCameraEvent()
-                    {
-                        OldMode = Mode.ToString(),
-                        NewMode = mode.ToString(),
-                        CameraID = ID
-                    };
-
                     Mode = mode;
-
-                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode, payload: cameraEvent);
+                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
                 }
             }
         }
         
-        public enum SettingType
+        /// <summary>
+        /// Attempts to update settings of the camera by issuing a request to the QTM host
+        /// </summary>
+        public void UpdateSettings()
         {
-            MarkerExposure,
-            MakerThreshold,
-            VideoExposure,
-            VideoFlashTime
+            UpdateSettings(SettingsService.GetCameraSettings(ID));
         }
 
-        public SettingsGeneralCameraSystem GetSettings()
+        /// <summary>
+        /// Update the settings of the camera if the QTM host updated the settings successfully
+        /// </summary>
+        /// <param name="settings"></param>
+        private void UpdateSettings(SettingsGeneralCameraSystem? settings)
         {
-            return SettingsService.GetCameraSettings(ID);
-
-            /*
-            return new Dictionary<SettingType, SettingsSlider>()
+            if (settings != null)
             {
-                { SettingType.MarkerExposure, new SettingsSlider(settings.MarkerExposure.Min, settings.MarkerExposure.Max, settings.MarkerExposure.Current) },
-                { SettingType.MakerThreshold, new SettingsSlider(settings.MarkerThreshold.Min, settings.MarkerThreshold.Max, settings.MarkerThreshold.Current) },
-                { SettingType.VideoExposure, new SettingsSlider(settings.VideoExposure.Min, settings.VideoExposure.Max, settings.VideoExposure.Current) },
-                { SettingType.VideoFlashTime, new SettingsSlider(settings.VideoFlashTime.Min, settings.VideoFlashTime.Max, settings.VideoFlashTime.Current) }
-            };
-            */
+                Settings = settings.Value;
+            }
+        }
+        
+        /// <summary>
+        /// Set a certain setting for this camera
+        /// </summary>
+        /// <param name="setting">the settings to be set</param>
+        /// <param name="value">the value to set the setting to</param>
+        public void SetSetting(string setting, double value)
+        {
+
+            if (SettingsService.SetCameraSettings(ID, setting, value.ToString()))
+                UpdateSettings();
         }
 
+        /// <summary>
+        /// Select the camera
+        /// </summary>
         public void Select()
         {
-            if(Mode != CameraMode.ModeMarker)
-                Enable();
+            // Enable image mode if neccessary
+            if(IsImageMode())
+                EnableImageMode();
 
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
         }
 
+
         public void Deselect()
         {
-            Disable();
+            // Disable image mode when not selected to keep the transferred data to a minimum
+            DisableImageMode();
+
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.Off));
         }
         
-        public void Enable()
+        /// <summary>
+        /// Enable image mode for streaming on the QTM host
+        /// </summary>
+        public void EnableImageMode()
         {
             SettingsService.EnableImageMode(ID, true, ImageResolution.Width, ImageResolution.Height);
         }
 
-        public void Disable()
+        /// <summary>
+        /// Disable image mode for streaming on the QTM host
+        /// </summary>
+        public void DisableImageMode()
         {
             SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+        }
+
+        /// <summary>
+        /// Check to see if the camera is in image mode, such as video or intensity
+        /// </summary>
+        /// <returns>true if the camera is running in image mode</returns>
+        private bool IsImageMode()
+        {
+            return Mode != CameraMode.ModeMarker;
         }
     }
 }

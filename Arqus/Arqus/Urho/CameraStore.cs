@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using QTMRealTimeSDK.Settings;
 using Arqus.Helpers;
 using Arqus.DataModels;
+using Prism.Mvvm;
 
 namespace Arqus
 {
@@ -14,8 +15,9 @@ namespace Arqus
     /// Camera store that handles retreival of up-to-date cameras and the current 
     /// state of the cameras in the application
     /// </summary>
-    class CameraStore
-    {        
+    class CameraStore : BindableBase
+    {
+        static Camera currentCamera;
         public static Camera CurrentCamera;
         public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
@@ -23,9 +25,6 @@ namespace Arqus
         
 
         /// <summary>
-        /// Name: GenerateCameraScreens
-        /// Created: 19-04-2017
-        /// 
         /// Generates camera screens to use inside an Urho context based on the 
         /// ImageCameras recieved from the QTM host.
         /// </summary>
@@ -47,10 +46,9 @@ namespace Arqus
                 if(!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
                     SettingsService.SetCameraMode(imageCameraSettings.CameraID, cameraSettings.Mode);
 
-                bool isImageMode = cameraSettings.Mode != CameraMode.ModeMarker;
-
+                
                 ImageResolution imageResolution = new ImageResolution(imageCameraSettings.Width / 4, imageCameraSettings.Height / 4);
-                Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings.Mode, cameraSettings.MarkerResolution, imageResolution, cameraSettings.Model, cameraSettings.Orientation);
+                Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings, imageResolution);
                 Cameras.Add(camera.ID, camera);
                 
                 // Make sure that the current settings are reflected in the state of the application

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <prism:PrismApplication xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:helpers="clr-namespace:Arqus.Helpers"
+             xmlns:converters="clr-namespace:Arqus.Converters"
              xmlns:prism="clr-namespace:Prism.Unity;assembly=Prism.Unity.Forms"
              x:Class="Arqus.App">
 
@@ -47,9 +47,10 @@
             </Style>
 
             <!--Value Converters-->
-            <helpers:InverseBoolConverter x:Key="InverseBoolConverter" />
-            <helpers:IntToDoubleConverter x:Key="IntToDoubleConverter" />
-            <helpers:ValueChangedEventArgsConverter x:Key="valueChangedEventArgsConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
+            <converters:ValueChangedEventArgsConverter x:Key="valueChangedEventArgsConverter" />
+            <converters:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
 
         </ResourceDictionary>
     </prism:PrismApplication.Resources>

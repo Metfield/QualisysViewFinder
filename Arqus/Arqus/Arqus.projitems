@@ -9,18 +9,16 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)CameraSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\CameraSettingsCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\IntToDoubleConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ValueChangedEventArgsConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraSettingsDrawer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml.cs">
       <DependentUpon>GridPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -34,7 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SettingsSlider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\SettingsSlider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
@@ -44,7 +42,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageProcessor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CarouselScreenLayout.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\InverseBoolConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\InverseBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
       <DependentUpon>CameraPage.xaml</DependentUpon>
@@ -53,12 +51,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ObservableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

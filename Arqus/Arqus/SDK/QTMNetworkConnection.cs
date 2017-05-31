@@ -288,7 +288,7 @@ namespace Arqus
             }
         }
        
-        public bool SetCameraSettings(int id, string settingsParameter, float value)
+        public bool SetCameraSettings(int id, string settingsParameter, string value)
         {
             // Create XML command
             string packetString = Packet.SettingsParameter(id, settingsParameter, value);

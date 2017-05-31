@@ -7,8 +7,14 @@ namespace Arqus.Helpers
     public static class DataOperations
     {
         /// <summary>
-        /// Transforms data from one range to another.
-        /// </summary>              
+        /// Transforms data from one range to another
+        /// </summary>
+        /// <param name="originalStart">original range start</param>
+        /// <param name="originalEnd">original range end</param>
+        /// <param name="newStart">new range start</param>
+        /// <param name="newEnd">new range end</param>
+        /// <param name="value">the value to be converted into a new range</param>
+        /// <returns></returns>
         public static float ConvertRange(float originalStart, float originalEnd, // original range
                                       float newStart, float newEnd, // desired range
                                       float value) // value to convert

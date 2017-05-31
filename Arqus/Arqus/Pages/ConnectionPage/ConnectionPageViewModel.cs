@@ -236,9 +236,8 @@ namespace Arqus
 
         // Command button binding        
         public DelegateCommand ConnectCommand { private set;  get; }
-
-        // 192.168.10.179
-        private string ipAddress = "192.168.10.179";
+        
+        private string ipAddress = "10.0.1.19";
 
         public string IPAddress
         {

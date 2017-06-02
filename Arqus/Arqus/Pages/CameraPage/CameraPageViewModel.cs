@@ -127,8 +127,7 @@ namespace Arqus
 
         private void SetCameraMode(CameraMode mode)
         {
-            // Set the mode
-            MobileCenterService.TrackEvent(GetType().Name, "SetCameraMode " + mode.ToString());
+            // Set the mode            
             CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme

@@ -33,7 +33,9 @@ namespace Arqus
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
- 
+
+            HideBottomSheetCommand = new DelegateCommand(() => IsBottomSheetVisible = !isBottomSheetVisible);
+
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
                 string cameraScreenLayout;
@@ -144,6 +146,7 @@ namespace Arqus
         public DelegateCommand SetCameraModeToVideoCommand { get; set; }
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
+        public DelegateCommand HideBottomSheetCommand { get; set; }
 
         private Camera currentCamera;
         public Camera CurrentCamera
@@ -212,6 +215,14 @@ namespace Arqus
 
                     break;
             }
+        }
+
+        private bool isBottomSheetVisible = true;
+
+        public bool IsBottomSheetVisible
+        {
+            get { return isBottomSheetVisible; }
+            set { SetProperty(ref isBottomSheetVisible, value); }
         }
 
 

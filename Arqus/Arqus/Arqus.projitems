@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />

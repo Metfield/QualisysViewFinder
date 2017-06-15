@@ -4,9 +4,9 @@
              xmlns:ui="clr-namespace:Arqus.UI"
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True"          
+             prism:ViewModelLocator.AutowireViewModel="True"   
              x:Class="Arqus.CameraPage" >
-
+    
     <ContentPage.ToolbarItems>
        
         <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
@@ -27,7 +27,7 @@
     <StackLayout Margin="0" Style="{StaticResource Background}">
 
 
-        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
+        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" InputTransparent="False">
             <Grid VerticalOptions="End" Padding="0">
 
                 <Grid.RowDefinitions>
@@ -69,13 +69,16 @@
             </Grid>
         </Frame>
 
-
-        <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand" />
-
-
-    <!-- Drawers layout -->
-        <StackLayout VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0">
+        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False">
+            <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
             
+        </StackLayout>
+       
+
+        <!-- Drawers layout -->
+        <ui:BottomSheet IsVisible="{Binding IsBottomSheetVisible}" VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0">
+            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}"
+                BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
             <!-- Marker-specific drawer -->
             <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" Margin="0" CornerRadius="0" >
                 <StackLayout>
@@ -134,7 +137,7 @@
                 
             </Frame>
 
-        </StackLayout>
+        </ui:BottomSheet>
 
 
     </StackLayout>

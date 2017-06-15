@@ -31,6 +31,16 @@
                 <Setter Property="VerticalOptions" Value="FillAndExpand" />
             </Style>
 
+            <Style x:Key="NoMarginButton" TargetType="Button">
+                <Setter Property="Margin" Value="-10" />
+                <Setter Property="BorderRadius" Value="0" />
+                <Setter Property="BorderWidth" Value="0" />
+                <Setter Property="ContentLayout" Value="Top,0" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="FontSize" Value="Micro" />
+            </Style>
+
             <Style x:Key="PrimaryText" TargetType="Label">
                 <Setter Property="TextColor" Value="#FFFFFF" />
                 <Setter Property="Opacity" Value="1" />

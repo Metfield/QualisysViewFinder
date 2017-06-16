@@ -24,10 +24,13 @@ namespace Arqus
 
         // Keep track if latest value was updated by QTM
         public bool updateQTMHost = true;
+
+        // Keep tabs on demo mode
+        private bool isDemoModeActive;
         
         public CameraPageViewModel(INavigationService navigationService)
         {
-            this.navigationService = navigationService;
+            this.navigationService = navigationService;            
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
@@ -67,7 +70,7 @@ namespace Arqus
                 MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(),
                 (QTMEventListener sender) => CurrentCamera.UpdateSettings());
             
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
+            //MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
 
             // Switch them drawers now
             SwitchDrawers(CurrentCamera.Mode);
@@ -82,7 +85,7 @@ namespace Arqus
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
-
+            
             try
             {
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
@@ -99,11 +102,39 @@ namespace Arqus
         public void OnNavigatedTo(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
+
+            // Try and get the demoMode parameter
+            try
+            {
+                isDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
             MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Navigate = "OnNavigatingTo" });
+
+            bool isDemoMode = false;
+
+            try
+            {
+                isDemoMode = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
+            }
+            catch(Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+
+            if(isDemoMode)
+            {
+                // Create demoMode object and load file
+                DemoMode demoMode = new DemoMode("Running.qd");
+                demoMode.LoadDemoFile();
+            }
         }
 
         private void OnCameraSelection(Object sender, int cameraID)

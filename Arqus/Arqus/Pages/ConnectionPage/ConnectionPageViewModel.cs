@@ -9,9 +9,17 @@ using Prism.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Xamarin.Forms;
+
+using QTMRealTimeSDK.Data;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+using System.Reflection;
+using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
@@ -30,6 +38,8 @@ namespace Arqus
         private INavigationService navigationService;
         private INotification notificationService;
 
+        private NavigationParameters navigationParams = new NavigationParameters();        
+
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
@@ -46,8 +56,9 @@ namespace Arqus
             
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
-            ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
+            ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 
+            ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -106,6 +117,7 @@ namespace Arqus
         public DelegateCommand RefreshQTMServers { private set; get; }
         public DelegateCommand ConnectionModeDiscoveryCommand { private set; get; }
         public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
+        public DelegateCommand ConnectionModeDemoCommand { private set; get; }
 
         private ConnectionMode currentConnectionMode;
 
@@ -260,7 +272,6 @@ namespace Arqus
         {
             try
             {
-
                 // Connect to IP
                 bool success = connection.Connect(IPAddress, Password);
 
@@ -279,8 +290,10 @@ namespace Arqus
                 SettingsService.Initialize();
                 CameraStore.GenerateCameras();
 
-                // Connection was successfull          
-                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage"));
+                // Connection was successfull                
+                // Navigate to camera page
+                navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
+                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
             }
             catch (Exception e)
             {
@@ -288,5 +301,22 @@ namespace Arqus
                 notificationService.Show("Whoopsie daisy!");
             }
         }
-    }
+
+        // Start app using demo mode
+        async void StartDemoMode()
+        {
+            // Initialize mock general settings
+            SettingsService.Initialize(true);
+            CameraStore.GenerateCameras();
+
+            // Create demoMode object and load file
+            /*DemoMode demoMode = new DemoMode("Running.qd");
+            demoMode.LoadDemoFile();*/
+
+            // Navigate to camera page
+            navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, true);
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
+        }
+    }      
 }
+

@@ -93,6 +93,7 @@ namespace QTMRealTimeSDK.Data
     #region Data structures related to RTPacket
 
     /// <summary>Data for cameras, includes 2D marker data</summary>
+    [Serializable]
     public struct Camera
     {
         /// <summary>Number of markers</summary>
@@ -146,6 +147,7 @@ namespace QTMRealTimeSDK.Data
     }
 
     /// <summary>2D Data for markers from cameras. used by both for non- and linearized marker</summary>
+    [Serializable]
     public struct Q2D
     {
         /// <summary>X coordinate of the marker</summary>

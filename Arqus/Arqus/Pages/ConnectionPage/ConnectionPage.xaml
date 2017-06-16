@@ -57,6 +57,10 @@
 
         </StackLayout>
 
+        <ui:JiggleButton HorizontalOptions="Center" Text="Demo Mode"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectionModeDemoCommand}"/>
+
     </StackLayout>
 
 </ContentPage>

@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Arqus.Droid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("Arqus.Resource", IsApplication=true)]
 
-namespace Arqus.Droid
+namespace Arqus
 {
 	
 	
@@ -26,7 +26,7 @@ namespace Arqus.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Arqus.Droid.Resource.Attribute.actionBarSize;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Arqus.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation

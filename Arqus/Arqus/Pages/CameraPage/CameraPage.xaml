@@ -27,7 +27,7 @@
     <StackLayout Margin="0" Style="{StaticResource Background}">
 
 
-        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" InputTransparent="False">
+        <Frame Style="{StaticResource AppBar}"  Margin="0,0,0,-5" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" InputTransparent="False">
             <Grid VerticalOptions="End" Padding="0">
 
                 <Grid.RowDefinitions>
@@ -69,21 +69,27 @@
             </Grid>
         </Frame>
 
-        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False">
+        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Bisque">
             <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
             
         </StackLayout>
-       
+
+        <Frame Style="{StaticResource AppBar}" 
+               Padding="0"
+               Margin="-5"
+               IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" >
+            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent"
+                BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
+        </Frame>
 
         <!-- Drawers layout -->
-        <ui:BottomSheet IsVisible="{Binding IsBottomSheetVisible}" VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0">
-            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}"
-                BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
-            <!-- Marker-specific drawer -->
-            <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" Margin="0" CornerRadius="0" >
-                <StackLayout>
-                    <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
+        <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
 
+            <!-- Marker-specific drawer -->
+            <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
+                <StackLayout>
+
+                    <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Exposure" HorizontalOptions="Start"/>
                             <Label BindingContext="{x:Reference Name=markerExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
@@ -128,17 +134,15 @@
                         <Slider x:Name="videoFlashTimeSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
-                                Minimum="{Binding CurrentCamera.Setttings.VideoFlashTime.Min}"
+                                Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
                                 Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
 
                     </StackLayout>
-
                 </StackLayout>
-                
+
             </Frame>
 
-        </ui:BottomSheet>
-
+        </StackLayout>
 
     </StackLayout>
 

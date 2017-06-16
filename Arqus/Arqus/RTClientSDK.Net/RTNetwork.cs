@@ -276,8 +276,11 @@ namespace QTMRealTimeSDK.Network
             {
                 foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    if (nic.OperationalStatus != OperationalStatus.Up)
-                        continue;
+                    // There is a bug on android that causes a native crash
+                    // Bugzilla: https://bugzilla.xamarin.com/show_bug.cgi?id=52733
+                    //
+                    //if (nic.OperationalStatus != OperationalStatus.Up)
+                    //    continue;
                     if (nic.NetworkInterfaceType != 0)
                     {
                         if (nic.NetworkInterfaceType != NetworkInterfaceType.Ethernet &&
@@ -302,6 +305,11 @@ namespace QTMRealTimeSDK.Network
             {
                 mErrorCode = ex.SocketErrorCode;
                 mErrorString = ex.Message;
+                return false;
+            }
+            catch (Exception e)
+            {
+                mErrorString = e.Message;
                 return false;
             }
             return true;

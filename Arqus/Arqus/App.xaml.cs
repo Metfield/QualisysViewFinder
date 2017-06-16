@@ -18,18 +18,6 @@ namespace Arqus
         protected override void OnInitialized()
         {
             InitializeComponent();
-            
-
-            MessagingService.Subscribe<Application>(this, MessageSubject.CONNECTED, (sender) =>
-            {
-                OnConnected();
-            });
-
-            MessagingService.Subscribe<Application>(this, MessageSubject.DISCONNECTED, (sender) =>
-            {
-                OnDisconnected();
-            });
-
             NavigationService.NavigateAsync("NavigationPage/ConnectionPage");
         }
 
@@ -47,16 +35,6 @@ namespace Arqus
         {
             base.OnStart();
             MobileCenterService.Init();
-        }
-        
-
-        protected void OnConnected()
-        {
-        }
-
-        protected void OnDisconnected()
-        {
-            SettingsService.Dispose();
         }
         
     }

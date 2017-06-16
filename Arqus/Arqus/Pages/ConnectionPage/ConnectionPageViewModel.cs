@@ -52,22 +52,11 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            ElasticsearchService.TrackEvent(new ElasticEvent()
-            {
-                Name = "ConnectionPageViewModel",
-                Message = "Connection Session Start"
-            });
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            ElasticsearchService.TrackEvent(new ElasticEvent()
-            {
-                Name = "ConnectionPageViewModel",
-                Message = "Connection Session End"
-            });
-
 
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
 
@@ -237,7 +226,7 @@ namespace Arqus
         // Command button binding        
         public DelegateCommand ConnectCommand { private set;  get; }
         
-        private string ipAddress = "192.168.10.168";
+        private string ipAddress = "192.168.10.179";
 
         public string IPAddress
         {
@@ -256,7 +245,7 @@ namespace Arqus
         /// <summary>
         /// Callback method for starting connection
         /// </summary>
-        async void OnConnectionStarted()
+        void OnConnectionStarted()
         {
             try
             {

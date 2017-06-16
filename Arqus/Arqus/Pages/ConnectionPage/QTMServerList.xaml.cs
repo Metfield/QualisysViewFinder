@@ -2,11 +2,11 @@
 
 namespace Arqus
 {
-	public partial class QTMServerList : ListView
+	public partial class QTMServerList : ContentView
 	{        
 		public QTMServerList ()
 		{
-			InitializeComponent();
+            InitializeComponent();
         }
     }
 }

@@ -17,7 +17,6 @@ namespace Arqus
     /// </summary>
     class CameraStore : BindableBase
     {
-        static Camera currentCamera;
         public static Camera CurrentCamera;
         public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
@@ -31,6 +30,7 @@ namespace Arqus
         /// <returns></returns>
         public static bool GenerateCameras()
         {
+            CurrentCamera = null;
             Cameras = new Dictionary<int, Camera>();
             CameraScreen.ResetScreenCounter();
             

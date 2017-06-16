@@ -84,7 +84,7 @@ namespace Arqus
 
             markerStream.Dispose();
 
-            //qtmEventListener.Dispose();
+            qtmEventListener.Dispose();
 
         }
 

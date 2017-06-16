@@ -63,6 +63,7 @@ namespace Arqus
 
             if(IsValidIPv4(ipAddress))
             {
+                hasControl = false;
                 if (Protocol.Connect(ipAddress, port))
                 {
                     string ver;
@@ -124,6 +125,9 @@ namespace Arqus
                 string response = Protocol.GetErrorString();
                 Debug.WriteLine("Error: " + response);
             }
+
+            hasControl = false;
+
             return success;
         }
 

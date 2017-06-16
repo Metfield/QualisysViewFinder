@@ -1294,6 +1294,7 @@ namespace QTMRealTimeSDK
             {
                 if (disposing)
                 {
+                    ReleaseControl();
                     Disconnect();
                     mNetwork.Dispose();
                 }

@@ -32,16 +32,18 @@
 
         </StackLayout>
 
-        <StackLayout  IsVisible="{Binding IsDiscovery}"
-                      VerticalOptions="StartAndExpand"
-                      HorizontalOptions="Center" 
-                      WidthRequest="300">
-            <Frame Margin="0,0,0,15" BackgroundColor="#424242">
-                <local:QTMServerList x:Name="qtmListView" />
-            </Frame>
+        <Frame IsVisible="{Binding IsDiscovery}"
+                VerticalOptions="StartAndExpand"
+                HorizontalOptions="Center" 
+                WidthRequest="300"
+                Margin="0,0,0,15" BackgroundColor="#424242">
+            
+            <local:QTMServerList x:Name="qtmListView" 
+                                 HorizontalOptions="FillAndExpand"
+                                 VerticalOptions="FillAndExpand"/>
 
+        </Frame>
 
-        </StackLayout>
 
         <StackLayout IsVisible="{Binding IsManually}" 
                     VerticalOptions="StartAndExpand" 

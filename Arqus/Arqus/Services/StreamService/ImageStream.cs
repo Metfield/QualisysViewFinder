@@ -38,29 +38,25 @@ namespace Arqus.Services
 
                         try
                         {
-
                             if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID)
                             {
 
                                 Task.Run(() =>
                                 {
-                                    lock (streamLock)
-                                    {
-                                        limiter++;
-                                    }
-
+                                    limiter++;
                                     long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                                    ImageSharp.Image<Rgba32> imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
 
                                     if (timestamp > lastDecodeTimestamp)
                                     {
                                         lastDecodeTimestamp = timestamp;
-                                        Urho.Application.InvokeOnMain(() => CameraStore.CurrentCamera.Parent.UpdateMaterialTexture(imageData.Pixels));
+
+                                        ImageSharp.Image<Rgba32> imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
+                                        Urho.Application.InvokeOnMainAsync(() => 
+                                            CameraStore.CurrentCamera?.Parent.UpdateMaterialTexture(imageData)
+                                        );
                                     }
-                                    lock (streamLock)
-                                    {
-                                        limiter--;
-                                    }
+                                    
+                                    limiter--;
                                 });
                             }
                         }

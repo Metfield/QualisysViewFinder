@@ -1,8 +1,6 @@
-﻿using Arqus.Services.MobileCenterService;
-using System;
+﻿using System;
 using Xamarin.Forms;
-using Nest;
-using Arqus.Services;
+using Arqus.Services.MobileCenterService;
 
 namespace Arqus.Service
 {
@@ -56,15 +54,6 @@ namespace Arqus.Service
 
         private static void TrackEvent(string name, string message, object payload = null)
         {
-
-            var elasticEvent = new ElasticEvent
-            {
-                Name = name,
-                Message = message,
-                Payload = payload
-            };
-
-            ElasticsearchService.TrackEvent(elasticEvent);
             MobileCenterService.TrackEvent(name, message);
         }
 

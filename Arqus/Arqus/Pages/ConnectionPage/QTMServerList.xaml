@@ -1,6 +1,13 @@
-﻿<ListView xmlns="http://xamarin.com/schemas/2014/forms"
-            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-            x:Class="Arqus.QTMServerList"
+﻿<ContentView   xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="Arqus.QTMServerList"
+        xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+        >
+    <StackLayout    
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+        <Label Text="Pull to refresh" IsVisible="{Binding QTMServers, Converter={StaticResource DataSourceConverter}}"/>
+        <ListView 
             SeparatorColor="#101010"
             HorizontalOptions="FillAndExpand"
             ItemsSource="{Binding QTMServers}"
@@ -10,17 +17,22 @@
             IsRefreshing="{Binding IsRefreshing}"
             HasUnevenRows="true"
           >
-   
 
-  <ListView.ItemTemplate>
-    <DataTemplate>
-      <ViewCell>
-        <StackLayout Padding="5">
-          <Label Text="{Binding HostName}" />
-          <Label Text="{Binding Details}"
+            <ListView.ItemTemplate>
+
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Padding="5">
+
+                            <Label Text="{Binding HostName}" />
+                            <Label Text="{Binding Details}"
                  FontSize="Micro" />
-        </StackLayout>
-      </ViewCell>
-    </DataTemplate>
-  </ListView.ItemTemplate>
-</ListView>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+
+</ContentView>
+    

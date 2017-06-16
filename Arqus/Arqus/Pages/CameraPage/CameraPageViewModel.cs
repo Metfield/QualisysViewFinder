@@ -23,7 +23,8 @@ namespace Arqus
         private INavigationService navigationService;
 
         // Keep track if latest value was updated by QTM
-        public bool updateQTMHost = true;
+        public uint skipCounter = 0;
+
 
         // Keep tabs on demo mode
         private bool isDemoModeActive;
@@ -37,7 +38,9 @@ namespace Arqus
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
-            HideBottomSheetCommand = new DelegateCommand(() => IsBottomSheetVisible = !isBottomSheetVisible);
+            HideBottomSheetCommand = new DelegateCommand(() => {
+                IsBottomSheetVisible = !isBottomSheetVisible;
+            });
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
@@ -56,7 +59,7 @@ namespace Arqus
                     IsGridLayoutActive = true;
                 }
 
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, payload: new { cameraScreenLayout });
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, cameraScreenLayout, payload: new { cameraScreenLayout });
             });
 
             // We're starting with carousel mode
@@ -68,7 +71,11 @@ namespace Arqus
             
             MessagingCenter.Subscribe(this,
                 MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(),
-                (QTMEventListener sender) => CurrentCamera.UpdateSettings());
+                (QTMEventListener sender) =>
+                {
+                    skipCounter++;
+                    CurrentCamera.UpdateSettings();
+                });
             
             //MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
 
@@ -78,7 +85,10 @@ namespace Arqus
 
         public void SetCameraSetting(string setting, double value)
         {
-            CurrentCamera.SetSetting(setting, value);
+            if(skipCounter == 0)
+                CurrentCamera.SetSetting(setting, value);
+            else
+                skipCounter--;
         }
         
 
@@ -248,7 +258,7 @@ namespace Arqus
             }
         }
 
-        private bool isBottomSheetVisible = true;
+        private bool isBottomSheetVisible = false;
 
         public bool IsBottomSheetVisible
         {

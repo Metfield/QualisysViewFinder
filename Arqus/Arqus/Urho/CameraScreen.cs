@@ -11,6 +11,7 @@ using Arqus.Service;
 using System.Diagnostics;
 using Urho.Gui;
 using System;
+using ImageSharp;
 
 namespace Arqus.Visualization
 {
@@ -83,7 +84,6 @@ namespace Arqus.Visualization
 
         // Intensity mode properties
         private Texture2D texture;
-        private Texture2D markerTexture;
 
         private ImageSharp.Rgba32[] imageData;
 
@@ -157,8 +157,6 @@ namespace Arqus.Visualization
             Material.SetTexture(TextureUnit.Diffuse, texture);
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             imageScreen.SetMaterial(Material);
-
-
             
 
             labelNode = screenNode.CreateChild();
@@ -180,10 +178,9 @@ namespace Arqus.Visualization
 
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
             MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
-            MessagingCenter.Unsubscribe<ImageStream, ImageSharp.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
             MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
+            base.Dispose(disposing);
         }
         
 
@@ -195,14 +192,7 @@ namespace Arqus.Visualization
                 if(!IsImageMode())
                     Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
-
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingService.Subscribe<ImageStream, ImageSharp.Rgba32[]>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, imageData) =>
-             {
-                if(IsImageMode())
-                    Urho.Application.InvokeOnMain(() => ImageData = imageData);
-            });
-
+            
             MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
                 SetImageMode(mode != CameraMode.ModeMarker);
@@ -250,13 +240,14 @@ namespace Arqus.Visualization
             OnUpdateHandler = OnMarkerUpdate;
         }
         
-        public unsafe bool UpdateMaterialTexture(ImageSharp.Rgba32[] imageData)
+        public unsafe void UpdateMaterialTexture(Image<Rgba32> imageData)
         {
-
-            fixed (ImageSharp.Rgba32* bptr = imageData)
+            fixed (ImageSharp.Rgba32* bptr = imageData.Pixels)
             {
-                return texture.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
+                texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
             }
+
+            imageData.Dispose();
         }
         
         protected override void OnUpdate(float timeStep)
@@ -343,8 +334,6 @@ namespace Arqus.Visualization
 
         private void OnImageUpdate()
         {
-          if(imageData != null)
-                UpdateMaterialTexture(imageData);
         }        
         
 

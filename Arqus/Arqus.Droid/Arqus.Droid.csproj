@@ -326,15 +326,9 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_grain_black_24dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\Drawable\arqus_logo.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Pages\CameraPage\" />
     <Folder Include="Pages\ConnectionPage\" />
     <Folder Include="Resources\images\" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\Drawable\arqus_logo_medium.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-mdpi\ic_grid_on_black_24dp.png" />
@@ -455,6 +449,12 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_settings_white_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\arqus_logo_medium.png" />
   </ItemGroup>
   <Import Project="..\Arqus\Arqus.projitems" Label="Shared" Condition="Exists('..\Arqus\Arqus.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

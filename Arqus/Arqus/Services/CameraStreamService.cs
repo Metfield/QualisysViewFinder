@@ -56,19 +56,17 @@ namespace Arqus
 
             markerStream = new MarkerStream();
 
-
-
-            imageStream.StartStream();
+            
+            //imageStream.StartStream();
 
             markerStream.StartStream();
-
-
+            
 
             // Frequency of 30
 
             // Create event listener and start listening immediately
 
-            qtmEventListener = new QTMEventListener(30, true);
+            //qtmEventListener = new QTMEventListener(30, true);
 
         }
 

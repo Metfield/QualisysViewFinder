@@ -1,6 +1,7 @@
 ﻿using Arqus.DataModels;
 using Arqus.Helpers;
 using Arqus.Service;
+using Arqus.Services;
 using Arqus.Services.MobileCenterService;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -14,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using static Arqus.CameraApplication;
 
 namespace Arqus
 {
@@ -21,7 +23,7 @@ namespace Arqus
     {
         // Dependency services
         private INavigationService navigationService;
-
+        
         // Keep track if latest value was updated by QTM
         public uint skipCounter = 0;
 
@@ -29,6 +31,7 @@ namespace Arqus
         public CameraPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
+
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
@@ -49,14 +52,19 @@ namespace Arqus
                     cameraScreenLayout = "carousel";
                     IsGridLayoutActive = false;
                     ShowDrawer();
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel, payload: new { cameraScreenLayout });
                 }
                 else
                 {
+
                     cameraScreenLayout = "grid";
                     IsGridLayoutActive = true;
+
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid, payload: new { cameraScreenLayout });
                 }
 
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, cameraScreenLayout, payload: new { cameraScreenLayout });
             });
 
             // We're starting with carousel mode
@@ -71,7 +79,8 @@ namespace Arqus
                 (QTMEventListener sender) =>
                 {
                     skipCounter++;
-                    CurrentCamera.UpdateSettings();
+                    // REMOVED FOR DEBUG PURPOSE
+                    //CurrentCamera.UpdateSettings();
                 });
             
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);

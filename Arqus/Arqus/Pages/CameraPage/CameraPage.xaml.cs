@@ -11,12 +11,13 @@ using Xamarin.Forms;
 using System.Reactive.Linq;
 using System.Threading;
 using Arqus.Helpers;
+using Arqus.Service;
 
 namespace Arqus
 {
     public partial class CameraPage : ContentPage
     {
-        CameraApplication currentApplication;
+        CameraApplication application;
         CameraPageViewModel viewModel;
         
 
@@ -31,7 +32,7 @@ namespace Arqus
             InitSliderObservers();
         }
 
-
+        DeviceOrientations orientation;
 
         // Moved into a function to keep the constructor from getting bloated with code
         private void InitSliderObservers()
@@ -60,26 +61,51 @@ namespace Arqus
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe((value) => viewModel.SetCameraSetting(Constants.VIDEO_FLASH_PACKET_STRING, value));
         }
-    
-        protected override async void OnAppearing()
+
+        /// <summary>
+        /// Updates the Urho application in case there is an orientation change
+        /// </summary>
+        /// <param name="width">width of the screen</param>
+        /// <param name="height">height of the screen</param>
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+
+            // If the width is greated than the height the device is in landscape mode,
+            // otherwise it is in portrait
+            if(width > height)
+            {
+                orientation = DeviceOrientations.Landscape;
+            }
+            else
+            {
+                orientation = DeviceOrientations.Portrait;
+            }
+
+            // Only update the application if it has been created
+            if (application != null)
+                application.Orientation = orientation;
+        }
+
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            currentApplication = await StartUrhoApp();                      
-            
+            StartUrhoApp();
         }
         
         protected override async void OnDisappearing()
         {
-            await currentApplication.Exit();
+            await application.Exit();
             UrhoSurface.OnDestroy();
             base.OnDisappearing();
         }        
         
 
-        async Task<CameraApplication> StartUrhoApp()
+        async void StartUrhoApp()
         {
-            CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
-            return markerApplication;
+            application = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            //Set the orientation of the application to match the rest of the UI
+            application.Orientation = orientation;
         }
         
     }

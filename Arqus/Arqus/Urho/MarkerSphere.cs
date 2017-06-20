@@ -14,9 +14,11 @@ namespace Arqus.Visualization
     public class MarkerSphere : CustomGeometry
     {
         public Color SphereColor { get; set; }
+        public uint Quality { get; set; }
 
         public MarkerSphere()
         {
+            Quality = 40;
             // Set default color to white
             SphereColor = Color.White;
 
@@ -28,6 +30,8 @@ namespace Arqus.Visualization
 
             // Create sphere component and attach it 
             SetMaterial(Material.FromColor(SphereColor, true));
+
+            DefineGeometry(0, PrimitiveType.TriangleFan, Quality, true, true, false, false);
         }   
     }
 }

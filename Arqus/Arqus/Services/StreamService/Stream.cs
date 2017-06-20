@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
@@ -12,8 +13,7 @@ namespace Arqus.Services
 {
 
     /// <summary>
-    /// Description: It is meant to retrieve RT packets in a 
-    /// consistent way    
+    ///   
     /// </summary>
     abstract class Stream<TData> : IDisposable
     {
@@ -55,19 +55,15 @@ namespace Arqus.Services
         }
 
         
-        PacketType packetType;
-        /// <summary>
-        /// Description: Streams data in the same frequency as the initiated stream
-        /// with the QTM server. If it manages to process packets faster that expected
-        /// it will wait.
-        /// </summary>
-        protected void ContinuousStream()
+
+        protected async void ContinuousStream()
         {
             while(streaming)
             {
                 try
                 {
-                    connection.Protocol.ReceiveRTPacket(out packetType);
+                    PacketType packetType;
+                    connection.Protocol.ReceiveRTPacket(out packetType, false);
                     // Make sure this is a data packet
                     if (packetType == PacketType.PacketData)
                     {
@@ -79,10 +75,9 @@ namespace Arqus.Services
                     Debug.WriteLine(e);
                     Debugger.Break();
                 }
-                
             }
         }
-        
+
         protected abstract void RetrieveDataAsync(RTPacket packet);
         
 

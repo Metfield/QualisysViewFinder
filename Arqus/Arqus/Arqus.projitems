@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IOrientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
@@ -37,6 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\SettingsSlider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayoutManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />

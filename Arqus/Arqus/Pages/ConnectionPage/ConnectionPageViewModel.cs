@@ -278,25 +278,24 @@ namespace Arqus
                     notificationService.Show("Attention: There was a connection error, please check IP and pass");
                     return;
                 }
-
-                // 
-                //networkConnection.Dispose();
-
-                // Send connection instance to settings service
-                SettingsService.Initialize();                
-                CameraStore.GenerateCameras();
-
-                // Connection was successfull                
-                // Navigate to camera page
-                NavigationParameters navigationParams = new NavigationParameters();
-                navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
-                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notificationService.Show("Whoopsie daisy!");
+                notificationService.Show("Please make sure that QTM is up and running");
+
+                return;
             }
+           
+            // Send connection instance to settings service
+            SettingsService.Initialize();                
+            CameraStore.GenerateCameras();
+
+            // Connection was successfull                
+            // Navigate to camera page
+            NavigationParameters navigationParams = new NavigationParameters();
+            navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));           
         }
 
         // Start app using demo mode

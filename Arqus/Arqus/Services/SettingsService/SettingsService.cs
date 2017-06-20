@@ -172,8 +172,6 @@ namespace Arqus
         /// <returns>camera settings or null in case of failure</returns>
         public static SettingsGeneralCameraSystem? GetCameraSettings(int id)
         {
-
-
             try
             {
                 if(connection.Protocol.GetGeneralSettings())
@@ -200,8 +198,6 @@ namespace Arqus
             connection.Protocol.GetImageSettings();
             return connection.Protocol.ImageSettings.Cameras;
         }
-
-
         
         /// <summary>
         /// Sends new settings to QTM
@@ -240,8 +236,7 @@ namespace Arqus
         public static async Task<bool> SetLED(int id, LEDMode mode, LEDColor color = LEDColor.All)
         {
             try
-            {
-                
+            {                
                 bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
                 return false;
             }

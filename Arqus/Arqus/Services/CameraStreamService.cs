@@ -25,9 +25,7 @@ namespace Arqus
         {
             streamingDemo = demoMode;
         }
-
-        // this is been CALLED TWICE AFTER GOING BACK ONCE FROM DEMO MODE
-        // START GETS CALLED BEFORE THE CONSTRUCTOR
+                
         public void Start()
         {
             if (!streamingDemo)

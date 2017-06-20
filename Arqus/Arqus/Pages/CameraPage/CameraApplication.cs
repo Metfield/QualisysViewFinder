@@ -309,7 +309,7 @@ namespace Arqus
                 //CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
                 //currentScreenLayout.Select(focus.position);
 
-                //MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
             }
 
         }    

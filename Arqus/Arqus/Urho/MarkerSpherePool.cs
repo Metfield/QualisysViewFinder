@@ -54,7 +54,8 @@ namespace Arqus.Components
         public void HideUnused(int startingArrayPosition)
         {
             for (int i = startingArrayPosition; i < markerSpheres.Count; i++)
-                markerSpheres[i].Enabled = false;
+                if(markerSpheres[i].EnabledEffective)
+                    markerSpheres[i].Enabled = false;
         }
     }   
 }

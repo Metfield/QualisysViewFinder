@@ -180,7 +180,7 @@ namespace QTMRealTimeSDK.Network
             return -1;
         }
 
-        internal int Receive(ref byte[] receivebuffer, int bufferSize, bool header, int timeout)
+        internal int Receive(ref byte[] receivebuffer, int offset, int bufferSize, bool header, int timeout)
         {
             try
             {
@@ -215,7 +215,7 @@ namespace QTMRealTimeSDK.Network
                 else if (mTCPClient != null && receiveList.Contains(mTCPClient.Client))
                 {
                     // Receive data from TCP socket
-                    return mTCPClient.Client.Receive(receivebuffer, header ? RTProtocol.Constants.PACKET_HEADER_SIZE : bufferSize, SocketFlags.None);
+                    return mTCPClient.Client.Receive(receivebuffer, offset, header ? RTProtocol.Constants.PACKET_HEADER_SIZE : bufferSize, SocketFlags.None);
                 }
                 else if (mUDPClient != null && errorList.Contains(mUDPClient.Client))
                 {
@@ -225,7 +225,7 @@ namespace QTMRealTimeSDK.Network
                 else if (mUDPClient != null && receiveList.Contains(mUDPClient.Client))
                 {
                     // Receive data from UDP socket
-                    return mUDPClient.Client.Receive(receivebuffer, bufferSize, SocketFlags.None);
+                    return mUDPClient.Client.Receive(receivebuffer, offset, bufferSize, SocketFlags.None);
                 }
             }
             catch (SocketException exception)
@@ -276,11 +276,8 @@ namespace QTMRealTimeSDK.Network
             {
                 foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    // There is a bug on android that causes a native crash
-                    // Bugzilla: https://bugzilla.xamarin.com/show_bug.cgi?id=52733
-                    //
-                    //if (nic.OperationalStatus != OperationalStatus.Up)
-                    //    continue;
+                    if (nic.OperationalStatus != OperationalStatus.Up)
+                        continue;
                     if (nic.NetworkInterfaceType != 0)
                     {
                         if (nic.NetworkInterfaceType != NetworkInterfaceType.Ethernet &&
@@ -305,11 +302,6 @@ namespace QTMRealTimeSDK.Network
             {
                 mErrorCode = ex.SocketErrorCode;
                 mErrorString = ex.Message;
-                return false;
-            }
-            catch (Exception e)
-            {
-                mErrorString = e.Message;
                 return false;
             }
             return true;

@@ -289,7 +289,6 @@ namespace Arqus.Visualization
             // markers which are not being currently used
             int lastUsedInArray = 0;
 
-            double markerAngle = 2 * Math.PI / markerQuality;
             float cameraScreenHalfWidth = Width / 2;
             float cameraScreenHalfHeight = Height / 2;
 
@@ -298,46 +297,14 @@ namespace Arqus.Visualization
             {
                 // Transform from camera coordinates to frame coordinates
                 // TODO: Add marker resolution to class
-                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -Width / 2, Width/2, markerData.MarkerData2D[i].X);
-                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
+                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -cameraScreenHalfWidth, cameraScreenHalfWidth, markerData.MarkerData2D[i].X);
+                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
                 float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
                 float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
-                
-                CustomGeometry geom = Pool.Get(i);
 
-                for (uint k = 0; k <= markerQuality; k++)
-                {
-                    float a = x + (width * (float)Math.Sin(k * markerAngle));
-                    float b = y + (height * (float)Math.Cos(k * markerAngle));
 
-                    if (a > cameraScreenHalfWidth)
-                        a = cameraScreenHalfWidth;
-                    else if (a < -cameraScreenHalfWidth)
-                        a = -cameraScreenHalfWidth;
-
-                    if (b > cameraScreenHalfHeight)
-                        b = cameraScreenHalfHeight;
-                    else if (b < -cameraScreenHalfHeight)
-                        b = -cameraScreenHalfHeight;
-
-                    unsafe
-                    {
-                        CustomGeometryVertex* vertex = geom.GetVertex(0, k);
-                        if(vertex != null)
-                            vertex->Position = new Vector3(a, b, 0);
-                    }
-                    
-                    
-                }
-
-                geom.Commit();
-
-                /*
-                // Set world position with new frame coordinates            
-                sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
-                sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
-                */
-
+                Pool.Get(i).Redraw(cameraScreenHalfHeight, cameraScreenHalfWidth, x, y, width, height);
+    
                 // Last element will set this variable
                 lastUsedInArray = i;
             }

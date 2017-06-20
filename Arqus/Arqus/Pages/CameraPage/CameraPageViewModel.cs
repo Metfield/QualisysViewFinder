@@ -17,15 +17,14 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    public class CameraPageViewModel : BindableBase, INavigationAware
+    public class CameraPageViewModel : BindableBase, INavigationAware, IDisposable
     {
         // Dependency services
         private INavigationService navigationService;
 
         // Keep track if latest value was updated by QTM
         public uint skipCounter = 0;
-
-
+        
         // Keep tabs on demo mode
         private bool isDemoModeActive;
         
@@ -76,8 +75,11 @@ namespace Arqus
                     skipCounter++;
                     CurrentCamera.UpdateSettings();
                 });
-            
-            //MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
+
+            MessagingCenter.Subscribe<CameraPage>(this,
+                MessageSubject.URHO_SURFACE_FINISHED_LOADING, (sender) => StartStreaming());
+                        
+            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
 
             // Switch them drawers now
             SwitchDrawers(CurrentCamera.Mode);
@@ -90,7 +92,6 @@ namespace Arqus
             else
                 skipCounter--;
         }
-        
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
@@ -113,9 +114,9 @@ namespace Arqus
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
 
-            // Try and get the demoMode parameter
             try
             {
+                // Need to know if this is demo mode in order to start stream accordingly
                 isDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
             }
             catch (Exception e)
@@ -124,27 +125,18 @@ namespace Arqus
             }
         }
 
+        /// <summary>
+        /// Gets notified by CameraPage once the UrhoSurface has finished loading
+        /// </summary>
+        private void StartStreaming()
+        {
+            // Notify UrhoSurface Application of the stream mode start intent
+            MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
+        }
+
         public void OnNavigatingTo(NavigationParameters parameters)
         {
             MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Navigate = "OnNavigatingTo" });
-
-            bool isDemoMode = false;
-
-            try
-            {
-                isDemoMode = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
-            }
-            catch(Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-
-            if(isDemoMode)
-            {
-                // Create demoMode object and load file
-                DemoMode demoMode = new DemoMode("Running.qd");
-                demoMode.LoadDemoFile();
-            }
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -275,5 +267,17 @@ namespace Arqus
             SwitchDrawers(CurrentCamera.Mode);
         }
 
+        public void Dispose()
+        {
+            navigationService = null;
+            currentCamera = null;
+            isDemoModeActive = false;
+
+            MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
+            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+
+            GC.Collect();
+        }
     }
 }

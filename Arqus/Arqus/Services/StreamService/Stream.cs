@@ -21,24 +21,37 @@ namespace Arqus.Services
         protected bool streaming;
         protected int frequency;
 
+        private bool demoMode;
+
         // Variables to handle packets
         protected QTMNetworkConnection connection;
 
-        protected Stream(ComponentType type, int frequency)
+        protected Stream(ComponentType type, int frequency, bool demoMode)
         {
             this.type = type;
             this.frequency = frequency;
-            connection = new QTMNetworkConnection();
+            this.demoMode = demoMode;
+
+            if(!demoMode)
+                connection = new QTMNetworkConnection();
         }
 
         public void StartStream()
         {
-
             if (!streaming)
             {
                 streaming = true;
-                if (connection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type))
+
+                if (!demoMode)
+                {
+                    if (connection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type))
+                        Task.Run(() => ContinuousStream());
+                }
+                else
+                {
+                    // TODO: Assuming DemoStream is going great!
                     Task.Run(() => ContinuousStream());
+                }
             }
             else
             {
@@ -46,14 +59,13 @@ namespace Arqus.Services
             }
         }
 
-
-
         public void StopStream()
         {
             streaming = false;
-            connection.Protocol.StreamFramesStop();
-        }
 
+            if(!demoMode)
+                connection.Protocol.StreamFramesStop();
+        }
         
         PacketType packetType;
         /// <summary>
@@ -63,37 +75,58 @@ namespace Arqus.Services
         /// </summary>
         protected void ContinuousStream()
         {
+            long then = DateTime.Now.Ticks, now;
+
             while(streaming)
             {
                 try
                 {
-                    connection.Protocol.ReceiveRTPacket(out packetType);
-                    // Make sure this is a data packet
-                    if (packetType == PacketType.PacketData)
+                    if (!demoMode)
                     {
-                        RetrieveDataAsync(connection.Protocol.GetRTPacket());
+                        connection.Protocol.ReceiveRTPacket(out packetType);
+
+                        // Make sure this is a data packet
+                        if (packetType == PacketType.PacketData)
+                        {
+                            RetrieveDataAsync(connection.Protocol.GetRTPacket());
+                        }
+                    }
+                    else
+                    {
+                        now = DateTime.Now.Ticks;
+
+                        // Task.Delay causes some overhead and slows down
+                        // execution a bit. This solution will work at different
+                        // speeds depending on cpu. Find cross-platform way of 
+                        // getting clock speed
+                        if (now - then > frequency * 500)
+                        {                            
+                            // We don't need a packet for demo mode
+                            RetrieveDataAsync(null);
+                            then = now;
+                        }                        
+
+                        // Sleep thread to match desired frequency
+                        //await Task.Delay(160 / frequency);                        
                     }
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine(e);
                     Debugger.Break();
-                }
-                
+                }                
             }
         }
         
         protected abstract void RetrieveDataAsync(RTPacket packet);
         
-
         public void Dispose()
         {
             StopStream();
-            connection.Dispose();
+
+            if(!demoMode)
+                connection.Dispose();
         }
-
-        
-
     }
 }
 

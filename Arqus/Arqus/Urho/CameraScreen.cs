@@ -192,7 +192,14 @@ namespace Arqus.Visualization
                 if(!IsImageMode())
                     Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
-            
+
+            // Subscribe to demoMode stream data as well
+            MessagingService.Subscribe<DemoStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
+            {
+                if (!IsImageMode())
+                    Urho.Application.InvokeOnMain(() => MarkerData = markerData);
+            });
+
             MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
                 SetImageMode(mode != CameraMode.ModeMarker);

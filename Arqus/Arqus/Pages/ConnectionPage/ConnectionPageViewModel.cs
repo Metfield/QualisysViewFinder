@@ -38,7 +38,7 @@ namespace Arqus
         private INavigationService navigationService;
         private INotification notificationService;
 
-        private NavigationParameters navigationParams = new NavigationParameters();        
+        private NavigationParameters navigationParams;       
 
         public ConnectionPageViewModel(
             INavigationService navigationService, 
@@ -76,13 +76,20 @@ namespace Arqus
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
 
                 if (navigationMode == NavigationMode.Back)
+                {
                     connection.Dispose();
+
+                    // Make sure everything is clean
+                    SettingsService.Clean();
+                    CameraStore.Clean();
+
+                    GC.Collect();
+                }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-            }
-
+            }            
         }
         
 
@@ -276,11 +283,12 @@ namespace Arqus
                 //networkConnection.Dispose();
 
                 // Send connection instance to settings service
-                SettingsService.Initialize();
+                SettingsService.Initialize();                
                 CameraStore.GenerateCameras();
 
                 // Connection was successfull                
                 // Navigate to camera page
+                NavigationParameters navigationParams = new NavigationParameters();
                 navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
                 Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
             }
@@ -292,17 +300,14 @@ namespace Arqus
         }
 
         // Start app using demo mode
-        async void StartDemoMode()
+        void StartDemoMode()
         {
             // Initialize mock general settings
             SettingsService.Initialize(true);
             CameraStore.GenerateCameras();
-
-            // Create demoMode object and load file
-            /*DemoMode demoMode = new DemoMode("Running.qd");
-            demoMode.LoadDemoFile();*/
-
+            
             // Navigate to camera page
+            NavigationParameters navigationParams = new NavigationParameters();
             navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, true);
             Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
         }

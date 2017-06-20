@@ -16,7 +16,7 @@ namespace Arqus.Services
     class ImageStream : Stream<ImageSharp.PixelFormats.RgbaVector>
     {
         int limiter = 0;
-        public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency){ }
+        public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency, false){ }
 
         private readonly object streamLock = new object();
 

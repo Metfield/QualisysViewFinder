@@ -11,14 +11,14 @@ using Xamarin.Forms;
 using System.Reactive.Linq;
 using System.Threading;
 using Arqus.Helpers;
+using Arqus.Service;
 
 namespace Arqus
 {
     public partial class CameraPage : ContentPage
     {
-        CameraApplication currentApplication;
-        CameraPageViewModel viewModel;
-        
+        CameraApplication markerApplication;
+        CameraPageViewModel viewModel;        
 
         public CameraPage()
         {
@@ -30,9 +30,7 @@ namespace Arqus
 
             InitSliderObservers();
         }
-
-
-
+        
         // Moved into a function to keep the constructor from getting bloated with code
         private void InitSliderObservers()
         {
@@ -64,25 +62,29 @@ namespace Arqus
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            currentApplication = await StartUrhoApp();                      
-            
+            markerApplication = await StartUrhoApp();
+
+            // Notify ViewModel that loading for 3D app is done
+            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
-        
+
         protected override async void OnDisappearing()
         {
-            await currentApplication.Exit();
+            await markerApplication.Exit();
             UrhoSurface.OnDestroy();
+            markerApplication = null;            
+
+            viewModel.Dispose();
+            viewModel = null;
+
             base.OnDisappearing();
-        }        
-        
+        }       
 
         async Task<CameraApplication> StartUrhoApp()
         {
-            CameraApplication markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
             return markerApplication;
-        }
-        
+        }        
     }
-
 }
 

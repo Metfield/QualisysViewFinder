@@ -11,8 +11,6 @@ namespace Arqus
 {
     public partial class  App : PrismApplication
     {
-        CameraStreamService cameraService;
-
         public App(IPlatformInitializer initializer = null) : base(initializer) { }
 
         protected override void OnInitialized()

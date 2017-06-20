@@ -20,8 +20,8 @@ namespace Arqus
     {
         private static QTMNetworkConnection connection = new QTMNetworkConnection();
 
-        public static List<SettingsGeneralCameraSystem> generalSettings;
-        private static List<ImageCamera> imageCameras;
+        public static List<SettingsGeneralCameraSystem> generalSettings = null;
+        private static List<ImageCamera> imageCameras = null;
 
         // We need to convert the CameraMode enum to a string that matches the API's
         static Dictionary<CameraMode, string> CameraModeString = new Dictionary<CameraMode, string>()
@@ -66,7 +66,9 @@ namespace Arqus
 
             if (!demoMode) // Real-time
             {
+                //connection = new QTMNetworkConnection();
                 connection.Connect();
+
                 // Get the first one manually and then let the auto-update run
                 connection.Protocol.GetGeneralSettings();
                 generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
@@ -74,8 +76,11 @@ namespace Arqus
             else // Demo mode
             {
                 // Load both general and image settings
-                generalSettings = LoadGeneralSettings();
-                imageCameras = LoadImageSettings();               
+                if(generalSettings == null)
+                    generalSettings = LoadGeneralSettings();
+
+                if(imageCameras == null)
+                    imageCameras = LoadImageSettings();               
             }
         }
 
@@ -193,8 +198,6 @@ namespace Arqus
             connection.Protocol.GetImageSettings();
             return connection.Protocol.ImageSettings.Cameras;
         }
-
-
         
         /// <summary>
         /// Sends new settings to QTM
@@ -233,8 +236,7 @@ namespace Arqus
         public static async Task<bool> SetLED(int id, LEDMode mode, LEDColor color = LEDColor.All)
         {
             try
-            {
-                
+            {                
                 bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
                 return false;
             }
@@ -244,12 +246,17 @@ namespace Arqus
                 return false;
             }
             
-        }
+        }            
 
-        public static void Dispose()
+        public static void Clean()
         {
-            connection.Dispose();
-        }
+            if(connection != null)
+                connection.Dispose();
 
+            isDemoModeActive = false;
+
+            generalSettings = null;
+            imageCameras = null;
+        }
     }
 }

@@ -7,9 +7,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Arqus
 {
-    public class DemoMode
+    public class DemoMode : IDisposable
     {
-        private List<List<Camera>> frames;
+        public List<List<Camera>> frames;
+        private int frameCount;
         private string filename;
 
         public DemoMode(string demoFilename)
@@ -28,6 +29,22 @@ namespace Arqus
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 frames = (List<List<Camera>>)binaryFormatter.Deserialize(stream);
             }
+
+            frameCount = frames.Count;
+
+            assembly = null;            
+        }
+
+        public int GetFrameCount()
+        {
+            return frameCount;
+        }
+
+        public void Dispose()
+        {
+            // Dispose of demo structure
+            frames.Clear();
+            frames = null;
         }
     }
 }

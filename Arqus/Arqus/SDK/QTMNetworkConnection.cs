@@ -223,13 +223,14 @@ namespace Arqus
         public bool SetCameraMode(int id, string mode)
         {
             string packetString = Packet.Camera(id, mode);
-            
+            string response;
+
             bool success;
 
             lock (controlLock)
             {
                 TakeControl();
-                success = Protocol.SendXML(packetString);
+                success = Protocol.SendXML(packetString, out response);
             }
 
             return true;
@@ -237,17 +238,16 @@ namespace Arqus
         
 
         public bool SetImageStream(int id, bool enabled, int width, int height)
-        {
-            
+        {            
             string packetString = Packet.CameraImage(id, enabled, width, height);
-            
+            string response;   
 
             bool success;
 
             lock (controlLock)
             {
                 TakeControl();
-                success = Protocol.SendXML(packetString);
+                success = Protocol.SendXML(packetString, out response);
             }
 
             return success;
@@ -258,10 +258,12 @@ namespace Arqus
             try
             {
                 string packetString = Packet.CameraImage(id, width, height);
+                string response;
+
                 lock (controlLock)
                 {
                     TakeControl();
-                    return Protocol.SendXML(packetString);
+                    return Protocol.SendXML(packetString, out response);
                 }
             }
             catch (Exception e)
@@ -296,8 +298,11 @@ namespace Arqus
         {
             // Create XML command
             string packetString = Packet.SettingsParameter(id, settingsParameter, value);
+            string response;
+
             TakeControl();
-            return Protocol.SendXML(packetString);
+
+            return Protocol.SendXML(packetString, out response);
         }
 
         private bool IsImage(string mode)

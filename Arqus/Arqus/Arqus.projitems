@@ -21,6 +21,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
@@ -68,7 +69,6 @@
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />

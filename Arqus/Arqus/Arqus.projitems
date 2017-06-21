@@ -9,6 +9,8 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CameraProfile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CameraProfiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DemoMode.cs" />
@@ -116,5 +118,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningImageSettings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
   </ItemGroup>
 </Project>

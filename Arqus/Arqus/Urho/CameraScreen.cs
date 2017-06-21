@@ -37,6 +37,7 @@ namespace Arqus.Visualization
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
 
+        private int orientation;
 
         // static fields
         static int screenCount;
@@ -104,6 +105,8 @@ namespace Arqus.Visualization
             this.cameraNode = cameraNode;
             urhoCamera = cameraNode.GetComponent<Urho.Camera>();
 
+            orientation = camera.Orientation;
+
             ReceiveSceneUpdates = true;
             OnUpdateHandler += OnMarkerUpdate;
 
@@ -125,20 +128,20 @@ namespace Arqus.Visualization
         public override void OnAttachedToNode(Node node)
         {
             base.OnAttachedToNode(node);
-
+            
             // Create screen Node, scale it accordingly and rotate it so it faces camera
             screenNode = node.CreateChild("screenNode");
             markerSphereNode = node.CreateChild("markerSphereNode"); 
             backdropNode = node.CreateChild("backdrop");
-
+            
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, markerSphereNode);
             
             backdropNode.Scale = new Vector3(Height, 1, Width);
 
-
             // Rotate the camera in the clockwise direction with 90 degrees
             backdropNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+
             // Apply camera orientation and an offset to match the no rotation position with QTM
             backdropNode.Rotate(new Quaternion(0, 90 - Camera.Orientation, 0), TransformSpace.Local);
             markerSphereNode.Rotate(new Quaternion(0, 0, -Camera.Orientation), TransformSpace.Local);

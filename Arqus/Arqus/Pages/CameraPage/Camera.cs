@@ -21,8 +21,11 @@ namespace Arqus.DataModels
 
         private CameraMode mode;
 
+        public string Model { get; private set; }
+        public CameraProfile Profile { get; set; }
+
         public CameraMode Mode { get { return mode;  }  set { SetProperty(ref mode, value); } }
-        public int Orientation { get; set; }
+        public int Orientation { get; private set; }
 
         private SettingsGeneralCameraSystem settings;
         public SettingsGeneralCameraSystem Settings
@@ -33,7 +36,7 @@ namespace Arqus.DataModels
                 SetProperty(ref settings, value);
             }
         }
-
+        
         public Camera(int id, SettingsGeneralCameraSystem settings, ImageResolution imageResolution)
         {
             ID = id;
@@ -42,6 +45,9 @@ namespace Arqus.DataModels
             Mode = settings.Mode;
             Settings = settings;
             ImageResolution = imageResolution;
+
+            Model = GetModelName(settings.Model);
+            Orientation = settings.Orientation;
 
             // TODO: this should not have to be done in the constructor
             if (IsImageMode())
@@ -139,6 +145,59 @@ namespace Arqus.DataModels
         private bool IsImageMode()
         {
             return Mode != CameraMode.ModeMarker;
+        }
+
+        // Gets model string
+        // TODO: Keep an eye out for changes hier
+        private string GetModelName(CameraModel cameraModel)
+        {
+            switch (cameraModel)
+            {
+                case CameraModel.ModelQqus100:
+                    return "Oqus 100 ";
+
+                case CameraModel.ModelQqus200C:
+                    return "Oqus 200 C";
+
+                case CameraModel.ModelQqus300:
+                    return "Oqus 300";
+
+                case CameraModel.ModelQqus300Plus:
+                    return "Oqus 300 Plus";
+
+                case CameraModel.ModelQqus400:
+                    return "Oqus 400";
+
+                case CameraModel.ModelQqus500:
+                    return "Oqus 500";
+
+                case CameraModel.ModelQqus500Plus:
+                    return "Oqus 500 Plus";
+
+                case CameraModel.ModelQqus700:
+                    return "Oqus 700";
+
+                case CameraModel.ModelQqus700Plus:
+                    return "Oqus 700 Plus";
+
+                case CameraModel.ModelMiqusM1:
+                    return "Miqus M1";
+
+                case CameraModel.ModelMiqusM3:
+                    return "Miqus M3";
+
+                case CameraModel.ModelMiqusM5:
+                    return "Miqus M3";
+
+                case CameraModel.ModelMiqusVideo:
+                    return "Miqus Video";
+
+                case CameraModel.ModelMiqusSU:
+                    return "Miqus Sync Unit";
+
+                default:
+                    return "Model Unknown";
+            }
         }
     }
 }

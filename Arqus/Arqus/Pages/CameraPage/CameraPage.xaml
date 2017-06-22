@@ -84,11 +84,11 @@
 
         <!-- Drawers layout -->
         <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
-
-            <!-- Marker-specific drawer -->
+            
             <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
                 <StackLayout>
 
+                    <!-- Marker-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Exposure" HorizontalOptions="Start"/>
@@ -113,6 +113,7 @@
                                 Value="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" />
                     </StackLayout>
 
+                    <!-- Video-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
 
                         <StackLayout HorizontalOptions="Fill">
@@ -130,13 +131,36 @@
                             <Label Text="Video Flash"/>
                             <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
-
+ 
                         <Slider x:Name="videoFlashTimeSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
                                 Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
                                 Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
 
+                        <!-- Automated lens manipulation for Oqus 700+ cameras -->
+                        <StackLayout HorizontalOptions="Fill">
+                            <Label Text="Lens Focus"/>
+                            <Label BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                        </StackLayout>
+
+                        <Slider x:Name="lensFocusSlider"
+                                HorizontalOptions="Fill" 
+                                Maximum="{Binding CurrentCamera.Settings.LensControl.Focus.Max}" 
+                                Minimum="{Binding CurrentCamera.Settings.LensControl.Focus.Min}"
+                                Value="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" /> 
+
+                        <StackLayout HorizontalOptions="Fill">
+                            <Label Text="Lens Aperture"/>
+                            <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value}" HorizontalOptions="End"/>
+                        </StackLayout>
+
+                        <Slider x:Name="lensApertureSlider"
+                                HorizontalOptions="Fill" 
+                                Maximum="{Binding ApertureSnapMax}" 
+                                Minimum="0"                                
+                                Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay} "  />
+                        
                     </StackLayout>
                 </StackLayout>
 

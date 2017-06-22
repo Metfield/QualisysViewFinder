@@ -21,6 +21,8 @@ namespace Arqus.DataModels
 
         private CameraMode mode;
 
+        public bool LensControlEnabled { get; private set; }
+
         public string Model { get; private set; }
         public CameraProfile Profile { get; set; }
 
@@ -48,6 +50,13 @@ namespace Arqus.DataModels
 
             Model = GetModelName(settings.Model);
             Orientation = settings.Orientation;
+
+            if(settings.LensControl.Focus.Max != 0 ||
+               settings.LensControl.Focus.Min != 0 ||
+               settings.LensControl.Focus.Value != 0)
+            {
+                LensControlEnabled = true;
+            }
 
             // TODO: this should not have to be done in the constructor
             if (IsImageMode())

@@ -296,13 +296,42 @@ namespace Arqus
        
         public bool SetCameraSettings(int id, string settingsParameter, string value)
         {
-            // Create XML command
-            string packetString = Packet.SettingsParameter(id, settingsParameter, value);
             string response;
+            string packetString;
 
+            // Create XML command depending on type of camera settings parameter
+            if (SettingIsLensControl(settingsParameter))
+            {
+                packetString = Packet.LensControlParameter(id, settingsParameter, value);
+            }
+            else
+            {
+                packetString = Packet.SettingsParameter(id, settingsParameter, value);
+            }            
+
+            // Take control and issue command
             TakeControl();
 
-            return Protocol.SendXML(packetString, out response);
+            bool success = Protocol.SendXML(packetString, out response);
+            HandleHostResponse(response);
+
+            return success;
+        }
+
+        private bool SettingIsLensControl(string setting)
+        {
+            if (setting == Constants.LENS_APERTURE_PACKET_STRING || setting == Constants.LENS_FOCUS_PACKET_STRING)
+                return true;
+
+            return false;
+        }
+
+        // Handle response appropriately
+        // TODO: Handle other messages        
+        private void HandleHostResponse(string response)
+        {
+            // Right now just toast
+            SharedProjects.Notification.Show("Host Response", response);
         }
 
         private bool IsImage(string mode)

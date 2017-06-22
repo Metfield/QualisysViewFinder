@@ -207,7 +207,7 @@ namespace Arqus
         /// <param name="value">Parameter's value</param>
         /// <returns>Returns true if successful</returns>
         public static bool SetCameraSettings(int id, string settingsParameter, string value)
-        {     
+        {
             try
             {
                 return connection.SetCameraSettings(id, settingsParameter, value);

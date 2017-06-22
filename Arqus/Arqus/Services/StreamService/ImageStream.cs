@@ -40,7 +40,6 @@ namespace Arqus.Services
                         {
                             if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID)
                             {
-
                                 Task.Run(() =>
                                 {
                                     limiter++;

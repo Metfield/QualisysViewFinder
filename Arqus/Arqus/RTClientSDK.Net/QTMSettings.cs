@@ -258,28 +258,30 @@ namespace QTMRealTimeSDK.Settings
         public SettingsSyncOut SyncOutMT;
         /// <summary>Lens Control settings for camera equipped with motorized lens</summary>
         [XmlElement("LensControl")]
-        public SettingsLensControl LensControl;
+        public SettingsLensControl LensControl { get; set; }
     }
 
     /// <summary>Settings regarding Lens Control for Camera equipped with motorized lens</summary>
     public struct SettingsLensControl
     {
         [XmlElement("Focus")]
-        public SettingsLensControlValues Focus;
+        public SettingsLensControlValues Focus { get; set; }
         [XmlElement("Aperture")]
-        public SettingsLensControlValues Aperture;
+        public SettingsLensControlValues Aperture { get; set; }
     }
-
+    
     /// <summary>Settings for Lens Control Focus</summary>
     public struct SettingsLensControlValues
     {
+        private float lensControlvalue;
+
         [XmlAttribute("Value")]
-        public float Value;
+        public float Value { get; set; }
         [XmlAttribute("Min")]
-        public float Min;
+        public float Min { get; set; }
         [XmlAttribute("Max")]
-        public float Max;
-    }
+        public float Max { get; set; }
+}
 
     /// <summary>Settings regarding sync for Camera</summary>
     public struct SettingsSyncOut

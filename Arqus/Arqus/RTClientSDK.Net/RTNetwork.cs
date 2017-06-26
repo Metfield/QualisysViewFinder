@@ -35,7 +35,7 @@ namespace QTMRealTimeSDK.Network
         /// <param name="serverAddr">IP or hostname of server.</param>
         /// <param name="port">Port that TCP should use.</param>
         /// <returns>True if connection is successful otherwise false</returns>
-        internal bool Connect(string serverAddr, int port)
+        internal bool Connect(string serverAddr, int port, int timeout = 1000)
         {
             try
             {
@@ -47,7 +47,16 @@ namespace QTMRealTimeSDK.Network
                 }
 
                 mTCPClient = new TcpClient();
-                mTCPClient.Connect(serverIP[0], port);
+                // TODO: add timeout
+               // mTCPClient.Connect(serverIP[0], port);
+                var result = mTCPClient.BeginConnect(serverIP[0], port, null, null);
+                
+                if (!result.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(timeout)))
+                {
+                    throw new Exception("Timeout when attempting to connect to QTM host");
+                }
+
+                mTCPClient.EndConnect(result);
                 // Disable Nagle's algorithm
                 mTCPClient.NoDelay = true;
             }
@@ -63,6 +72,18 @@ namespace QTMRealTimeSDK.Network
 
                 return false;
             }
+            catch (Exception e)
+            {
+                mErrorString = e.Message;
+
+                if (mTCPClient != null)
+                {
+                    mTCPClient.Close();
+                }
+
+                return false;
+            }
+
 
             return true;
         }

@@ -84,7 +84,7 @@ namespace Arqus
             
             CreateScene();
             SetupViewport();
-
+            
             // Update the application when a new screen layout is set in the view model
             MessagingService.Subscribe<CameraPageViewModel, ScreenLayoutType>
             (
@@ -216,7 +216,7 @@ namespace Arqus
                 if (i < currentScreenLayout.Selection + 1|| i > currentScreenLayout.Selection  - 1)
                 {
                    screenList[i].Enabled = true;
-                    currentScreenLayout.SetCameraScreenPosition(screenList[i], Orientation);
+                   currentScreenLayout.SetCameraScreenPosition(screenList[i], Orientation);
                 }
                 else
                 {
@@ -308,7 +308,6 @@ namespace Arqus
                 //CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
                 //currentScreenLayout.Select(focus.position);
 
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
             }
         }    
     }

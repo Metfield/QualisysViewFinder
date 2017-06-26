@@ -46,6 +46,12 @@ namespace Arqus
             }
         }
 
+        public static bool DisableImageMode(int id)
+        {
+            return connection.SetImageStream(id, false);
+        }
+
+
         public static bool EnableImageMode(int id, bool enabled, int width, int height)
         {
             return connection.SetImageStream(id, enabled, width, height);

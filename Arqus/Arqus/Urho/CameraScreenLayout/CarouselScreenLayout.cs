@@ -1,4 +1,5 @@
 ﻿using Arqus.Helpers;
+using Arqus.Service;
 using Arqus.Services;
 using Prism.Services;
 using System;
@@ -87,6 +88,8 @@ namespace Arqus.Visualization
                 Offset = Offset + screenDistance;
 
             Selection = id;
+
+            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
         }
         
         
@@ -109,7 +112,7 @@ namespace Arqus.Visualization
                     positionFromCameraFocus = ItemCount + positionFromCameraFocus;
             }
 
-            x = positionFromCameraFocus * screenDistance * 2 + Offset;
+            x = positionFromCameraFocus * screenDistance + Offset;
             
 
             double distance;
@@ -123,9 +126,7 @@ namespace Arqus.Visualization
             if (screen.targetDistanceFromCamera != distance)
             {
                 if (screen.position == Selection)
-                {
                     screen.Node.RunActionsAsync(new EaseBackOut(new MoveTo(0.25f, new Vector3(0, 0, (float)distance))));
-                }
                 else if (screen.position != Selection)
                     screen.Node.RunActionsAsync(new EaseBackOut(new MoveTo(0.25f, new Vector3(0, 0, (float)distance * 1.5f))));
             }

@@ -235,19 +235,27 @@ namespace Arqus
 
             return true;
         }
-        
+
+        public bool SetImageStream(int id, bool enabled)
+        {
+            return SetImageStream(Packet.CameraImage(id, enabled));
+        }
 
         public bool SetImageStream(int id, bool enabled, int width, int height)
         {            
-            string packetString = Packet.CameraImage(id, enabled, width, height);
-            string response;   
+            return SetImageStream(Packet.CameraImage(id, enabled, width, height));
+        }
+
+        private bool SetImageStream(string packet)
+        {
+            string response;
 
             bool success;
 
             lock (controlLock)
             {
                 TakeControl();
-                success = Protocol.SendXML(packetString, out response);
+                success = Protocol.SendXML(packet, out response);
             }
 
             return success;

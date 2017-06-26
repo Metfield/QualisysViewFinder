@@ -161,13 +161,8 @@ namespace Arqus.Visualization
             imageScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
             Material = new Material();
 
-            texture = new Texture2D();
-            texture.SetNumLevels(1);
-            texture.SetSize(Camera.ImageResolution.Width, Camera.ImageResolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
-            Material.SetTexture(TextureUnit.Diffuse, texture);
-            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
-            imageScreen.SetMaterial(Material);
-            
+            SetImageTexture(Camera.ImageResolution.Width, Camera.ImageResolution.Height);
+
 
             labelNode = screenNode.CreateChild();
             label = labelNode.CreateComponent<Text3D>();
@@ -181,7 +176,7 @@ namespace Arqus.Visualization
             label.TextEffect = TextEffect.Stroke;
 
             // Initialize current camera mode
-            SetImageMode(IsImageMode());
+            SetImageMode(Camera.IsImageMode());
 
             SubscribeToDataEvents();
         }
@@ -212,7 +207,7 @@ namespace Arqus.Visualization
 
             MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
-                SetImageMode(mode != CameraMode.ModeMarker);
+                SetImageMode(Camera.IsImageMode());
             });
         }
 
@@ -259,12 +254,34 @@ namespace Arqus.Visualization
         
         public unsafe void UpdateMaterialTexture(Image<Rgba32> imageData)
         {
+            if(imageData.Width != Camera.ImageResolution.Width || imageData.Height != Camera.ImageResolution.Height)
+            {
+                ReinitializeImagePlane(imageData.Width, imageData.Height);
+            }
+
             fixed (ImageSharp.Rgba32* bptr = imageData.Pixels)
             {
                 texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
             }
 
             imageData.Dispose();
+        }
+
+        private void ReinitializeImagePlane(int width, int height)
+        {
+            Camera.ImageResolution = new ImageResolution(width, height);
+            Camera.EnableImageMode();
+            SetImageTexture(width, height);
+        }
+
+        private void SetImageTexture(int width, int height)
+        {
+            texture = new Texture2D();
+            texture.SetNumLevels(1);
+            texture.SetSize(Camera.ImageResolution.Width, Camera.ImageResolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            Material.SetTexture(TextureUnit.Diffuse, texture);
+            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
+            imageScreen.SetMaterial(Material);
         }
         
         protected override void OnUpdate(float timeStep)

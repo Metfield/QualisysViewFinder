@@ -3,6 +3,7 @@ using Arqus.Helpers;
 using Arqus.Service;
 using Arqus.Services;
 using Arqus.Services.MobileCenterService;
+using Arqus.Visualization;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -71,7 +72,7 @@ namespace Arqus
             // We're starting with carousel mode
             isGridLayoutActive = false;
 
-            MessagingCenter.Subscribe<CameraApplication, int>(this,
+            MessagingCenter.Subscribe<CarouselScreenLayout, int>(this,
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
             

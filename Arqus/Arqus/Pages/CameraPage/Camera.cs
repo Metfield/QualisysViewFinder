@@ -24,7 +24,7 @@ namespace Arqus.DataModels
         public int ID { get; private set; }
 
         // public properties
-        public ImageResolution ImageResolution { get; private set; }
+        public ImageResolution ImageResolution { get; set; }
         public CameraScreen Parent { get; set; }
 
         public bool LensControlEnabled { get; private set; }
@@ -81,7 +81,13 @@ namespace Arqus.DataModels
                 if (SettingsService.SetCameraMode(ID, mode))
                 {
                     Mode = mode;
-                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
+
+                    if (IsImageMode())
+                    {
+                        EnableImageMode();
+                        MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
+                    }
+                    
                 }
             }
         }
@@ -132,7 +138,8 @@ namespace Arqus.DataModels
         public void Deselect()
         {
             // Disable image mode when not selected to keep the transferred data to a minimum
-            DisableImageMode();
+            // TODO: Fix QTM 16 crash 
+            //DisableImageMode();
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.Off));
         }
 
@@ -141,7 +148,7 @@ namespace Arqus.DataModels
         /// </summary>
         public void DisableImageMode()
         {
-           SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+           SettingsService.DisableImageMode(ID);
         }
 
         /// <summary>
@@ -156,7 +163,7 @@ namespace Arqus.DataModels
         /// Check to see if the camera is in image mode, such as video or intensity
         /// </summary>
         /// <returns>true if the camera is running in image mode</returns>
-        private bool IsImageMode()
+        public bool IsImageMode()
         {
             return Mode != CameraMode.ModeMarker;
         }

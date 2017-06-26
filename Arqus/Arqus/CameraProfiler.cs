@@ -63,7 +63,10 @@ namespace Arqus
                 foreach (CameraProfile cameraProfile in cameraProfiles)
                 {
                     if (camera.Value.Model.ToLower() == cameraProfile.Model.ToLower())
+                    {
                         camera.Value.Profile = cameraProfile;
+                        break;
+                    }
                 }
             }
         }

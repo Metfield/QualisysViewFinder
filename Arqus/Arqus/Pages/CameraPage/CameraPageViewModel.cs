@@ -17,18 +17,23 @@ using Xamarin.Forms;
 
 namespace Arqus
 {
-    public class CameraPageViewModel : BindableBase, INavigationAware
+    public class CameraPageViewModel : BindableBase, INavigationAware, IDisposable
     {
         // Dependency services
         private INavigationService navigationService;
 
         // Keep track if latest value was updated by QTM
         public uint skipCounter = 0;
-
         
+        // Keep tabs on demo mode
+        private bool isDemoModeActive;
+
+        // Used for snapping slider to pre-determined values
+        private LensApertureSnapper lensApertureSnapper;
+
         public CameraPageViewModel(INavigationService navigationService)
         {
-            this.navigationService = navigationService;
+            this.navigationService = navigationService;            
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
@@ -73,8 +78,15 @@ namespace Arqus
                     skipCounter++;
                     CurrentCamera.UpdateSettings();
                 });
-            
+
+            MessagingCenter.Subscribe<CameraPage>(this,
+                MessageSubject.URHO_SURFACE_FINISHED_LOADING, (sender) => StartStreaming());
+                        
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
+
+            // Initialize lens aperture snapper
+            lensApertureSnapper = new LensApertureSnapper(this);
+            ApertureSnapMax = lensApertureSnapper.LookupTSize - 1;
 
             // Switch them drawers now
             SwitchDrawers(CurrentCamera.Mode);
@@ -87,12 +99,11 @@ namespace Arqus
             else
                 skipCounter--;
         }
-        
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
-
+            
             try
             {
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
@@ -109,6 +120,25 @@ namespace Arqus
         public void OnNavigatedTo(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
+
+            try
+            {
+                // Need to know if this is demo mode in order to start stream accordingly
+                isDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+        }
+
+        /// <summary>
+        /// Gets notified by CameraPage once the UrhoSurface has finished loading
+        /// </summary>
+        private void StartStreaming()
+        {
+            // Notify UrhoSurface Application of the stream mode start intent
+            MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
@@ -244,5 +274,54 @@ namespace Arqus
             SwitchDrawers(CurrentCamera.Mode);
         }
 
+        // Convenient variable to handle a camera's max aperture        
+        private double apertureSnapMax;
+        public double ApertureSnapMax
+        {
+            get
+            {
+                return apertureSnapMax;
+            }
+            set
+            {
+                SetProperty(ref apertureSnapMax, value);
+            }
+        }
+
+        // Used for displaying the value on the camera page's label
+        private double snappedValue;
+        public double SnappedValue
+        {
+            get
+            {
+                return snappedValue;
+            }
+            set
+            {
+                SetProperty(ref snappedValue, value);
+            }
+        }
+
+        // Handles Aperture value snapping and sets the setting
+        public void SnapAperture(double value)
+        {
+            SnappedValue = lensApertureSnapper.OnSliderValueChanged(value);
+
+            // Once value is snapped, set the aperture setting
+            SetCameraSetting(Constants.LENS_APERTURE_PACKET_STRING, SnappedValue);
+        }
+
+        public void Dispose()
+        {
+            navigationService = null;
+            currentCamera = null;
+            isDemoModeActive = false;
+
+            MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
+            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+
+            GC.Collect();
+        }
     }
 }

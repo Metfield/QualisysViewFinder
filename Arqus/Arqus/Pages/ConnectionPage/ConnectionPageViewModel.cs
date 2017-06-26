@@ -9,9 +9,17 @@ using Prism.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Xamarin.Forms;
+
+using QTMRealTimeSDK.Data;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
+using System.Reflection;
+using QTMRealTimeSDK.Settings;
 
 namespace Arqus
 {
@@ -30,6 +38,8 @@ namespace Arqus
         private INavigationService navigationService;
         private INotification notificationService;
 
+        private NavigationParameters navigationParams;       
+
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
@@ -46,8 +56,9 @@ namespace Arqus
             
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
-            ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
+            ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 
+            ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -65,13 +76,20 @@ namespace Arqus
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
 
                 if (navigationMode == NavigationMode.Back)
+                {
                     connection.Dispose();
+
+                    // Make sure everything is clean
+                    SettingsService.Clean();
+                    CameraStore.Clean();
+
+                    GC.Collect();
+                }
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-            }
-
+            }            
         }
         
 
@@ -95,6 +113,7 @@ namespace Arqus
         public DelegateCommand RefreshQTMServers { private set; get; }
         public DelegateCommand ConnectionModeDiscoveryCommand { private set; get; }
         public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
+        public DelegateCommand ConnectionModeDemoCommand { private set; get; }
 
         private ConnectionMode currentConnectionMode;
 
@@ -249,7 +268,6 @@ namespace Arqus
         {
             try
             {
-
                 // Connect to IP
                 bool success = connection.Connect(IPAddress, Password);
 
@@ -260,22 +278,38 @@ namespace Arqus
                     notificationService.Show("Attention: There was a connection error, please check IP and pass");
                     return;
                 }
-
-                // 
-                //networkConnection.Dispose();
-
-                // Send connection instance to settings service
-                SettingsService.Initialize();
-                CameraStore.GenerateCameras();
-
-                // Connection was successfull          
-                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage"));
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notificationService.Show("Whoopsie daisy!");
+                notificationService.Show("Please make sure that QTM is up and running");
+
+                return;
             }
+           
+            // Send connection instance to settings service
+            SettingsService.Initialize();                
+            CameraStore.GenerateCameras();
+
+            // Connection was successfull                
+            // Navigate to camera page
+            NavigationParameters navigationParams = new NavigationParameters();
+            navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));           
         }
-    }
+
+        // Start app using demo mode
+        void StartDemoMode()
+        {
+            // Initialize mock general settings
+            SettingsService.Initialize(true);
+            CameraStore.GenerateCameras();
+            
+            // Navigate to camera page
+            NavigationParameters navigationParams = new NavigationParameters();
+            navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, true);
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
+        }
+    }      
 }
+

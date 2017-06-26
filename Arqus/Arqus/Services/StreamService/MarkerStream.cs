@@ -13,7 +13,7 @@ namespace Arqus.Services
 {
     class MarkerStream: Stream<Camera>
     {
-        public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency){}
+        public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency, false){}
 
         List<Camera> cameras;
         protected override void RetrieveDataAsync(RTPacket packet)

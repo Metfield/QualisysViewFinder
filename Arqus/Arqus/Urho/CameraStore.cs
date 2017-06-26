@@ -21,7 +21,6 @@ namespace Arqus
         public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
-        
 
         /// <summary>
         /// Generates camera screens to use inside an Urho context based on the 
@@ -33,30 +32,43 @@ namespace Arqus
             CurrentCamera = null;
             Cameras = new Dictionary<int, Camera>();
             CameraScreen.ResetScreenCounter();
-            
+
+            // Get Camera Settings
             List<SettingsGeneralCameraSystem> cameraSettingsList = SettingsService.GetCameraSettings();
+            
+            // Get Image Settings
             List<ImageCamera> imageCameraSettingsList = SettingsService.GetImageCameraSettings();
 
+            // Iterate over image settings list and create camera objects
             foreach (ImageCamera imageCameraSettings in imageCameraSettingsList)
             {
                 SettingsGeneralCameraSystem cameraSettings = cameraSettingsList
                     .Where(c => c.CameraId == imageCameraSettings.CameraID)
                     .First();
 
-                if(!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
+                if (!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
                     SettingsService.SetCameraMode(imageCameraSettings.CameraID, cameraSettings.Mode);
-
-                
+                                
                 ImageResolution imageResolution = new ImageResolution(imageCameraSettings.Width / 4, imageCameraSettings.Height / 4);
-                Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings, imageResolution);
+
+                // Create camera object and add it to dictionary
+                Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings, imageResolution);                
                 Cameras.Add(camera.ID, camera);
-                
+
                 // Make sure that the current settings are reflected in the state of the application
                 // The state of the QTM host should always have precedence unless expliciltly told to
                 // change settings
                 if (CurrentCamera == null)
                     CurrentCamera = camera;
             }
+
+            // Load and run profiler
+            CameraProfiler cameraProfiler = new CameraProfiler(Cameras, "CameraProfiles.json");
+            cameraProfiler.Run();
+
+            // Dispose of it once it's done
+            cameraProfiler.Dispose();
+            cameraProfiler = null;
 
             return true;
         }
@@ -72,7 +84,7 @@ namespace Arqus
             CurrentCamera = Cameras[id];
             CurrentCamera.Select();
         }
-        
+
 
         // TODO: Look over this later
         /*static void RefreshCameraAndScreen()
@@ -85,5 +97,24 @@ namespace Arqus
 
         //public static void SelectCamera(int id){ State.ID = id; }
         //public static void SelectCamera(int id, CameraMode mode) { State.ID = id; State.Mode = mode; }
+
+        public static void Clean()
+        {
+            CurrentCamera = null;
+
+            if (Cameras != null)
+            {
+                Cameras.Clear();
+                Cameras = null;
+            }
+
+            settingsService = null;
+
+            if (Screens != null)
+            {
+                Screens.Clear();
+                Screens = null;
+            }
+        }
     }
 }

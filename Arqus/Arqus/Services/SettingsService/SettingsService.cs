@@ -10,13 +10,18 @@ using Arqus.Helpers;
 using QTMRealTimeSDK.Settings;
 using System.Threading;
 using System.Linq;
+using System.Reflection;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace Arqus
 {
     class SettingsService
     {
         private static QTMNetworkConnection connection = new QTMNetworkConnection();
-        public static List<SettingsGeneralCameraSystem> generalSettings;
+
+        public static List<SettingsGeneralCameraSystem> generalSettings = null;
+        private static List<ImageCamera> imageCameras = null;
 
         // We need to convert the CameraMode enum to a string that matches the API's
         static Dictionary<CameraMode, string> CameraModeString = new Dictionary<CameraMode, string>()
@@ -25,6 +30,8 @@ namespace Arqus
             { CameraMode.ModeMarkerIntensity, "Marker Intensity" },
             { CameraMode.ModeVideo, "Video" }
         };
+
+        private static bool isDemoModeActive;
 
         public static bool SetCameraMode(int id, CameraMode mode)
         {
@@ -49,16 +56,64 @@ namespace Arqus
             return connection.SetImageResolution(id, width, height);
         }
 
-        public static void Initialize()
+        /// <summary>
+        /// Initializes settings service.
+        /// </summary>
+        /// <param name="demoMode">Initialize in demo mode (not real time)</param>
+        public static void Initialize(bool demoMode = false)
         {
-            connection.Connect();
-            // Get the first one manually and then let the auto-update run
-            connection.Protocol.GetGeneralSettings();
-            generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
+            isDemoModeActive = demoMode;
 
-            // Start periodic fetching of camera settings in a 
-            // separate thread
-            //Task.Run(() => RefreshSettings());
+            if (!demoMode) // Real-time
+            {
+                //connection = new QTMNetworkConnection();
+                connection.Connect();
+
+                // Get the first one manually and then let the auto-update run
+                connection.Protocol.GetGeneralSettings();
+                generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
+            }    
+            else // Demo mode
+            {
+                // Load both general and image settings
+                if(generalSettings == null)
+                    generalSettings = LoadGeneralSettings();
+
+                if(imageCameras == null)
+                    imageCameras = LoadImageSettings();               
+            }
+        }
+
+        private static List<SettingsGeneralCameraSystem> LoadGeneralSettings()
+        {
+            // Get assembly object
+            Assembly assembly = typeof(SettingsService).Assembly;
+
+            // Get General Settings file
+            using (Stream stream = assembly.GetManifestResourceStream("Arqus.RunningGeneralSettings.xml"))
+            {
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsGeneral));
+                SettingsGeneral gs = (SettingsGeneral)xmlSerializer.Deserialize(stream);
+
+                // Store mock settings
+                return gs.CameraSettings;
+            }
+        }
+
+        private static List<ImageCamera> LoadImageSettings()
+        {
+            // Get assembly object
+            Assembly assembly = typeof(SettingsService).Assembly;
+
+            // Get General Settings file
+            using (Stream stream = assembly.GetManifestResourceStream("Arqus.RunningImageSettings.xml"))
+            {
+                XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsImage));
+                SettingsImage si = (SettingsImage)xmlSerializer.Deserialize(stream);
+
+                // Store mock settings
+                return si.Cameras;
+            }
         }
 
         /// <summary>
@@ -89,6 +144,9 @@ namespace Arqus
         /// <returns></returns>
         public static List<SettingsGeneralCameraSystem> GetCameraSettings()
         {
+            if (isDemoModeActive)
+                return generalSettings;
+
             // Refresh general settings
             connection.Protocol.GetGeneralSettings();
 
@@ -134,11 +192,12 @@ namespace Arqus
 
         public static List<ImageCamera> GetImageCameraSettings()
         {
+            if (isDemoModeActive)
+                return imageCameras;
+
             connection.Protocol.GetImageSettings();
             return connection.Protocol.ImageSettings.Cameras;
         }
-
-
         
         /// <summary>
         /// Sends new settings to QTM
@@ -148,7 +207,7 @@ namespace Arqus
         /// <param name="value">Parameter's value</param>
         /// <returns>Returns true if successful</returns>
         public static bool SetCameraSettings(int id, string settingsParameter, string value)
-        {     
+        {
             try
             {
                 return connection.SetCameraSettings(id, settingsParameter, value);
@@ -177,8 +236,7 @@ namespace Arqus
         public static async Task<bool> SetLED(int id, LEDMode mode, LEDColor color = LEDColor.All)
         {
             try
-            {
-                
+            {                
                 bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
                 return false;
             }
@@ -188,12 +246,17 @@ namespace Arqus
                 return false;
             }
             
-        }
+        }            
 
-        public static void Dispose()
+        public static void Clean()
         {
-            connection.Dispose();
-        }
+            if(connection != null)
+                connection.Dispose();
 
+            isDemoModeActive = false;
+
+            generalSettings = null;
+            imageCameras = null;
+        }
     }
 }

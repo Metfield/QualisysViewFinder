@@ -37,7 +37,9 @@ namespace Arqus.Visualization
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
 
+        public double targetDistanceFromCamera;
         private int orientation;
+
 
         // static fields
         static int screenCount;
@@ -56,6 +58,8 @@ namespace Arqus.Visualization
 
         public float Width { private set; get; }
         public float Height { private set; get; }
+
+        public bool Focused { get; set; }
         
         public Material Material { get; set; }
         
@@ -74,7 +78,11 @@ namespace Arqus.Visualization
             {
                 dirty = true;
                 markerData = value;
-            } 
+            }
+            get
+            {
+                return markerData;
+            }
         }
 
 
@@ -108,7 +116,7 @@ namespace Arqus.Visualization
             orientation = camera.Orientation;
 
             ReceiveSceneUpdates = true;
-            OnUpdateHandler += OnMarkerUpdate;
+            //OnUpdateHandler += OnMarkerUpdate;
 
             // Set position in relation to the number of cameras that are already initialized
             // so the screens can be positioned accordingly
@@ -247,7 +255,7 @@ namespace Arqus.Visualization
                 imageScreen.Enabled = false;
                 markerScreen.Enabled = true;
             });
-            OnUpdateHandler = OnMarkerUpdate;
+            //OnUpdateHandler = OnMarkerUpdate;
         }
         
         public unsafe void UpdateMaterialTexture(Image<Rgba32> imageData)
@@ -264,76 +272,49 @@ namespace Arqus.Visualization
         {
             base.OnUpdate(timeStep);
 
-            if (backdropNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
+            if (Node.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
             {
-                Camera.DisableImageMode();
-                backdropNode.Enabled = false;
+                //Camera.DisableImageMode();
+                Node.Enabled = false;
             }
-            else if (!backdropNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
+            else if (!Node.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
             {
-                Camera.EnableImageMode();
-                backdropNode.Enabled = true;
+                //Camera.EnableImageMode();
+                Node.Enabled = true;
             }
                 
             
-            if (backdropNode.Enabled && dirty)
+            if (Node.Enabled && dirty)
             {
                 dirty = false;
                 OnUpdateHandler?.Invoke();
             }
         }
                 
-        private void OnMarkerUpdate()
+        private int markerQuality = 40;
+
+        public void OnMarkerUpdate(QTMRealTimeSDK.Data.Camera markerData)
         {
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used
             int lastUsedInArray = 0;
 
+            float cameraScreenHalfWidth = Width / 2;
+            float cameraScreenHalfHeight = Height / 2;
 
             // Iterate through the marker array, transform and draw spheres
             for (int i = 0; i < markerData.MarkerCount; i++)
             {
                 // Transform from camera coordinates to frame coordinates
                 // TODO: Add marker resolution to class
-                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -Width / 2, Width/2, markerData.MarkerData2D[i].X);
-                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
+                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -cameraScreenHalfWidth, cameraScreenHalfWidth, markerData.MarkerData2D[i].X);
+                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
                 float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
                 float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
-                
-                CustomGeometry geom = Pool.Get(i);
-                geom.BeginGeometry(0, PrimitiveType.TriangleFan);  
-
-                geom.DefineVertex(new Vector3(x, y, 0));
-                geom.SetMaterial(Urho.Material.FromColor(Urho.Color.White, true));
 
 
-                for (int k = 0; k <= 40; k++)
-                {
-                    float a = x + (width * (float)Math.Sin(k * 2 * Math.PI / 40));
-                    float b = y + (height * (float)Math.Cos(k * 2 * Math.PI / 40));
-                   
-                    if(a > Width/2)
-                        a = Width / 2;
-                    else if(a < -Width/2)
-                        a = -Width / 2;
-
-                    if (b > Height / 2)
-                        b = Height / 2;
-                    else if (b < -Height / 2)
-                        b = -Height / 2;
-
-                    geom.DefineVertex(new Vector3(a, b, 0));
-                    geom.DefineColor(Urho.Color.White);
-                }
-
-                geom.Commit();
-
-                /*
-                // Set world position with new frame coordinates            
-                sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
-                sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
-                */
-
+                Pool.Get(i).Redraw(cameraScreenHalfHeight, cameraScreenHalfWidth, x, y, width, height);
+    
                 // Last element will set this variable
                 lastUsedInArray = i;
             }

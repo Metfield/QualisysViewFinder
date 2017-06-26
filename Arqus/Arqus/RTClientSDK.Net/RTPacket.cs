@@ -456,7 +456,7 @@ namespace QTMRealTimeSDK.Data
         /// Set the data of packet.
         /// </summary>
         /// <param name="data">byte data recieved from server</param>
-		internal void SetData(byte[] data)
+		internal void SetData(ref byte[] data)
         {
             /*  === Data packet setup ===
 			 *  Packet size - 4 bytes

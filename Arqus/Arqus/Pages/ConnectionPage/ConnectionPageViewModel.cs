@@ -43,11 +43,11 @@ namespace Arqus
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
-            INotification notifaction)
+            INotification notification)
         {
             this.container = container;
             this.navigationService = navigationService;
-            this.notificationService = notifaction;
+            this.notificationService = notification;
 
             connection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;

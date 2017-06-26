@@ -223,8 +223,8 @@ namespace Arqus
         public bool SetCameraMode(int id, string mode)
         {
             string packetString = Packet.Camera(id, mode);
-            string response;
 
+            string response;
             bool success;
 
             lock (controlLock)
@@ -243,6 +243,7 @@ namespace Arqus
             string response;   
 
             bool success;
+            string response;
 
             lock (controlLock)
             {
@@ -257,6 +258,8 @@ namespace Arqus
         {
             try
             {
+
+                string response;
                 string packetString = Packet.CameraImage(id, width, height);
                 string response;
 

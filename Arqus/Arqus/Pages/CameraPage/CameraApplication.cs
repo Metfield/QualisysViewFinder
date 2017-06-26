@@ -207,15 +207,12 @@ namespace Arqus
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
-
-
+            
             // Update camera offset and reset 
             //UpdateCameraPosition();
-
             
             for (int i = 0; i < screenList.Count; i++)
             {
-
                 if (i < currentScreenLayout.Selection + 1|| i > currentScreenLayout.Selection  - 1)
                 {
                    screenList[i].Enabled = true;
@@ -225,7 +222,6 @@ namespace Arqus
                 {
                    screenList[i].Enabled = false;
                 }
-
             }
             
         }

@@ -5,6 +5,7 @@ using Urho.Actions;
 using Urho.Gui;
 using Urho.Shapes;
 using QTMRealTimeSDK.Data;
+using Arqus.Helpers;
 
 namespace Arqus.Visualization
 {
@@ -38,37 +39,36 @@ namespace Arqus.Visualization
 
         private double markerAngle;
 
-        public void Redraw(float halfWidth, float halfHeight, float x, float y, float width, float height)
+        public void Redraw(float x, float y, float width, float height, float clampWidth, float clampHeight)
         {
 
             for (uint k = 0; k <= Quality + 1; k++)
             {
-                float a = x + (width * (float)Math.Sin(k * markerAngle));
-                float b = y + (height * (float)Math.Cos(k * markerAngle));
-
-                if (a > halfWidth)
-                    a = halfWidth;
-                else if (a < -halfWidth)
-                    a = -halfWidth;
-
-                if (b > halfHeight)
-                    b = halfHeight;
-                else if (b < -halfHeight)
-                    b = -halfHeight;
-
+                float vx = clamp(x + (width * (float)Math.Sin(k * markerAngle)), clampWidth);
+                float vy = clamp(y + (height * (float)Math.Cos(k * markerAngle)), clampHeight);
 
                 unsafe
                 {
                     CustomGeometryVertex* vertex = GetVertex(0, k);
                     if (vertex != null)
                     {
-                        vertex->Position = new Vector3(a, b, 0);
+                        vertex->Position = new Vector3(vx, vy, 0);
                     }
                 }
             }
 
             Commit();
-
         }
+
+        public static float clamp(float value, float clampValue)
+        {
+            if (value > clampValue)
+                return clampValue;
+            else if (value < -clampValue)
+                return -clampValue;
+            return value;
+        }
+
+
     }
 }

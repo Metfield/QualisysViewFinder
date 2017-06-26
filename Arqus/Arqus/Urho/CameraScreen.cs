@@ -31,7 +31,6 @@ namespace Arqus.Visualization
         private Node backdropNode;
         private Node cameraNode;
         private Node labelNode;
-        private Node markerScreenNode;
         private Text3D label;
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
@@ -309,11 +308,11 @@ namespace Arqus.Visualization
                 // TODO: Add marker resolution to class
                 float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -cameraScreenHalfWidth, cameraScreenHalfWidth, markerData.MarkerData2D[i].X);
                 float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
-                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
-                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
+                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, cameraScreenHalfWidth, markerData.MarkerData2D[i].DiameterX);
+                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, cameraScreenHalfHeight, markerData.MarkerData2D[i].DiameterY);
 
 
-                Pool.Get(i).Redraw(cameraScreenHalfHeight, cameraScreenHalfWidth, x, y, width, height);
+                Pool.Get(i).Redraw(x, y, width, height, cameraScreenHalfWidth, cameraScreenHalfHeight);
     
                 // Last element will set this variable
                 lastUsedInArray = i;

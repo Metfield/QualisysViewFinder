@@ -55,6 +55,8 @@ namespace Arqus.Helpers
         {
             return height * 0.5f / Math.Tan(fov * DEGREE_TO_RADIANS * 0.5f);
         }
+        
+        
 
     }
 }

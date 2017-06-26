@@ -71,6 +71,12 @@ namespace Arqus.Visualization
         }
 
         float screenDistance = 25;
+        float halfScreenDistance {
+            get
+            {
+                return screenDistance * 0.5f;
+            }
+        }
 
         public override void Select(int id)
         {
@@ -117,7 +123,9 @@ namespace Arqus.Visualization
             if (screen.targetDistanceFromCamera != distance)
             {
                 if (screen.position == Selection)
+                {
                     screen.Node.RunActionsAsync(new EaseBackOut(new MoveTo(0.25f, new Vector3(0, 0, (float)distance))));
+                }
                 else if (screen.position != Selection)
                     screen.Node.RunActionsAsync(new EaseBackOut(new MoveTo(0.25f, new Vector3(0, 0, (float)distance * 1.5f))));
             }
@@ -147,7 +155,6 @@ namespace Arqus.Visualization
 
                 double deltaTime = Time.SystemTime - touchThrottleTime;
 
-
                 if (eventArgs.DX > 0)
                     swipingDirection = SwipingDirection.RIGHT;
                 else if (eventArgs.DX < 0)
@@ -157,13 +164,18 @@ namespace Arqus.Visualization
                 // based on current zoom
                 if (deltaTime > 200)
                 {
-                    if (Offset > screenDistance / 2)
+                    // If the offset is greater than half the screen distance then the neighbouring camera is closer 
+                    // to the center and thus is selected.
+                    if (Offset > halfScreenDistance)
                     {
-                        Select(Selection - 1 < 1 ? ItemCount : Selection - 1);
+                        int neighbour = (Selection - 1 < 1) ? ItemCount : Selection - 1;
+                        Select(neighbour);
                     }
-                    else if (Offset < -screenDistance / 2)
+                    else if (Offset < -halfScreenDistance)
                     {
-                        Select((Selection + 1 > ItemCount) ? 1 : Selection + 1);
+
+                        int neighbour = (Selection + 1 > ItemCount) ? 1 : Selection + 1;
+                        Select(neighbour);
                     }
 
                     touchThrottleTime = Time.SystemTime;
@@ -171,8 +183,7 @@ namespace Arqus.Visualization
                 else
                 {
                     // We want to Pan
-                    //Camera.Pan(eventArgs.DX, eventArgs.DY, cameraMovementSpeed * 5, carouselInitialDistance);
-
+                    Camera.Pan(eventArgs.DX, eventArgs.DY);
                 }
 
             }
@@ -182,12 +193,18 @@ namespace Arqus.Visualization
                 TouchState fingerOne = input.GetTouch(0);
                 TouchState fingerTwo = input.GetTouch(1);
 
-                // HACK: Current max is not calculated, this should be fixed to more closesly corelate to
-                // what a full screen actually is...
-                Camera.PinchAndZoom(fingerOne, fingerTwo, carouselInitialDistance, carouselInitialDistance + 20);
+                Camera.Zoom += Gestures.GetZoomAmountFromPinch(fingerOne, fingerTwo) * 0.2f;
+                if (Camera.Zoom < 1)
+                {
+                    Camera.Zoom = 1;
+                    // Reset panning instantly instead of waiting for next finger touch
+                    Camera.Pan(eventArgs.DX, eventArgs.DY);
+                }
             }
 
         }
+
+        float zoom = 1;
 
         int tapTouchID;
         float startTouchTime;

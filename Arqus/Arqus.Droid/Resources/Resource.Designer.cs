@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Arqus.Droid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("Arqus.Resource", IsApplication=true)]
 
-namespace Arqus.Droid
+namespace Arqus
 {
 	
 	
@@ -26,7 +26,7 @@ namespace Arqus.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Arqus.Droid.Resource.Attribute.actionBarSize;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Arqus.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation
@@ -2192,8 +2192,26 @@ namespace Arqus.Droid
 			// aapt resource value: 0x7f020054
 			public const int avd_hide_password = 2130837588;
 			
+			// aapt resource value: 0x7f020119
+			public const int avd_hide_password_1 = 2130837785;
+			
+			// aapt resource value: 0x7f02011a
+			public const int avd_hide_password_2 = 2130837786;
+			
+			// aapt resource value: 0x7f02011b
+			public const int avd_hide_password_3 = 2130837787;
+			
 			// aapt resource value: 0x7f020055
 			public const int avd_show_password = 2130837589;
+			
+			// aapt resource value: 0x7f02011c
+			public const int avd_show_password_1 = 2130837788;
+			
+			// aapt resource value: 0x7f02011d
+			public const int avd_show_password_2 = 2130837789;
+			
+			// aapt resource value: 0x7f02011e
+			public const int avd_show_password_3 = 2130837790;
 			
 			// aapt resource value: 0x7f020056
 			public const int design_bottom_navigation_item_background = 2130837590;

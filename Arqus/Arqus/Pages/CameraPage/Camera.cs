@@ -1,6 +1,5 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Threading.Tasks;
-
 using Arqus.Helpers;
 using Arqus.Service;
 using Arqus.Visualization;
@@ -21,19 +20,26 @@ namespace Arqus.DataModels
     /// </summary>
     public class Camera : BindableBase
     {
-        public ImageResolution ImageResolution { get; private set; }
-
-        public CameraScreen Parent { get; set; }
         
         public int ID { get; private set; }
 
-        public int Orientation { get; set; }
+        // public properties
+        public ImageResolution ImageResolution { get; private set; }
+        public CameraScreen Parent { get; set; }
+
+        public bool LensControlEnabled { get; private set; }
+
+        public string Model { get; private set; }
+        public CameraProfile Profile { get; set; }
+            
+        public int Orientation { get; private set; }
 
         private CameraMode mode;
         public CameraMode Mode { get { return mode; } set { SetProperty(ref mode, value); } }
 
         private SettingsGeneralCameraSystem settings;
-        public SettingsGeneralCameraSystem Settings {
+        public SettingsGeneralCameraSystem Settings
+        {
             get { return settings; }
             set
             {
@@ -48,11 +54,20 @@ namespace Arqus.DataModels
             Mode = settings.Mode;
             Settings = settings;
             ImageResolution = imageResolution;
+            Model = GetModelName(settings.Model);
+            Orientation = settings.Orientation;
+
+            if(settings.LensControl.Focus.Max != 0 ||
+               settings.LensControl.Focus.Min != 0 ||
+               settings.LensControl.Focus.Value != 0)
+            {
+                LensControlEnabled = true;
+            }
 
             // TODO: this should not have to be done in the constructor
             if (IsImageMode())
                 EnableImageMode();
-        }
+        }        
 
         /// <summary>
         /// Set the camera stream mode
@@ -105,42 +120,36 @@ namespace Arqus.DataModels
         
         /// <summary>
         /// Select the camera and enable the led-ring
+        /// Select the camera
         /// </summary>
         public void Select()
         {
             // Enable image mode if neccessary
             if(IsImageMode())
                 EnableImageMode();
-            
-
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
         }
-        
-        /// <summary>
-        /// Deselects the camera and disables the led-ring
-        /// </summary>
         public void Deselect()
         {
             // Disable image mode when not selected to keep the transferred data to a minimum
             DisableImageMode();
-
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.Off));
         }
-        
-        /// <summary>
-        /// Enable image mode for streaming on the QTM host
-        /// </summary>
-        public void EnableImageMode()
-        {
-            SettingsService.EnableImageMode(ID, true, ImageResolution.Width, ImageResolution.Height);
-        }
-        
+
         /// <summary>
         /// Disable image mode for streaming on the QTM host
         /// </summary>
         public void DisableImageMode()
         {
             SettingsService.EnableImageMode(ID, false, ImageResolution.Width, ImageResolution.Height);
+        }
+
+        /// <summary>
+        /// Enable image mode for streaming on the QTM host
+        /// </summary>
+        public void EnableImageMode()
+        {
+            SettingsService.EnableImageMode(ID, true, ImageResolution.Width, ImageResolution.Height);
         }
         
         /// <summary>
@@ -151,7 +160,59 @@ namespace Arqus.DataModels
         {
             return Mode != CameraMode.ModeMarker;
         }
-    }
 
+        // Gets model string
+        // TODO: Keep an eye out for changes hier
+        private string GetModelName(CameraModel cameraModel)
+        {
+            switch (cameraModel)
+            {
+                case CameraModel.ModelQqus100:
+                    return "Oqus 100 ";
+
+                case CameraModel.ModelQqus200C:
+                    return "Oqus 200 C";
+
+                case CameraModel.ModelQqus300:
+                    return "Oqus 300";
+
+                case CameraModel.ModelQqus300Plus:
+                    return "Oqus 300 Plus";
+
+                case CameraModel.ModelQqus400:
+                    return "Oqus 400";
+
+                case CameraModel.ModelQqus500:
+                    return "Oqus 500";
+
+                case CameraModel.ModelQqus500Plus:
+                    return "Oqus 500 Plus";
+
+                case CameraModel.ModelQqus700:
+                    return "Oqus 700";
+
+                case CameraModel.ModelQqus700Plus:
+                    return "Oqus 700 Plus";
+
+                case CameraModel.ModelMiqusM1:
+                    return "Miqus M1";
+
+                case CameraModel.ModelMiqusM3:
+                    return "Miqus M3";
+
+                case CameraModel.ModelMiqusM5:
+                    return "Miqus M3";
+
+                case CameraModel.ModelMiqusVideo:
+                    return "Miqus Video";
+
+                case CameraModel.ModelMiqusSU:
+                    return "Miqus Sync Unit";
+
+                default:
+                    return "Model Unknown";
+            }
+        }
+    }
 }
 

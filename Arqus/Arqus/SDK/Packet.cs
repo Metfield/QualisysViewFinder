@@ -87,6 +87,23 @@ namespace Arqus.Helpers
             return FormatStringToXML(string.Format(packet, id, value));
         }
 
+        // Sends XML packet specifically for LensControl camera settings
+        public static string LensControlParameter(int id, string parameter, string value)
+        {
+            string packet = @"<QTM_Settings>
+                <General>
+                    <Camera>
+                        <ID>{0}</ID>
+                            <LensControl>                                
+                                <" + parameter + " Value=\"{1}\"/>" +                                
+                            "</LensControl >" +
+                    "</Camera>" +
+                "</General>" +
+            "</QTM_Settings>";
+
+            return FormatStringToXML(string.Format(packet, id, value));
+        }
+
         private static string FormatStringToXML(string value)
         {
             XmlDocument document = new XmlDocument();

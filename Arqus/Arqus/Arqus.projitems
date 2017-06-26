@@ -9,14 +9,20 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CameraProfile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CameraProfiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DemoMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ThresholdConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DemoStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LensApertureSnapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
@@ -64,7 +70,6 @@
       <DependentUpon>ConnectionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
@@ -92,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Running.qd" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Pages\GridPage\" />
@@ -107,5 +113,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningGeneralSettings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningImageSettings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
   </ItemGroup>
 </Project>

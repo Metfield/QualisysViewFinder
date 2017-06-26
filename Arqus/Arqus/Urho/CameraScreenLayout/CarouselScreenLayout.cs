@@ -19,7 +19,8 @@ namespace Arqus.Visualization
         private float carouselInitialDistance = -80;
 
         // TODO: Fix number of camerascreens
-        private float cameraMovementSpeed = 0.5f;
+        private float speed = 0.025f;
+
         public double Radius
         {
             get { return length / (2 * Math.PI); }
@@ -47,14 +48,10 @@ namespace Arqus.Visualization
         {
             // focus on the first position
             Selection = 0;
-            Length = itemCount * 30;
+            Length = itemCount * screenDistance;
             ItemCount = itemCount;
             Camera = camera;
-
-            // Set center pivot of the carousel
-            PivotX = 0;
-            PivotY = Camera.Node.Position.Z + Radius + 20;
-            
+                
             // Offset the minimum somewhat to emphasize on having at least a small distance from the screen
             Min -= 10;
         }
@@ -106,7 +103,7 @@ namespace Arqus.Visualization
                     positionFromCameraFocus = ItemCount + positionFromCameraFocus;
             }
 
-            x = positionFromCameraFocus * screenDistance + Offset;
+            x = positionFromCameraFocus * screenDistance * 2 + Offset;
             
 
             double distance;
@@ -146,7 +143,7 @@ namespace Arqus.Visualization
             {
                 
                 // We want to scroll 
-                Offset += eventArgs.DX * cameraMovementSpeed;
+                Offset += eventArgs.DX * speed;
 
                 double deltaTime = Time.SystemTime - touchThrottleTime;
 
@@ -160,11 +157,11 @@ namespace Arqus.Visualization
                 // based on current zoom
                 if (deltaTime > 200)
                 {
-                    if (Offset > 30 / 2)
+                    if (Offset > screenDistance / 2)
                     {
                         Select(Selection - 1 < 1 ? ItemCount : Selection - 1);
                     }
-                    else if (Offset < -30 / 2)
+                    else if (Offset < -screenDistance / 2)
                     {
                         Select((Selection + 1 > ItemCount) ? 1 : Selection + 1);
                     }

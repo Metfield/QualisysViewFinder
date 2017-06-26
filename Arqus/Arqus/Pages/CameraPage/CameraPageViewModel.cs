@@ -61,11 +61,8 @@ namespace Arqus
                 }
                 else
                 {
-
                     cameraScreenLayout = "grid";
                     IsGridLayoutActive = true;
-
-
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid, payload: new { cameraScreenLayout });
                 }
 

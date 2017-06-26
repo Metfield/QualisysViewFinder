@@ -38,8 +38,6 @@ namespace Arqus
         private INavigationService navigationService;
         private INotification notificationService;
 
-        private NavigationParameters navigationParams;       
-
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
@@ -54,7 +52,11 @@ namespace Arqus
 
             RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
             
-            ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
+            ConnectionModeDiscoveryCommand = new DelegateCommand(() => {
+                LoadQTMServers();
+                IsDiscovery = true;
+            }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
+
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
             ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 

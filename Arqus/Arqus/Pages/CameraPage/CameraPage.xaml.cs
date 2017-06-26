@@ -66,7 +66,7 @@ namespace Arqus
                 .Subscribe((value) => viewModel.SetCameraSetting(Constants.VIDEO_FLASH_PACKET_STRING, value));
 
             // Extra video-specific value bindings for Lens control
-            Observable.FromEventPattern<ValueChangedEventArgs>(lensFocusSlider, "ValueChanged")
+            /*Observable.FromEventPattern<ValueChangedEventArgs>(lensFocusSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
@@ -76,7 +76,7 @@ namespace Arqus
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SnapAperture(value));                
+                .Subscribe((value) => viewModel.SnapAperture(value));  */              
         }
 
         /// <summary>
@@ -108,17 +108,13 @@ namespace Arqus
         {
             base.OnAppearing();
             StartUrhoApp();
-            markerApplication = await StartUrhoApp();
-
-            // Notify ViewModel that loading for 3D app is done
-            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
 
         protected override async void OnDisappearing()
         {
             await application.Exit();
             UrhoSurface.OnDestroy();
-            markerApplication = null;            
+            application = null;            
 
             viewModel.Dispose();
             viewModel = null;
@@ -132,6 +128,10 @@ namespace Arqus
             application = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
             //Set the orientation of the application to match the rest of the UI
             application.Orientation = orientation;
+            
+
+            // Notify ViewModel that loading for 3D app is done
+            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
         
     }

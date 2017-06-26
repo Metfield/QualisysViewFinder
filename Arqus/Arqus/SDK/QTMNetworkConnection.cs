@@ -243,7 +243,6 @@ namespace Arqus
             string response;   
 
             bool success;
-            string response;
 
             lock (controlLock)
             {
@@ -261,7 +260,6 @@ namespace Arqus
 
                 string response;
                 string packetString = Packet.CameraImage(id, width, height);
-                string response;
 
                 lock (controlLock)
                 {

@@ -125,7 +125,7 @@ namespace Arqus.DataModels
         public void Select()
         {
             // Enable image mode if neccessary
-            if(IsImageMode())
+            if (IsImageMode()) { }
                 EnableImageMode();
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
         }

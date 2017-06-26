@@ -139,7 +139,7 @@
                                 Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
 
                         <!-- Automated lens manipulation for Oqus 700+ cameras -->
-                        <StackLayout HorizontalOptions="Fill">
+                        <!--<StackLayout HorizontalOptions="Fill">
                             <Label Text="Lens Focus"/>
                             <Label BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
@@ -160,7 +160,7 @@
                                 Maximum="{Binding ApertureSnapMax}" 
                                 Minimum="0"                                
                                 Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay} "  />
-                        
+                        -->
                     </StackLayout>
                 </StackLayout>
 

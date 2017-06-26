@@ -215,14 +215,15 @@ namespace Arqus
             
             for (int i = 0; i < screenList.Count; i++)
             {
-                if (i < currentScreenLayout.Selection + 1 || i > currentScreenLayout.Selection - 1)
+
+                if (i < currentScreenLayout.Selection + 1|| i > currentScreenLayout.Selection  - 1)
                 {
-                    screenList[i].Enabled = true;
+                   screenList[i].Enabled = true;
                     currentScreenLayout.SetCameraScreenPosition(screenList[i], Orientation);
                 }
                 else
                 {
-                    screenList[i].Enabled = false;
+                   screenList[i].Enabled = false;
                 }
 
             }

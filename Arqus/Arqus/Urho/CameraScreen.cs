@@ -50,13 +50,13 @@ namespace Arqus.Visualization
             set
             {
                 scale = value;
-                Height = scale;
-                Width = Camera.ImageResolution.PixelAspectRatio * Height;
+                Width = scale;
+                Height = Width / Camera.ImageResolution.PixelAspectRatio;
             }
         }
 
-        public float Width { private set; get; }
-        public float Height { private set; get; }
+        public float Width { set; get; }
+        public float Height { set; get; }
 
         public bool Focused { get; set; }
         
@@ -167,10 +167,12 @@ namespace Arqus.Visualization
             labelNode = screenNode.CreateChild();
             label = labelNode.CreateComponent<Text3D>();
 
+            // TODO: Fix magic numbers
             if(Camera.Orientation == 0)
-                labelNode.Position = new Vector3(Width/2 - 0.5f, -Height/2 + 1f, -0.1f);
+                labelNode.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 1f, -0.1f);
             else
-                labelNode.Position = new Vector3(Height / 2 - 0.5f, -Width / 2 + 1f, -0.1f);
+                labelNode.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 1f, -0.1f);
+
             label.Text = Camera.ID.ToString();
             label.SetFont(CoreAssets.Fonts.AnonymousPro, 100);
             label.TextEffect = TextEffect.Stroke;
@@ -249,7 +251,7 @@ namespace Arqus.Visualization
                 imageScreen.Enabled = false;
                 markerScreen.Enabled = true;
             });
-            //OnUpdateHandler = OnMarkerUpdate;
+            OnUpdateHandler = OnMarkerUpdate;
         }
         
         public unsafe void UpdateMaterialTexture(Image<Rgba32> imageData)
@@ -309,7 +311,7 @@ namespace Arqus.Visualization
                 
         private int markerQuality = 40;
 
-        public void OnMarkerUpdate(QTMRealTimeSDK.Data.Camera markerData)
+        public void OnMarkerUpdate()
         {
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used

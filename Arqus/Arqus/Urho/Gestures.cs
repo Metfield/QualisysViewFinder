@@ -63,21 +63,26 @@ namespace Arqus
                 camera.Node.SetWorldPosition(new Vector3(reset2DPosition == true ? 0.0f : camera.Node.Position.X, reset2DPosition == true ? 0.0f : camera.Node.Position.Y, newPosition));
             }
         }
-
-        private static float panPrecision = 0.005f;
+        
         /// <summary>
         /// Pans a camera in both x- and y-direction
         /// </summary>
         /// <param name="camera">the camera to be panned</param>
         /// <param name="dx">the pan value in x-direction</param>
         /// <param name="dy">the pan value in y-direction</param>
-        public static void Pan(this Urho.Camera camera, int dx, int dy)
+        public static void Pan(this Urho.Camera camera, int dx, int dy, float precision = 0.005f, bool onZoom = true, float maxY = -99999, float minY = -99999)
         {
             // Only pan if camera is zoomed
-            if (camera.Zoom > 1)
+            if (!onZoom || camera.Zoom > 1)
             {   
-                float x = camera.Node.Position.X + -dx * panPrecision * camera.Zoom;
-                float y = camera.Node.Position.Y + dy * panPrecision * camera.Zoom;
+                float x = camera.Node.Position.X + -dx * precision * camera.Zoom;
+                float y = camera.Node.Position.Y + dy * precision * camera.Zoom;
+
+                if (maxY > -99999 && y > maxY)
+                    y = maxY;
+
+                if (minY > -99999 && y < minY)
+                    y = minY;
 
                 camera.Node.Position = new Vector3(x, y, camera.Node.Position.Z);
             }

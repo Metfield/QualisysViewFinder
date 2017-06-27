@@ -268,7 +268,7 @@ namespace Arqus
                     // Get selected camera ID 
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
                     
-                    camera.FarClip = 50.0f;
+                    camera.FarClip = 150.0f;
                     currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
                     currentScreenLayout.Select(cameraID);
 
@@ -300,14 +300,13 @@ namespace Arqus
             // If it is lesser than our tap margin, it is a tap
             if (dt < tapTimeMargin && currentScreenLayout.GetType() == typeof(GridScreenLayout))
             {
-                //CastTouchRay(eventArgs.X, eventArgs.Y);
+                CastTouchRay(eventArgs.X, eventArgs.Y);
             }
             else if(currentScreenLayout.GetType() == typeof(CarouselScreenLayout))
             {
                 //List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
                 //CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
                 //currentScreenLayout.Select(focus.position);
-
             }
         }    
     }

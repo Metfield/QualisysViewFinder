@@ -24,6 +24,8 @@ namespace Arqus
         public override float Offset { get; set; }
         public override Camera Camera { get; }
 
+        public int Row => (int) Math.Ceiling((double) ItemCount / Columns);
+
         public GridScreenLayout(int itemCount, int columns, Urho.Camera camera)
         {
             Columns = columns;
@@ -41,22 +43,50 @@ namespace Arqus
 
         public override void SetCameraScreenPosition(CameraScreen screen, DeviceOrientations orientation)
         {
-            float distance = 70;
+            float margin = 5;
+            float width = 10;
+            
+            //screen.Scale = 1;
+
+            // Calculate the distance where the camera screen width is half the width of the frustrum
+            float distance = (float)DataOperations.GetDistanceForFrustrumWidth(screen.Width * Columns + margin, Camera.AspectRatio, Camera.Fov); ;
+
+
+            if (Math.Abs(screen.Camera.Orientation) == 0 || Math.Abs(screen.Camera.Orientation) == 180)
+            {
+                //screen.Node.SetScale(1);
+            }
+            else
+            {
+                //float newScale = screen.Height / screen.Width;
+                //screen.Scale = newScale;
+            }
+
             float halfHeight = distance * Camera.HalfViewSize;
             float halfWidth = halfHeight * Camera.AspectRatio;
 
-            float margin = 2;
+
             // Something is off with this algorithm as they are not being centered fully....
-            float x = -halfWidth + ( ((Columns - 1) - screen.position % Columns)) * halfWidth * 2 / Columns + halfWidth / Columns;
-            float y = halfHeight - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin) - screen.Height / 2 - margin;
-            
+            float x = -halfWidth + (((Columns - 1) - screen.position % Columns)) * halfWidth * 2 / Columns + halfWidth / Columns;
+            float y = halfHeight - screen.Height / 2 - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin / 2) - margin / 2;
+
+
+            if ((y - screen.Height / 2) < min)
+                min = y - screen.Height / 2;
 
             // We need a small offset or the will not be seen by the camera
-             screen.Node.SetWorldPosition(new Vector3(x, y, Camera.Node.Position.Z + distance));
+            screen.Node.SetWorldPosition(new Vector3(x, y, distance));
         }
+
+        float min;
 
         public override void OnTouch(Input input, TouchMoveEventArgs eventArgs)
         {
+            if(input.NumTouches == 1)
+            {
+                // Only move in y axis
+                Camera.Pan(0, eventArgs.DY, 0.05f, false, 0, min);
+            }
         }
 
         public override void OnTouchBegan(TouchBeginEventArgs eventArgs)
@@ -65,6 +95,7 @@ namespace Arqus
 
         public override void OnTouchReleased(Input input, TouchEndEventArgs eventArgs)
         {
+
         }
     }
 }

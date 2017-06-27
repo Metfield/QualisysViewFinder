@@ -13,29 +13,57 @@
 
     <StackLayout VerticalOptions="FillAndExpand" Style="{StaticResource Background}" >
 
-        <Image Source="Drawable/arqus_logo_medium.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="100"/>
+        <Image Source="Drawable/arqus_logo_medium.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
         <Label Text="ARQUS" FontSize="Large" HorizontalOptions="Center" TextColor="Black" Margin="0, 0, 0, 10"/>
 
-        <StackLayout  
-        VerticalOptions="Start" 
-        HorizontalOptions="CenterAndExpand" 
-        Orientation="Horizontal">
+        <Grid   
+            VerticalOptions="Start" 
+            HorizontalOptions="CenterAndExpand">
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            
             <ui:JiggleButton Text="Discover"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalOptions="End" 
+                    VerticalOptions="FillAndExpand"
                     Style="{StaticResource primaryButton}"
                     Command="{Binding ConnectionModeDiscoveryCommand}"/>
 
             <ui:JiggleButton Text="Manually"
-                    Style="{StaticResource primaryButton}"
-                    Command="{Binding ConnectionModeManuallyCommand}"/>
+                             Grid.Row="0"
+                            Grid.Column="1"
+                            HorizontalOptions="Start" 
+                            VerticalOptions="FillAndExpand"
+                             Style="{StaticResource primaryButton}"
+                            Command="{Binding ConnectionModeManuallyCommand}"/>
 
 
-        </StackLayout>
+            <ui:JiggleButton HorizontalOptions="Center" 
+                        VerticalOptions="FillAndExpand"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Text="Demo Mode"
+                        Style="{StaticResource primaryButton}"
+                        Command="{Binding ConnectionModeDemoCommand}"/>
+            
+        </Grid>
 
         <Frame IsVisible="{Binding IsDiscovery}"
                 VerticalOptions="StartAndExpand"
                 HorizontalOptions="Center" 
                 WidthRequest="300"
+                Padding="0"
                 Margin="0,0,0,15" BackgroundColor="#424242">
             
             <local:QTMServerList x:Name="qtmListView" 
@@ -43,7 +71,6 @@
                                  VerticalOptions="FillAndExpand"/>
 
         </Frame>
-
 
         <StackLayout IsVisible="{Binding IsManually}" 
                     VerticalOptions="StartAndExpand" 
@@ -58,10 +85,6 @@
                     Command="{Binding ConnectCommand}" />
 
         </StackLayout>
-
-        <ui:JiggleButton HorizontalOptions="Center" Text="Demo Mode"
-                    Style="{StaticResource primaryButton}"
-                    Command="{Binding ConnectionModeDemoCommand}"/>
 
     </StackLayout>
 

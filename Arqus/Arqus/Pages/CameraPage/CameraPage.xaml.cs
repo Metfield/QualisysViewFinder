@@ -66,17 +66,17 @@ namespace Arqus
                 .Subscribe((value) => viewModel.SetCameraSetting(Constants.VIDEO_FLASH_PACKET_STRING, value));
 
             // Extra video-specific value bindings for Lens control
-            /*Observable.FromEventPattern<ValueChangedEventArgs>(lensFocusSlider, "ValueChanged")
+            Observable.FromEventPattern<ValueChangedEventArgs>(lensFocusSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) =>   viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(lensApertureSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SnapAperture(value));  */              
+                .Subscribe((value) => viewModel.SnapAperture(value));
         }
 
         /// <summary>

@@ -214,6 +214,9 @@ namespace Arqus
         /// <returns>Returns true if successful</returns>
         public static bool SetCameraSettings(int id, string settingsParameter, string value)
         {
+            if (isDemoModeActive)
+                return false;
+
             try
             {
                 return connection.SetCameraSettings(id, settingsParameter, value);
@@ -241,6 +244,9 @@ namespace Arqus
 
         public static async Task<bool> SetLED(int id, LEDMode mode, LEDColor color = LEDColor.All)
         {
+            if (isDemoModeActive)
+                return false;
+
             try
             {                
                 bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
@@ -250,8 +256,7 @@ namespace Arqus
             {
                 Debug.WriteLine(e);
                 return false;
-            }
-            
+            }            
         }            
 
         public static void Clean()

@@ -111,13 +111,7 @@ namespace Arqus
             // Update the application when a new screen layout is set in the view model
             MessagingCenter.Unsubscribe<CameraPageViewModel, string>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
             MessagingCenter.Unsubscribe<CameraPageViewModel, bool>(this, MessageSubject.STREAM_START);
-
-            // Unsubscribe from touch events
-            // Why is this crashing?!
-            //Input.TouchMove -= OnTouched;
-            //Input.TouchBegin -= OnTouchBegan;
-            //Input.TouchEnd -= OnTouchReleased;
-
+            
             base.OnDeleted();
         }
         

@@ -26,6 +26,9 @@ namespace Arqus.Services
         // Variables to handle packets
         protected QTMNetworkConnection connection;
 
+        // This task handles do ContinuousStreaming loop
+        Task streamTask;
+
         protected Stream(ComponentType type, int frequency, bool demoMode)
         {
             this.type = type;
@@ -45,12 +48,12 @@ namespace Arqus.Services
                 if (!demoMode)
                 {
                     if (connection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type))
-                        Task.Run(() => ContinuousStream());
+                        streamTask = Task.Run(() => ContinuousStream());
                 }
                 else
                 {
                     // TODO: Assuming DemoStream is going great!
-                    Task.Run(() => ContinuousStream());
+                    streamTask = Task.Run(() => ContinuousStream());
                 }
             }
             else
@@ -62,8 +65,8 @@ namespace Arqus.Services
         public void StopStream()
         {
             streaming = false;
-
-            if(!demoMode)
+            
+            if (!demoMode)
                 connection.Protocol.StreamFramesStop();
         }
         
@@ -104,7 +107,7 @@ namespace Arqus.Services
                             // We don't need a packet for demo mode
                             RetrieveDataAsync(null);
                             then = now;
-                        }                        
+                        }
 
                         // Sleep thread to match desired frequency
                         //await Task.Delay(160 / frequency);                        

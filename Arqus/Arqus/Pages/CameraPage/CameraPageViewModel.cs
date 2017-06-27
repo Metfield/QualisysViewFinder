@@ -145,6 +145,9 @@ namespace Arqus
         {
             // Notify UrhoSurface Application of the stream mode start intent
             MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
+
+            // Once this is done we unsubscribe to the msg
+            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
@@ -324,8 +327,7 @@ namespace Arqus
             isDemoModeActive = false;
 
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
-            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
-            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);            
 
             GC.Collect();
         }

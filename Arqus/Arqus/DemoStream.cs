@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using QTMRealTimeSDK.Data;
 using Arqus.Service;
+using System.Diagnostics;
 
 namespace Arqus.Services
 {
@@ -26,20 +27,20 @@ namespace Arqus.Services
         {
             cameras = demoMode.frames[currentFrame];
 
-            if (cameras != null)
+            Urho.Application.InvokeOnMainAsync(() => 
             {
-                uint id = 1;
-                foreach (var camera in cameras)
-                {
-                    if (camera.MarkerData2D.Length > 0)
-                    {
-                        MessagingService.Send(this, MessageSubject.STREAM_DATA_SUCCESS + id, camera, track: false);
-                    }
-
-                    id++;
+                // NOTE: There is a chance that the packet does not contain data for the currently selected 
+                // camera if that is the case simply catch the exception and log it then keep streaming as usual.
+                try
+                {                    
+                    CameraStore.CurrentCamera.Parent?.OnMarkerUpdate(cameras[CameraStore.CurrentCamera.ID - 1]);
                 }
-            }
-
+                catch (Exception e)
+                {
+                    Debug.WriteLine("DemoStream:" + e.Message);
+                }
+            });
+            
             SetNextFrame();
         }
 
@@ -49,15 +50,13 @@ namespace Arqus.Services
                 currentFrame = 0;
         }
        
-        public new void Dispose()
+        public void Clean()
         {
             cameras.Clear();
             cameras = null;
 
             demoMode.Dispose();
-            demoMode = null;
-
-            base.Dispose();
+            demoMode = null;                        
         }
     }
 }

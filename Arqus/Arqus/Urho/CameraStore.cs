@@ -117,7 +117,7 @@ namespace Arqus
             {
                 Screens.Clear();
                 Screens = null;
-            }
+            }                        
         }
     }
 }

@@ -514,7 +514,7 @@ namespace QTMRealTimeSDK
                         }
                         receivedTotal += received;
                     }
-                    mPacket.SetData(data);
+                    mPacket.SetData(ref data);
                 }
                 while (skipEvents && packetType == PacketType.PacketEvent);
 

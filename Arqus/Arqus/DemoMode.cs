@@ -21,7 +21,7 @@ namespace Arqus
         public void LoadDemoFile()
         {
             // Get assembly object
-            Assembly assembly = typeof(DemoMode).Assembly;    
+            Assembly assembly = typeof(DemoMode).Assembly;
 
             // Get camera frames information
             using (Stream stream = assembly.GetManifestResourceStream("Arqus." + filename))
@@ -32,7 +32,7 @@ namespace Arqus
 
             frameCount = frames.Count;
 
-            assembly = null;            
+            assembly = null;
         }
 
         public int GetFrameCount()
@@ -45,6 +45,9 @@ namespace Arqus
             // Dispose of demo structure
             frames.Clear();
             frames = null;
+
+            frameCount = 0;
+            filename = null;
         }
     }
 }

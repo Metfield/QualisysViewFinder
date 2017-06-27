@@ -1,7 +1,9 @@
 ﻿using Arqus.DataModels;
 using Arqus.Helpers;
 using Arqus.Service;
+using Arqus.Services;
 using Arqus.Services.MobileCenterService;
+using Arqus.Visualization;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -14,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using static Arqus.CameraApplication;
 
 namespace Arqus
 {
@@ -21,7 +24,7 @@ namespace Arqus
     {
         // Dependency services
         private INavigationService navigationService;
-
+        
         // Keep track if latest value was updated by QTM
         public uint skipCounter = 0;
         
@@ -54,20 +57,22 @@ namespace Arqus
                     cameraScreenLayout = "carousel";
                     IsGridLayoutActive = false;
                     ShowDrawer();
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel, payload: new { cameraScreenLayout });
                 }
                 else
                 {
                     cameraScreenLayout = "grid";
                     IsGridLayoutActive = true;
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid, payload: new { cameraScreenLayout });
                 }
 
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, cameraScreenLayout, payload: new { cameraScreenLayout });
             });
 
             // We're starting with carousel mode
             isGridLayoutActive = false;
 
-            MessagingCenter.Subscribe<CameraApplication, int>(this,
+            MessagingCenter.Subscribe<CarouselScreenLayout, int>(this,
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
             
@@ -76,7 +81,8 @@ namespace Arqus
                 (QTMEventListener sender) =>
                 {
                     skipCounter++;
-                    CurrentCamera.UpdateSettings();
+                    // REMOVED FOR DEBUG PURPOSE
+                    //CurrentCamera.UpdateSettings();
                 });
 
             MessagingCenter.Subscribe<CameraPage>(this,
@@ -139,6 +145,9 @@ namespace Arqus
         {
             // Notify UrhoSurface Application of the stream mode start intent
             MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
+
+            // Once this is done we unsubscribe to the msg
+            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
@@ -318,8 +327,7 @@ namespace Arqus
             isDemoModeActive = false;
 
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
-            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
-            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);            
 
             GC.Collect();
         }

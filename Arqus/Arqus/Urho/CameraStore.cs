@@ -7,6 +7,7 @@ using QTMRealTimeSDK.Settings;
 using Arqus.Helpers;
 using Arqus.DataModels;
 using Prism.Mvvm;
+using System.Diagnostics;
 
 namespace Arqus
 {
@@ -78,8 +79,10 @@ namespace Arqus
             return Cameras.Values.Select(camera => new CameraScreen(camera, cameraNode)).ToList();
         }
 
+        // Set the currently selected camera
         public static void SetCurrentCamera(int id)
         {
+            // Before setting the new camera make sure to deselect the old one
             CurrentCamera.Deselect();
             CurrentCamera = Cameras[id];
             CurrentCamera.Select();
@@ -114,7 +117,7 @@ namespace Arqus
             {
                 Screens.Clear();
                 Screens = null;
-            }
+            }                        
         }
     }
 }

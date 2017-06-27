@@ -31,13 +31,14 @@ namespace Arqus.Visualization
         private Node backdropNode;
         private Node cameraNode;
         private Node labelNode;
-        private Node markerScreenNode;
         private Text3D label;
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
 
+        public double targetDistanceFromCamera;
         private int orientation;
+
 
         // static fields
         static int screenCount;
@@ -56,6 +57,8 @@ namespace Arqus.Visualization
 
         public float Width { private set; get; }
         public float Height { private set; get; }
+
+        public bool Focused { get; set; }
         
         public Material Material { get; set; }
         
@@ -74,7 +77,11 @@ namespace Arqus.Visualization
             {
                 dirty = true;
                 markerData = value;
-            } 
+            }
+            get
+            {
+                return markerData;
+            }
         }
 
 
@@ -108,7 +115,7 @@ namespace Arqus.Visualization
             orientation = camera.Orientation;
 
             ReceiveSceneUpdates = true;
-            OnUpdateHandler += OnMarkerUpdate;
+            //OnUpdateHandler += OnMarkerUpdate;
 
             // Set position in relation to the number of cameras that are already initialized
             // so the screens can be positioned accordingly
@@ -154,13 +161,8 @@ namespace Arqus.Visualization
             imageScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
             Material = new Material();
 
-            texture = new Texture2D();
-            texture.SetNumLevels(1);
-            texture.SetSize(Camera.ImageResolution.Width, Camera.ImageResolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
-            Material.SetTexture(TextureUnit.Diffuse, texture);
-            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
-            imageScreen.SetMaterial(Material);
-            
+            SetImageTexture(Camera.ImageResolution.Width, Camera.ImageResolution.Height);
+
 
             labelNode = screenNode.CreateChild();
             label = labelNode.CreateComponent<Text3D>();
@@ -174,7 +176,7 @@ namespace Arqus.Visualization
             label.TextEffect = TextEffect.Stroke;
 
             // Initialize current camera mode
-            SetImageMode(IsImageMode());
+            SetImageMode(Camera.IsImageMode());
 
             SubscribeToDataEvents();
         }
@@ -205,7 +207,7 @@ namespace Arqus.Visualization
 
             MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
-                SetImageMode(mode != CameraMode.ModeMarker);
+                SetImageMode(Camera.IsImageMode());
             });
         }
 
@@ -247,11 +249,16 @@ namespace Arqus.Visualization
                 imageScreen.Enabled = false;
                 markerScreen.Enabled = true;
             });
-            OnUpdateHandler = OnMarkerUpdate;
+            //OnUpdateHandler = OnMarkerUpdate;
         }
         
         public unsafe void UpdateMaterialTexture(Image<Rgba32> imageData)
         {
+            if(imageData.Width != Camera.ImageResolution.Width || imageData.Height != Camera.ImageResolution.Height)
+            {
+                ReinitializeImagePlane(imageData.Width, imageData.Height);
+            }
+
             fixed (ImageSharp.Rgba32* bptr = imageData.Pixels)
             {
                 texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
@@ -259,81 +266,71 @@ namespace Arqus.Visualization
 
             imageData.Dispose();
         }
+
+        private void ReinitializeImagePlane(int width, int height)
+        {
+            Camera.ImageResolution = new ImageResolution(width, height);
+            Camera.EnableImageMode();
+            SetImageTexture(width, height);
+        }
+
+        private void SetImageTexture(int width, int height)
+        {
+            texture = new Texture2D();
+            texture.SetNumLevels(1);
+            texture.SetSize(Camera.ImageResolution.Width, Camera.ImageResolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            Material.SetTexture(TextureUnit.Diffuse, texture);
+            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
+            imageScreen.SetMaterial(Material);
+        }
         
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
 
-            if (backdropNode.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
+            if (Node.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
             {
-                Camera.DisableImageMode();
-                backdropNode.Enabled = false;
+                //Camera.DisableImageMode();
+                Node.Enabled = false;
             }
-            else if (!backdropNode.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
+            else if (!Node.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
             {
-                Camera.EnableImageMode();
-                backdropNode.Enabled = true;
+                //Camera.EnableImageMode();
+                Node.Enabled = true;
             }
                 
             
-            if (backdropNode.Enabled && dirty)
+            if (Node.Enabled && dirty)
             {
                 dirty = false;
                 OnUpdateHandler?.Invoke();
             }
         }
                 
-        private void OnMarkerUpdate()
+        private int markerQuality = 40;
+
+        public void OnMarkerUpdate(QTMRealTimeSDK.Data.Camera markerData)
         {
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used
             int lastUsedInArray = 0;
 
+            float cameraScreenHalfWidth = Width / 2;
+            float cameraScreenHalfHeight = Height / 2;
 
             // Iterate through the marker array, transform and draw spheres
             for (int i = 0; i < markerData.MarkerCount; i++)
             {
                 // Transform from camera coordinates to frame coordinates
                 // TODO: Add marker resolution to class
-                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -Width / 2, Width/2, markerData.MarkerData2D[i].X);
-                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, Height/2, -Height/2, markerData.MarkerData2D[i].Y);
-                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, Width, markerData.MarkerData2D[i].DiameterX);
-                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, Height, markerData.MarkerData2D[i].DiameterY);
-                
-                CustomGeometry geom = Pool.Get(i);
-                geom.BeginGeometry(0, PrimitiveType.TriangleFan);  
-
-                geom.DefineVertex(new Vector3(x, y, 0));
-                geom.SetMaterial(Urho.Material.FromColor(Urho.Color.White, true));
+                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -cameraScreenHalfWidth, cameraScreenHalfWidth, markerData.MarkerData2D[i].X);
+                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
+                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, cameraScreenHalfWidth, markerData.MarkerData2D[i].DiameterX);
+                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, cameraScreenHalfHeight, markerData.MarkerData2D[i].DiameterY);
 
 
-                for (int k = 0; k <= 40; k++)
-                {
-                    float a = x + (width * (float)Math.Sin(k * 2 * Math.PI / 40));
-                    float b = y + (height * (float)Math.Cos(k * 2 * Math.PI / 40));
-                   
-                    if(a > Width/2)
-                        a = Width / 2;
-                    else if(a < -Width/2)
-                        a = -Width / 2;
-
-                    if (b > Height / 2)
-                        b = Height / 2;
-                    else if (b < -Height / 2)
-                        b = -Height / 2;
-
-                    geom.DefineVertex(new Vector3(a, b, 0));
-                    geom.DefineColor(Urho.Color.White);
-                }
-
-                geom.Commit();
-
-                /*
-                // Set world position with new frame coordinates            
-                sphere.Position = new Vector3(adjustedY, 0.5f, adjustedX);
-                sphere.Scale = new Vector3(adjustedScaleY, sphere.Scale.Y, adjustedScaleX);
-                */
-
+                Pool.Get(i).Redraw(x, y, width, height, cameraScreenHalfWidth, cameraScreenHalfHeight);
+    
                 // Last element will set this variable
                 lastUsedInArray = i;
             }

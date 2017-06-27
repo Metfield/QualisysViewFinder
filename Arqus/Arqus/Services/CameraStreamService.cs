@@ -41,7 +41,7 @@ namespace Arqus
                 qtmEventListener = new QTMEventListener(30, true);
             }
             else
-            {
+            {               
                 demoStream = new DemoStream();
                 demoStream.StartStream();
             }
@@ -58,6 +58,7 @@ namespace Arqus
             else
             {
                 demoStream.Dispose();
+                demoStream.Clean();
             }
 
             streamingDemo = false;

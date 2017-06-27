@@ -18,20 +18,18 @@ namespace Arqus.Services
         List<Camera> cameras;
         protected override void RetrieveDataAsync(RTPacket packet)
         {
-            cameras = packet.Get2DMarkerData();
-
-            if(cameras != null)
-            {
-                uint id = 1;
-                foreach (var camera in cameras)
+            Urho.Application.InvokeOnMainAsync(() => {
+                // NOTE: There is a chance that the packet does not contain data for the currently selected 
+                // camera if that is the case simply catch the exception and log it then keep streaming as usual.
+                try
                 {
-                    if(camera.MarkerData2D.Length > 0)
-                    {
-                        MessagingService.Send(this, MessageSubject.STREAM_DATA_SUCCESS + id, camera, track: false);
-                    }   
-                    id++;
+                    CameraStore.CurrentCamera.Parent?.OnMarkerUpdate(packet.Get2DMarkerData(CameraStore.CurrentCamera.ID - 1));
                 }
-            }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("MarkerStream:" + e.Message);
+                }
+            });
         }
     }
 }

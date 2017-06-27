@@ -17,7 +17,7 @@ namespace Arqus
 {
     public partial class CameraPage : ContentPage
     {
-        CameraApplication markerApplication;
+        CameraApplication application;
         CameraPageViewModel viewModel;
 
         int throttleTime = 50;
@@ -33,7 +33,9 @@ namespace Arqus
             // Initialize slider observers
             InitSliderObservers();
         }
-        
+
+        DeviceOrientations orientation;
+
         // Moved into a function to keep the constructor from getting bloated with code
         private void InitSliderObservers()
         {
@@ -77,32 +79,61 @@ namespace Arqus
                 .Subscribe((value) => viewModel.SnapAperture(value));
         }
 
-        protected override async void OnAppearing()
+        /// <summary>
+        /// Updates the Urho application in case there is an orientation change
+        /// </summary>
+        /// <param name="width">width of the screen</param>
+        /// <param name="height">height of the screen</param>
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+
+            // If the width is greated than the height the device is in landscape mode,
+            // otherwise it is in portrait
+            if(width > height)
+            {
+                orientation = DeviceOrientations.Landscape;
+            }
+            else
+            {
+                orientation = DeviceOrientations.Portrait;
+            }
+
+            // Only update the application if it has been created
+            if (application != null)
+                application.Orientation = orientation;
+        }
+
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            markerApplication = await StartUrhoApp();
-
-            // Notify ViewModel that loading for 3D app is done
-            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+            StartUrhoApp();
         }
 
         protected override async void OnDisappearing()
         {
-            await markerApplication.Exit();
+            await application.Exit();
             UrhoSurface.OnDestroy();
-            markerApplication = null;            
+            application = null;            
 
             viewModel.Dispose();
             viewModel = null;
 
             base.OnDisappearing();
-        }       
-
-        async Task<CameraApplication> StartUrhoApp()
-        {
-            markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
-            return markerApplication;
         }        
+        
+
+        async void StartUrhoApp()
+        {
+            application = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            //Set the orientation of the application to match the rest of the UI
+            application.Orientation = orientation;
+            
+
+            // Notify ViewModel that loading for 3D app is done
+            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+        }
+        
     }
 }
 

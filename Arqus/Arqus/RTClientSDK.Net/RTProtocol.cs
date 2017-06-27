@@ -6,6 +6,7 @@ using QTMRealTimeSDK.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -100,11 +101,11 @@ namespace QTMRealTimeSDK
     {
         [XmlEnum("Control port")]
         SourceControlPort = 0,
-        [XmlEnum("IR_receiver")]
+        [XmlEnum("IR receiver")]
         SourceIRReceiver,
         [XmlEnum("SMPTE")]
         SourceSMPTE,
-        [XmlEnum("Video_sync")]
+        [XmlEnum("Video sync")]
         SourceVideoSync
     }
 
@@ -174,7 +175,7 @@ namespace QTMRealTimeSDK
             /// <summary>Latest major version of protocol</summary>
             public const int MAJOR_VERSION = 1;
             /// <summary>Latest minor version of protocol</summary>
-            public const int MINOR_VERSION = 13;
+            public const int MINOR_VERSION = 17;
             /// <summary>Maximum camera count</summary>
             public const int MAX_CAMERA_COUNT = 256;
             /// <summary>Maximum Analog device count</summary>
@@ -221,11 +222,24 @@ namespace QTMRealTimeSDK
 
         private SettingsImage mImageSettings;
         /// <summary>Image settings from QTM</summary>
-        public SettingsImage ImageSettings { get { return mImageSettings; } }
+        public SettingsImage ImageSettings
+        {
+            get
+            {
+                return mImageSettings;
+            }
+            set
+            {
+                if (mImageSettings != value)
+                {
+                    mImageSettings = value;
+                }
+            }
+        }
 
-        private SettingsGazeVector mGazeVectorSettings;
+        private SettingsGazeVectors mGazeVectorSettings;
         /// <summary>Gaze vector settings from QTM</summary>
-        public SettingsGazeVector GazeVectorSettings { get { return mGazeVectorSettings; } }
+        public SettingsGazeVectors GazeVectorSettings { get { return mGazeVectorSettings; } }
 
         private bool mBroadcastSocketCreated = false;
         private RTNetwork mNetwork;
@@ -235,9 +249,30 @@ namespace QTMRealTimeSDK
         private int mMinorVersion;
         private string mErrorString;
 
+        /// <summary>Data with response from Discovery broadcast</summary>
+        public struct DiscoveryResponse
+        {
+            /// <summary>Hostname of server</summary>
+            public string HostName;
+            /// <summary>IP to server</summary>
+            public string IpAddress;
+            /// <summary>Base port</summary>
+            public short Port;
+            /// <summary>Info text about host</summary>
+            public string InfoText;
+            /// <summary>Number of cameras connected to server</summary>
+            public int CameraCount;
+        }
+
         private HashSet<DiscoveryResponse> mDiscoveryResponses;
         /// <summary>list of discovered QTM server possible to connect to</summary>
-        public HashSet<DiscoveryResponse> DiscoveryResponses { get { return mDiscoveryResponses; } }
+        public HashSet<DiscoveryResponse> DiscoveryResponses
+        {
+            get
+            {
+                return mDiscoveryResponses;
+            }
+        }
 
         /// <summary>
         /// Default constructor
@@ -412,8 +447,7 @@ namespace QTMRealTimeSDK
             return mPacket;
         }
 
-        private byte[] header = new byte[RTProtocol.Constants.PACKET_HEADER_SIZE];
-        private byte[] data;
+        private byte[] data = new byte[RTProtocol.Constants.PACKET_HEADER_SIZE];
         private Object receiveLock = new Object();
 
         public int ReceiveRTPacket(out PacketType packetType, bool skipEvents = true, int timeout = 500000)
@@ -429,7 +463,7 @@ namespace QTMRealTimeSDK
                 {
                     receivedTotal = 0;
 
-                    int received = mNetwork.Receive(ref header, RTProtocol.Constants.PACKET_HEADER_SIZE, true, timeout);
+                    int received = mNetwork.Receive(ref data, 0, RTProtocol.Constants.PACKET_HEADER_SIZE, true, timeout);
                     if (received == 0)
                     {
                         return 0; // Receive timeout
@@ -453,22 +487,19 @@ namespace QTMRealTimeSDK
                     }
                     receivedTotal += received;
 
-                    frameSize = RTPacket.GetPacketSize(header);
-                    packetType = RTPacket.GetPacketType(header);
+                    frameSize = RTPacket.GetPacketSize(data);
+                    packetType = RTPacket.GetPacketType(data);
 
                     if (data == null || frameSize > data.Length)
                     {
-                        data = new byte[frameSize];
+                        Array.Resize(ref data, frameSize);
                     }
-                    header.CopyTo(data, 0);
 
                     // Receive more data until we have read the whole packet
                     while (receivedTotal < frameSize)
                     {
                         // As long as we haven't received enough data, wait for more
-                        byte[] buffer = new byte[frameSize - receivedTotal];
-                        received = mNetwork.Receive(ref buffer, frameSize - receivedTotal, false, timeout);
-                        buffer.CopyTo(data, receivedTotal);
+                        received = mNetwork.Receive(ref data, receivedTotal, frameSize - receivedTotal, false, timeout);
                         if (received <= 0)
                         {
                             if (!mNetwork.IsConnected())
@@ -483,8 +514,7 @@ namespace QTMRealTimeSDK
                         }
                         receivedTotal += received;
                     }
-
-                    mPacket.SetData(data);
+                    mPacket.SetData(ref data);
                 }
                 while (skipEvents && packetType == PacketType.PacketEvent);
 
@@ -496,7 +526,6 @@ namespace QTMRealTimeSDK
                 return -1;
             }
         }
-
 
         /// <summary>Send discovery packet to network to find available QTM Servers.</summary>
         /// <param name="replyPort">port for servers to reply.</param>
@@ -534,15 +563,17 @@ namespace QTMRealTimeSDK
                 int received = 0;
                 do
                 {
-                    received = mNetwork.Receive(ref discoverBuffer, discoverBufferSize, false, 100000);
+                    EndPoint remoteEP = new IPEndPoint(IPAddress.Any, 0);
+                    received = mNetwork.ReceiveBroadcast(ref discoverBuffer, discoverBufferSize, ref remoteEP, 100000);
                     if (received != -1 && received > 8)
                     {
                         var packetType = RTPacket.GetPacketType(discoverBuffer);
                         if (packetType == PacketType.PacketCommand)
                         {
                             DiscoveryResponse response;
-                            if (RTPacket.GetDiscoverData(discoverBuffer, out response))
+                            if (GetDiscoverData(discoverBuffer, out response))
                             {
+                                response.IpAddress = (remoteEP as IPEndPoint).Address.ToString();
                                 mDiscoveryResponses.Add(response);
                             }
                         }
@@ -1011,6 +1042,10 @@ namespace QTMRealTimeSDK
                 if (xmlReader.ReadToDescendant(name))
                 {
                     settings = (TSettings)serializer.Deserialize(xmlReader.ReadSubtree());
+                    if (settings is SettingsBase)
+                    {
+                        (settings as SettingsBase).Xml = xmldata;
+                    }
                 }
                 else
                 {
@@ -1118,25 +1153,27 @@ namespace QTMRealTimeSDK
         /// <summary>Send XML data to QTM server</summary>
         /// <param name="xmlString">string with XML data to send</param>
         /// <returns>true if xml was sent successfully</returns>
-        public bool SendXML(string xmlString)
+        public bool SendXML(string xmlString, out string response)
         {
             if (SendString(xmlString, PacketType.PacketXML))
             {
                 PacketType packetType;
-
-                if (ReceiveRTPacket(out packetType) > 0)
+                while (ReceiveRTPacket(out packetType, true) > 0)
                 {
                     if (packetType == PacketType.PacketCommand)
                     {
+                        response = mPacket.GetCommandString();
                         return true;
                     }
-                    else
+                    if (packetType == PacketType.PacketError)
                     {
+                        response = mPacket.GetErrorString();
                         mErrorString = mPacket.GetErrorString();
+                        return false;
                     }
                 }
             }
-
+            response = "Send xml failed";
             return false;
         }
 
@@ -1212,6 +1249,9 @@ namespace QTMRealTimeSDK
                     case ComponentType.ComponentImage:
                         command += " Image";
                         break;
+                    case ComponentType.ComponentTimecode:
+                        command += " Timecode";
+                        break;
                     case ComponentType.ComponentForceSingle:
                         command += " ForceSingle";
                         break;
@@ -1223,6 +1263,45 @@ namespace QTMRealTimeSDK
             return command;
         }
 
+
+        /// <summary>
+        /// get all data from discovery packet
+        /// </summary>
+        /// <param name="discoveryResponse">data from packet</param>
+        /// <returns>true if </returns>
+        public static bool GetDiscoverData(byte[] data, out DiscoveryResponse discoveryResponse)
+        {
+            var packetSize = BitConverter.ToInt32(data, 0);
+            byte[] portData = new byte[2];
+            Array.Copy(data, packetSize - 2, portData, 0, 2);
+            Array.Reverse(portData);
+            discoveryResponse.Port = BitConverter.ToInt16(portData, 0);
+
+            byte[] stringData = new byte[packetSize - 10];
+            Array.Copy(data, 8, stringData, 0, packetSize - 10);
+            string stringFromByteData = System.Text.Encoding.Default.GetString(stringData);
+            string[] splittedData = stringFromByteData.Split(',');
+
+            discoveryResponse.HostName = splittedData[0].Trim();
+            discoveryResponse.InfoText = splittedData[1].Trim();
+
+            string camcount = splittedData[2].Trim();
+            Regex pattern = new Regex("\\d*");
+            Match camMatch = pattern.Match(camcount);
+
+            if (camMatch.Success)
+            {
+                camcount = camMatch.Groups[0].Value;
+                discoveryResponse.CameraCount = int.Parse(camcount);
+            }
+            else
+            {
+                discoveryResponse.CameraCount = -1;
+            }
+            discoveryResponse.IpAddress = null;
+            return true;
+        }
+
         #region disposing
 
         protected virtual void Dispose(bool disposing)
@@ -1231,6 +1310,7 @@ namespace QTMRealTimeSDK
             {
                 if (disposing)
                 {
+                    ReleaseControl();
                     Disconnect();
                     mNetwork.Dispose();
                 }
@@ -1253,4 +1333,5 @@ namespace QTMRealTimeSDK
 
         #endregion
     }
+
 }

@@ -1,64 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using Arqus.Services;
+using Prism.Unity;
 using Xamarin.Forms;
+using Arqus.Helpers;
+using Microsoft.Practices.Unity;
+using System.Diagnostics;
+using Arqus.Services.MobileCenterService;
+using Arqus.Service;
 
 namespace Arqus
 {
-	public partial class App : Application
-	{
-        CameraStream cameraStream;        
+    public partial class  App : PrismApplication
+    {
+        public App(IPlatformInitializer initializer = null) : base(initializer) { }
 
-		public App ()
-		{
-			InitializeComponent();
-			MainPage = new Arqus.ConnectionPage();
-		}
-
-		protected override void OnStart ()
-		{
-			// Handle when your app starts
-		}
-
-		protected override void OnSleep ()
-		{
-			// Handle when your app sleeps
-		}
-
-		protected override void OnResume ()
-		{
-            // Handle when your app resumes            
-        }
-
-        /// <summary>
-        /// Starts network communication with QTM through specified IP
-        /// </summary>
-        /// <param name="ipAddress">QTM's instance address</param>
-        public void Connect(string ipAddress)
+        protected override void OnInitialized()
         {
-            // Initialize stream class and real-time protocol
-            cameraStream = new CameraStream();
-
-            // Connect to IP
-            if (!cameraStream.ConnectToIP(ipAddress))
-            {
-                // There was an error with the connection
-                SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP");
-                return;
-            }
-                        
-            // Connection was successfull
-            SharedProjects.Notification.Show("Success", "Connected to " + cameraStream.GetQTMVersion());
-
-            // Begin streaming 
-            MainPage = new OnlineStreamMenuPage();
+            InitializeComponent();
+            NavigationService.NavigateAsync("NavigationPage/ConnectionPage");
         }
 
-        public CameraStream getCameraStream()
+        protected override void RegisterTypes()
         {
-            return cameraStream;
+            // Register types for navigation
+            Container.RegisterTypeForNavigation<NavigationPage>();
+            Container.RegisterTypeForNavigation<ConnectionPage>();
+            Container.RegisterTypeForNavigation<CameraPage>();
+            Container.RegisterTypeForNavigation<GridPage>();
         }
-	}
+
+       
+        protected override void OnStart()
+        {
+            base.OnStart();
+            MobileCenterService.Init();
+        }
+        
+    }
 }

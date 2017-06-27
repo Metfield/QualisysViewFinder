@@ -35,7 +35,7 @@ namespace QTMRealTimeSDK.Network
         /// <param name="serverAddr">IP or hostname of server.</param>
         /// <param name="port">Port that TCP should use.</param>
         /// <returns>True if connection is successful otherwise false</returns>
-        internal bool Connect(string serverAddr, int port)
+        internal bool Connect(string serverAddr, int port, int timeout = 1000)
         {
             try
             {
@@ -47,7 +47,16 @@ namespace QTMRealTimeSDK.Network
                 }
 
                 mTCPClient = new TcpClient();
-                mTCPClient.Connect(serverIP[0], port);
+                // TODO: add timeout
+               // mTCPClient.Connect(serverIP[0], port);
+                var result = mTCPClient.BeginConnect(serverIP[0], port, null, null);
+                
+                if (!result.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(timeout)))
+                {
+                    throw new Exception("Timeout when attempting to connect to QTM host");
+                }
+
+                mTCPClient.EndConnect(result);
                 // Disable Nagle's algorithm
                 mTCPClient.NoDelay = true;
             }
@@ -63,6 +72,18 @@ namespace QTMRealTimeSDK.Network
 
                 return false;
             }
+            catch (Exception e)
+            {
+                mErrorString = e.Message;
+
+                if (mTCPClient != null)
+                {
+                    mTCPClient.Close();
+                }
+
+                return false;
+            }
+
 
             return true;
         }
@@ -143,11 +164,47 @@ namespace QTMRealTimeSDK.Network
             }
         }
 
-        internal int Receive(ref byte[] receivebuffer, int bufferSize, bool header = false, int timeout = 500000)
+        internal int ReceiveBroadcast(ref byte[] receivebuffer, int bufferSize, ref EndPoint remoteEP, int timeout)
+        {
+            if (mUDPBroadcastClient == null)
+                return -1;
+
+            try
+            {
+                List <Socket> receiveList = new List<Socket>();
+                List<Socket> errorList = new List<Socket>();
+
+                if (mUDPBroadcastClient != null)
+                {
+                    receiveList.Add(mUDPBroadcastClient.Client);
+                    errorList.Add(mUDPBroadcastClient.Client);
+                }
+
+                Socket.Select(receiveList, null, errorList, timeout);
+
+                if (mUDPBroadcastClient != null && errorList.Contains(mUDPBroadcastClient.Client))
+                {
+                    // Error from broadcast socket
+                    mErrorString = "Error reading from Broadcast UDP socket";
+                }
+                else if (mUDPBroadcastClient != null && receiveList.Contains(mUDPBroadcastClient.Client))
+                {
+                    // Receive data from broadcast socket
+                    return mUDPBroadcastClient.Client.ReceiveFrom(receivebuffer, bufferSize, SocketFlags.None, ref remoteEP);
+                }
+            }
+            catch (SocketException exception)
+            {
+                // Ignore and return
+                mErrorString = exception.Message;
+            }
+            return -1;
+        }
+
+        internal int Receive(ref byte[] receivebuffer, int offset, int bufferSize, bool header, int timeout)
         {
             try
             {
-
                 List<Socket> receiveList = new List<Socket>();
                 List<Socket> errorList = new List<Socket>();
 
@@ -161,12 +218,6 @@ namespace QTMRealTimeSDK.Network
                 {
                     receiveList.Add(mUDPClient.Client);
                     errorList.Add(mUDPClient.Client);
-                }
-
-                if (mUDPBroadcastClient != null)
-                {
-                    receiveList.Add(mUDPBroadcastClient.Client);
-                    errorList.Add(mUDPBroadcastClient.Client);
                 }
 
                 if (receiveList.Count == 0)
@@ -185,7 +236,7 @@ namespace QTMRealTimeSDK.Network
                 else if (mTCPClient != null && receiveList.Contains(mTCPClient.Client))
                 {
                     // Receive data from TCP socket
-                    return mTCPClient.Client.Receive(receivebuffer, header ? RTProtocol.Constants.PACKET_HEADER_SIZE : bufferSize, SocketFlags.None);
+                    return mTCPClient.Client.Receive(receivebuffer, offset, header ? RTProtocol.Constants.PACKET_HEADER_SIZE : bufferSize, SocketFlags.None);
                 }
                 else if (mUDPClient != null && errorList.Contains(mUDPClient.Client))
                 {
@@ -195,17 +246,7 @@ namespace QTMRealTimeSDK.Network
                 else if (mUDPClient != null && receiveList.Contains(mUDPClient.Client))
                 {
                     // Receive data from UDP socket
-                    return mUDPClient.Client.Receive(receivebuffer, bufferSize, SocketFlags.None);
-                }
-                else if (mUDPBroadcastClient != null && errorList.Contains(mUDPBroadcastClient.Client))
-                {
-                    // Error from broadcast socket
-                    mErrorString = "Error reading from Broadcast UDP socket";
-                }
-                else if (mUDPBroadcastClient != null && receiveList.Contains(mUDPBroadcastClient.Client))
-                {
-                    // Receive data from broadcast socket
-                    return mUDPBroadcastClient.Client.Receive(receivebuffer, bufferSize, SocketFlags.None);
+                    return mUDPClient.Client.Receive(receivebuffer, offset, bufferSize, SocketFlags.None);
                 }
             }
             catch (SocketException exception)
@@ -256,45 +297,22 @@ namespace QTMRealTimeSDK.Network
             {
                 foreach (NetworkInterface nic in NetworkInterface.GetAllNetworkInterfaces())
                 {
-                    if (nic.NetworkInterfaceType != NetworkInterfaceType.Ethernet &&
-                        nic.NetworkInterfaceType != NetworkInterfaceType.Wireless80211)
+                    // There is a bug on android that causes a native crash
+                    // Bugzilla: https://bugzilla.xamarin.com/show_bug.cgi?id=52733
+                    //
+                    //if (nic.OperationalStatus != OperationalStatus.Up)
+                    //    continue;
+                    if (nic.NetworkInterfaceType != 0)
+                    {
+                        if (nic.NetworkInterfaceType != NetworkInterfaceType.Ethernet &&
+                            nic.NetworkInterfaceType != NetworkInterfaceType.Wireless80211)
                         continue;
+                    }
                     foreach (UnicastIPAddressInformation ip in nic.GetIPProperties().UnicastAddresses)
                     {
                         if (ip.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
                         {
-                            IPAddress broadcastAddress = null;
-
-                            Type monoSpecificType = Type.GetType("Mono.Runtime") ?? Type.GetType("System.MonoType");
-                            bool runningOnMono = monoSpecificType != null;
-                            if (runningOnMono)
-                            {
-                                if (IPInfoTools.IsUnix)
-                                {
-                                    string mask = null;
-                                    try
-                                    {
-                                        mask = IPInfoTools.GetIPv4Mask(nic.Name, ip.Address);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Console.WriteLine("GetIPRangeInfoFromNetworkInterface failed: {0}", ex.Message);
-                                    }
-
-                                    if (mask == null || IPAddress.TryParse(mask, out broadcastAddress) == false)
-                                    {
-                                        broadcastAddress = IPAddress.Parse("255.255.255.0"); // default to this
-                                    }
-                                }
-                                else
-                                {
-                                    broadcastAddress = ip.Address.GetBroadcastAddress(ip.IPv4Mask);
-                                }
-                            }
-                            else
-                            {
-                                broadcastAddress = ip.Address.GetBroadcastAddress(ip.IPv4Mask);
-                            }
+                            var broadcastAddress = ip.Address.GetBroadcastAddress(ip.IPv4Mask);
                             if (broadcastAddress == null)
                                 continue;
 
@@ -308,6 +326,11 @@ namespace QTMRealTimeSDK.Network
             {
                 mErrorCode = ex.SocketErrorCode;
                 mErrorString = ex.Message;
+                return false;
+            }
+            catch (Exception e)
+            {
+                mErrorString = e.Message;
                 return false;
             }
             return true;

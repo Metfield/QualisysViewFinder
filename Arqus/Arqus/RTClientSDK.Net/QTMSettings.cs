@@ -7,49 +7,55 @@ using QTMRealTimeSDK.Data;
 
 namespace QTMRealTimeSDK.Settings
 {
+    public class SettingsBase
+    {
+        [XmlIgnore]
+        public string Xml;
+    }
+
     /// <summary>General Settings from QTM</summary>
     [XmlRoot("General")]
-    public class SettingsGeneral
+    public class SettingsGeneral : SettingsBase
     {
         /// <summary>QTM Capture frequency </summary>
         [XmlElement("Frequency")]
-        public int captureFrequency;
+        public int CaptureFrequency;
 
         /// <summary>length of QTM Capture. Time expressed in seconds</summary>
         [XmlElement("Capture_Time")]
-        public float captureTime;
+        public float CaptureTime;
 
         /// <summary>Measurement start on any external trigger (qtm version 2.13 or less, or 2.14 running Oqus systems)</summary>
         [XmlElement("Start_On_External_Trigger")]
-        public bool startOnExternalTrigger;
+        public bool StartOnExternalTrigger;
 
         /// <summary>Measurement start on MSU Trig NO/Oqus Trig in</summary>
         [XmlElement("Start_On_Trigger_NO")]
-        public bool startOnTrigNO;
+        public bool StartOnTrigNO;
 
         /// <summary>Measurement start on MSU Trig NC</summary>
         [XmlElement("Start_On_Trigger_NC")]
-        public bool startOnTrigNC;
+        public bool StartOnTrigNC;
 
         /// <summary>Measurement start on software trigger (app, keyboard etc)</summary>
         [XmlElement("Start_On_Trigger_Software")]
-        public bool startOnTrigSoftware;
+        public bool StartOnTrigSoftware;
 
         [XmlElement("External_Time_Base")]
-        public SettingsExternalTimeBase externalTimebase;
+        public SettingsExternalTimeBase ExternalTimebase;
 
         [XmlElement("Processing_Actions")]
-        public SettingProcessingActions processingActions;
+        public SettingProcessingActions ProcessingActions;
 
         [XmlElement("RealTime_Processing_Actions")]
-        public SettingProcessingActions realtimeProcessingActions;
+        public SettingProcessingActions RealtimeProcessingActions;
 
         [XmlElement("Reprocessing_Actions")]
         public SettingProcessingActions ReprocessingActions;
 
         /// <summary>Camera Settings </summary>
         [XmlElement("Camera")]
-        public List<SettingsGeneralCameraSystem> cameraSettings;
+        public List<SettingsGeneralCameraSystem> CameraSettings;
 
         public SettingsGeneral()
         {
@@ -57,42 +63,42 @@ namespace QTMRealTimeSDK.Settings
     }
 
     /// <summary>3D Bone Settings from QTM</summary>
-    public class SettingsBone
+    public class SettingsBone : SettingsBase
     {
         /// <summary>name of marker bone starts from </summary>
         [XmlAttribute("From")]
-        public string from;
+        public string From;
 
         /// <summary>name of marker bone ends at</summary>
         [XmlAttribute("To")]
-        public string to;
+        public string To;
 
         /// <summary>Color of marker bone</summary>
         [XmlAttribute("Color")]
-        public int color;
+        public int Color;
 
         SettingsBone()
         {
-            color = 0xEEEEEE;
+            Color = 0xEEEEEE;
         }
     }
 
     /// <summary>3D Settings from QTM</summary>
     [XmlRoot("The_3D")]
-    public class Settings3D
+    public class Settings3D : SettingsBase
     {
         [XmlElement("AxisUpwards")]
-        public Axis axisUpwards;
+        public Axis AxisUpwards;
         [XmlElement("CalibrationTime")]
-        public string calibrationTime;
+        public string CalibrationTime;
         [XmlElement("Labels")]
-        public int labelsCount;
+        public int LabelCount;
         [XmlElement("Label")]
-        public List<Settings3DLabel> labels3D;
+        public List<Settings3DLabel> Labels;
 
         [XmlArray("Bones")]
         [XmlArrayItem("Bone", typeof(SettingsBone))]
-        public SettingsBone[] bones;
+        public SettingsBone[] Bones;
 
         public Settings3D()
         {
@@ -101,19 +107,19 @@ namespace QTMRealTimeSDK.Settings
 
     /// <summary>6D Settings from QTM</summary>
     [XmlRoot("The_6D")]
-    public class Settings6D
+    public class Settings6D : SettingsBase
     {
         public Settings6D()
         {
-            eulerNames = new EulerNames();
+            EulerNames = new EulerNames();
         }
 
         [XmlElement("Bodies")]
-        public int bodyCount;
+        public int BodyCount;
         [XmlElement("Body")]
-        public List<Settings6DOF> bodies;
+        public List<Settings6DOF> Bodies;
         [XmlElement("Euler")]
-        public EulerNames eulerNames;
+        public EulerNames EulerNames;
     }
 
     [XmlRoot("Euler")]
@@ -137,10 +143,10 @@ namespace QTMRealTimeSDK.Settings
 
     /// <summary>Analog Settings from QTM</summary>
     [XmlRoot("Analog")]
-    public class SettingsAnalog
+    public class SettingsAnalog : SettingsBase
     {
         [XmlElement("Device")]
-        public List<AnalogDevice> devices;
+        public List<AnalogDevice> Devices;
 
         public SettingsAnalog()
         {
@@ -150,32 +156,41 @@ namespace QTMRealTimeSDK.Settings
 
     /// <summary>Force Settings from QTM</summary>
     [XmlRoot("Force")]
-    public class SettingsForce
+    public class SettingsForce : SettingsBase
     {
         [XmlElement("Unit_Length")]
-        public string unitLength;
+        public string UnitLength;
         [XmlElement("Unit_Force")]
-        public string unitForce;
+        public string UnitForce;
         [XmlElement("Plate")]
-        public List<ForcePlateSettings> plates;
+        public List<ForcePlateSettings> Plates;
 
         public SettingsForce() { }
     }
 
     /// <summary>Image Settings from QTM</summary>
     [XmlRoot("Image")]
-    public class SettingsImage
+    public class SettingsImage : SettingsBase
     {
         [XmlElement("Camera")]
-        public List<ImageCamera> cameraList;
+        public List<ImageCamera> Cameras;
     }
 
-    /// <summary>Gaze vector Settings from QTM</summary>
-    [XmlRoot("Gaze_Vector")]
-    public class SettingsGazeVector
+    /// <summary> Gaze vector name from QTM. </summary>
+    public class SettingGazeVector
     {
         [XmlElement("Name")]
         public string Name;
+        [XmlElement("Frequency")]
+        public float Frequency;
+    }
+
+    /// <summary> Gaze vector Settings from QTM. </summary>
+    [XmlRoot("Gaze_Vector")]
+    public class SettingsGazeVectors : SettingsBase
+    {
+        [XmlElement("Vector")]
+        public List<SettingGazeVector> GazeVectors;
     }
 
     /// <summary>General settings for Camera System</summary>
@@ -198,22 +213,22 @@ namespace QTMRealTimeSDK.Settings
         public int Serial;
         /// <summary>Camera mode the camera is set to</summary>
         [XmlElement("Mode")]
-        public CameraMode Mode;
+        public CameraMode Mode { get; set; }
        /// <summary>Values for camera video mode, current, min and max</summary>
         [XmlElement("Video_Frequency")]
         public int VideoFrequency;
         /// <summary>Values for camera video exposure, current, min and max</summary>
         [XmlElement("Video_Exposure")]
-        public CameraSetting VideoExposure;
+        public CameraSetting VideoExposure { get; set; }
         /// <summary>Values for camera video flash time, current, min and max</summary>
         [XmlElement("Video_Flash_Time")]
-        public CameraSetting VideoFlashTime;
+        public CameraSetting VideoFlashTime { get; set; }
         /// <summary>Values for camera marker exposure, current, min and max</summary>
         [XmlElement("Marker_Exposure")]
-        public CameraSetting MarkerExposure;
+        public CameraSetting MarkerExposure { get; set; }
         /// <summary>Values for camera marker threshold, current, min and max</summary>
         [XmlElement("Marker_Threshold")]
-        public CameraSetting MarkerThreshold;
+        public CameraSetting MarkerThreshold { get; set; }
         /// <summary>Position of camera</summary>
         [XmlElement("Position")]
         public CameraPosition Position;
@@ -241,9 +256,32 @@ namespace QTMRealTimeSDK.Settings
         /// <summary>Sync out settings for Miqus Sync Unit Measurement Time (MT)</summary>
         [XmlElement("Sync_Out_MT")]
         public SettingsSyncOut SyncOutMT;
+        /// <summary>Lens Control settings for camera equipped with motorized lens</summary>
+        [XmlElement("LensControl")]
+        public SettingsLensControl LensControl { get; set; }
     }
 
-    /// <summary>settings regarding sync for Camera</summary>
+    /// <summary>Settings regarding Lens Control for Camera equipped with motorized lens</summary>
+    public struct SettingsLensControl
+    {
+        [XmlElement("Focus")]
+        public SettingsLensControlValues Focus { get; set; }
+        [XmlElement("Aperture")]
+        public SettingsLensControlValues Aperture { get; set; }
+    }
+
+    /// <summary>Settings for Lens Control Focus</summary>
+    public struct SettingsLensControlValues
+    {
+        [XmlAttribute("Value")]
+        public float Value { get; set; }
+        [XmlAttribute("Min")]
+        public float Min { get; set; }
+        [XmlAttribute("Max")]
+        public float Max { get; set; }
+    }
+
+    /// <summary>Settings regarding sync for Camera</summary>
     public struct SettingsSyncOut
     {
         /// <summary>Sync mode for camera</summary>
@@ -329,18 +367,18 @@ namespace QTMRealTimeSDK.Settings
         public int Bottom;
     }
 
-    /// <summary>settings for Camera values (min,max and current)</summary>
+    /// <summary>Settings for Camera values (min,max and current)</summary>
     public struct CameraSetting
     {
         /// <summary>Current value</summary>
         [XmlElement("Current")]
-        public int Current;
+        public int Current { get; set; }
         /// <summary>Minimum value</summary>
         [XmlElement("Min")]
-        public int Min;
+        public int Min { get; set; }
         /// <summary>Maximum value</summary>
         [XmlElement("Max")]
-        public int Max;
+        public int Max { get; set; }
     }
 
     /// <summary>Settings regarding post processing actions</summary>
@@ -408,7 +446,7 @@ namespace QTMRealTimeSDK.Settings
         public float NonPeriodicTimeout;
     }
 
-    /// <summary>settings for 6DOF bodies</summary>
+    /// <summary>Settings for 6DOF bodies</summary>
     public struct Settings6DOF
     {
         /// <summary>Name of 6DOF body</summary>
@@ -456,7 +494,7 @@ namespace QTMRealTimeSDK.Settings
         public float Max;
     }
 
-    /// <summary>settings for Analog channel</summary>
+    /// <summary>Settings for Analog channel</summary>
     public struct AnalogChannelInfo
     {
         /// <summary>Channel label</summary>
@@ -629,7 +667,7 @@ namespace QTMRealTimeSDK.Settings
         public float CropBottom;
     }
 
-    /// <summary>settings for labeled marker</summary>
+    /// <summary>Settings for labeled marker</summary>
     public struct Settings3DLabel
     {
         /// <summary>Name of marker</summary>

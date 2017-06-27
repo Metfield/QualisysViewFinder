@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             
+             xmlns:ui="clr-namespace:Arqus.UI"
+             xmlns:local="clr-namespace:Arqus"
+             x:Class="Arqus.ConnectionPage"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             Title="Home Page"
+             NavigationPage.HasNavigationBar="False" >
+
+
+    <StackLayout VerticalOptions="FillAndExpand" Style="{StaticResource Background}" >
+
+        <Image Source="Drawable/arqus_logo_medium.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
+        <Label Text="ARQUS" FontSize="Large" HorizontalOptions="Center" TextColor="Black" Margin="0, 0, 0, 10"/>
+
+        <Grid   
+            VerticalOptions="Start" 
+            HorizontalOptions="CenterAndExpand">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            
+            <ui:JiggleButton Text="Discover"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalOptions="End" 
+                    VerticalOptions="FillAndExpand"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectionModeDiscoveryCommand}"/>
+
+            <ui:JiggleButton Text="Manually"
+                             Grid.Row="0"
+                            Grid.Column="1"
+                            HorizontalOptions="Start" 
+                            VerticalOptions="FillAndExpand"
+                             Style="{StaticResource primaryButton}"
+                            Command="{Binding ConnectionModeManuallyCommand}"/>
+
+
+            <ui:JiggleButton HorizontalOptions="Center" 
+                        VerticalOptions="FillAndExpand"
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Text="Demo Mode"
+                        Style="{StaticResource primaryButton}"
+                        Command="{Binding ConnectionModeDemoCommand}"/>
+            
+        </Grid>
+
+        <Frame IsVisible="{Binding IsDiscovery}"
+                VerticalOptions="StartAndExpand"
+                HorizontalOptions="Center" 
+                WidthRequest="300"
+                Padding="0"
+                Margin="0,0,0,15" BackgroundColor="#424242">
+            
+            <local:QTMServerList x:Name="qtmListView" 
+                                 HorizontalOptions="FillAndExpand"
+                                 VerticalOptions="FillAndExpand"/>
+
+        </Frame>
+
+        <StackLayout IsVisible="{Binding IsManually}" 
+                    VerticalOptions="StartAndExpand" 
+                    HorizontalOptions="Center" 
+                    WidthRequest="300" >
+
+            <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
+            <Entry Placeholder="Password" Text="{Binding Password}" />
+
+            <ui:JiggleButton Text="Connect"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectCommand}" />
+
+        </StackLayout>
+
+    </StackLayout>
+
+</ContentPage>

@@ -1,10 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Application xmlns="http://xamarin.com/schemas/2014/forms"
+<prism:PrismApplication xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Arqus.Converters"
+             xmlns:prism="clr-namespace:Prism.Unity;assembly=Prism.Unity.Forms"
              x:Class="Arqus.App">
-	<Application.Resources>
 
-		<!-- Application resource dictionary -->
+    <prism:PrismApplication.Resources>
+        <ResourceDictionary>
 
-	</Application.Resources>
-</Application>
+            <Style x:Key="primaryButton" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#2196F3" />
+            </Style>
+            <!--Definition of the Color palette-->
+
+            <Color x:Key="primaryColor">#2196F3</Color>
+            
+            
+            
+            <!-- Component themes -->
+            <Style x:Key="AppBar" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#212121" />
+            </Style>
+
+            <Style x:Key="Card" TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="#424242" />
+            </Style>
+
+            <Style x:Key="Background" TargetType="StackLayout">
+                <Setter Property="BackgroundColor" Value="#303030" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+            </Style>
+
+            <Style x:Key="NoMarginButton" TargetType="Button">
+                <Setter Property="Margin" Value="-10" />
+                <Setter Property="BorderRadius" Value="0" />
+                <Setter Property="BorderWidth" Value="0" />
+                <Setter Property="ContentLayout" Value="Top,0" />
+                <Setter Property="VerticalOptions" Value="FillAndExpand" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="FontSize" Value="Micro" />
+            </Style>
+
+            <Style x:Key="PrimaryText" TargetType="Label">
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="Opacity" Value="1" />
+            </Style>
+
+            <Style x:Key="SecondaryText" TargetType="Label">
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="Opacity" Value="0.7" />
+            </Style>
+
+            <Style x:Key="DisabledText" TargetType="Label">
+                <Setter Property="TextColor" Value="#FFFFFF" />
+                <Setter Property="Opacity" Value="0.5" />
+            </Style>
+
+            <!--Value Converters-->
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:IntToDoubleConverter x:Key="IntToDoubleConverter" />
+            <converters:ValueChangedEventArgsConverter x:Key="valueChangedEventArgsConverter" />
+            <converters:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
+            <converters:DataSourceConverter x:Key="DataSourceConverter" />
+            <converters:ThresholdConverter x:Key="ThresholdConverter" />
+        </ResourceDictionary>
+    </prism:PrismApplication.Resources>
+
+</prism:PrismApplication>

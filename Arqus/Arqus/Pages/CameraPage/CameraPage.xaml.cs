@@ -68,13 +68,13 @@ namespace Arqus
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) =>   viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(lensApertureSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SnapAperture(value));                
+                .Subscribe((value) => viewModel.SnapAperture(value));
         }
 
         protected override async void OnAppearing()

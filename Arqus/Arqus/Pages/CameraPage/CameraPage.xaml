@@ -131,14 +131,14 @@
                             <Label Text="Video Flash"/>
                             <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
- 
+
                         <Slider x:Name="videoFlashTimeSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
                                 Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
                                 Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
 
-                        <!-- Automated lens manipulation for Oqus 700+ cameras -->
+                        <!-- Automated lens control for Oqus 700+ cameras -->
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Lens Focus"/>
                             <Label BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
@@ -146,10 +146,10 @@
 
                         <Slider x:Name="lensFocusSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding CurrentCamera.Settings.LensControl.Focus.Max}" 
+                                Maximum="{Binding CurrentCamera.MaxFocus}"
                                 Minimum="{Binding CurrentCamera.Settings.LensControl.Focus.Min}"
-                                Value="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" /> 
-
+                                Value="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" />
+                        
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Lens Aperture"/>
                             <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value}" HorizontalOptions="End"/>

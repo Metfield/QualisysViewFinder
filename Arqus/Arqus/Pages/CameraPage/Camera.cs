@@ -85,9 +85,10 @@ namespace Arqus.DataModels
                     if (IsImageMode())
                     {
                         EnableImageMode();
-                        MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
                     }
-                    
+
+                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
+
                 }
             }
         }

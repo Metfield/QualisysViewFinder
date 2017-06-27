@@ -83,9 +83,9 @@ namespace Arqus
 
                     // Make sure everything is clean
                     SettingsService.Clean();
-                    CameraStore.Clean();
+                    //CameraStore.Clean();
 
-                    GC.Collect();
+                    //GC.Collect();
                 }
             }
             catch (Exception e)

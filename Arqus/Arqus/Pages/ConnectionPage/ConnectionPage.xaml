@@ -78,7 +78,6 @@
                     WidthRequest="300" >
 
             <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
-            <Entry Placeholder="Password" Text="{Binding Password}" />
 
             <ui:JiggleButton Text="Connect"
                     Style="{StaticResource primaryButton}"

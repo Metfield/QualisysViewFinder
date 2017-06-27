@@ -6,6 +6,7 @@ using Microsoft.Practices.Unity;
 using System.Diagnostics;
 using Arqus.Services.MobileCenterService;
 using Arqus.Service;
+using Acr.UserDialogs;
 
 namespace Arqus
 {
@@ -26,6 +27,8 @@ namespace Arqus
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<CameraPage>();
             Container.RegisterTypeForNavigation<GridPage>();
+
+            Container.RegisterInstance<IUserDialogs>(UserDialogs.Instance);
         }
 
        

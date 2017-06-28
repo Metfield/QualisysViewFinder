@@ -84,7 +84,7 @@ namespace Arqus
         /// NOTE: Only one client can have control at the time
         /// </summary>
         /// <returns>true if the client took control</returns>
-        private bool TakeControl()
+        public bool TakeControl()
         {
             if (hasControl)
                 return true;
@@ -110,6 +110,11 @@ namespace Arqus
             hasControl = true;
 
             return true;
+        }
+
+        public bool HasPassword()
+        {
+            return !TakeControl();
         }
         
         /// <summary>

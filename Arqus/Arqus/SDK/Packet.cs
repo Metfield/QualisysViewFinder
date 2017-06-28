@@ -18,12 +18,12 @@ namespace Arqus.Helpers
                 <Image>
                     <Camera>
                         <ID>{0}</ID>
-                        <Enabled>{1}</Enabled>
+                        <Enabled>False</Enabled>
                     </Camera>
                 </Image>
             </QTM_Settings>";
 
-            return FormatStringToXML(string.Format(packet, id, enabled));
+            return FormatStringToXML(string.Format(packet, id));
         }
 
         public static string CameraImage(int id, bool enabled, int width, int height, string format = "JPG")

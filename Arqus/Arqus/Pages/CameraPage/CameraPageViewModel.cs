@@ -121,8 +121,8 @@ namespace Arqus
             {
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
 
-                if (navigationMode == NavigationMode.Back)
-                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
+                //if (navigationMode == NavigationMode.Back)
+                    //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
             }
             catch (Exception e)
             {

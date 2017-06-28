@@ -125,6 +125,18 @@
     <InterfaceDefinition Include="Resources\LaunchScreen.storyboard" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Acr.Support.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Acr.Support.2.1.0\lib\Xamarin.iOS10\Acr.Support.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Acr.UserDialogs, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Acr.UserDialogs.6.5.1\lib\Xamarin.iOS10\Acr.UserDialogs.dll</HintPath>
+    </Reference>
+    <Reference Include="Acr.UserDialogs.Interface, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Acr.UserDialogs.6.5.1\lib\Xamarin.iOS10\Acr.UserDialogs.Interface.dll</HintPath>
+    </Reference>
+    <Reference Include="BTProgressHUD, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BTProgressHUD.1.2.0.5\lib\Xamarin.iOS10\BTProgressHUD.dll</HintPath>
+    </Reference>
     <Reference Include="CoreCompat.System.Drawing, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c0a7ed9c2333b592, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CoreCompat.System.Drawing.1.0.0-beta006\lib\netstandard1.3\CoreCompat.System.Drawing.dll</HintPath>
     </Reference>
@@ -179,6 +191,9 @@
     </Reference>
     <Reference Include="SegmentedTabControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SegmentedTabControl.FormsPlugin.1.0.0\lib\portable45-net45+win8+wp8+wpa81\SegmentedTabControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Splat.2.0.0\lib\Xamarin.iOS10\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">

@@ -20,6 +20,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.Reflection;
 using QTMRealTimeSDK.Settings;
+using Acr.UserDialogs;
 
 namespace Arqus
 {
@@ -33,7 +34,9 @@ namespace Arqus
         }
         
         private QTMNetworkConnection connection;
+        private PromptConfig passwordPromptConfig;
 
+        private IUserDialogs userDialogs;
         private IUnityContainer container;
         private INavigationService navigationService;
         private INotification notificationService;
@@ -41,8 +44,10 @@ namespace Arqus
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
-            INotification notification)
+            INotification notification,
+            IUserDialogs userDialogs)
         {
+            this.userDialogs = userDialogs;
             this.container = container;
             this.navigationService = navigationService;
             this.notificationService = notification;
@@ -51,7 +56,8 @@ namespace Arqus
             CurrentConnectionMode = ConnectionMode.NONE;
 
             RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
-            
+
+
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => {
                 LoadQTMServers();
                 IsDiscovery = true;
@@ -83,9 +89,9 @@ namespace Arqus
 
                     // Make sure everything is clean
                     SettingsService.Clean();
-                    CameraStore.Clean();
+                    //CameraStore.Clean();
 
-                    GC.Collect();
+                    //GC.Collect();
                 }
             }
             catch (Exception e)
@@ -266,20 +272,53 @@ namespace Arqus
         /// <summary>
         /// Callback method for starting connection
         /// </summary>
-        void OnConnectionStarted()
+        async void OnConnectionStarted()
         {
             try
             {
                 // Connect to IP
-                bool success = connection.Connect(IPAddress, Password);
+
+                bool success = connection.Connect(IPAddress);
 
                 if (!success)
                 {
                     // There was an error with the connection
                     //SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
-                    notificationService.Show("Attention: There was a connection error, please check IP and pass");
+                    notificationService.Show("Attention: There was a connection error, please check IP address");
                     return;
                 }
+                else if(connection.HasPassword())
+                {
+                    // NOTE: A new propmt configuration has to be created everytime we run it
+                    // if we do not do this the acr library will add an action to it and since
+                    // it is async it does not expect that and will thus throw an error
+                    PromptResult result = await userDialogs
+                        .PromptAsync(
+                            new PromptConfig()
+                            .SetTitle("Please enter a password")
+                            .SetOkText("Connect")
+                            );
+
+                    connection.Connect(IPAddress, result.Text);
+
+                    if (!connection.TakeControl())
+                    {
+                        userDialogs.Toast(new ToastConfig("Incorrect Password"));
+                        return;
+                    }
+                }
+
+
+                // Send connection instance to settings service
+                SettingsService.Initialize();
+                CameraStore.GenerateCameras();
+
+                // Connection was successfull                
+                // Navigate to camera page
+                NavigationParameters navigationParams = new NavigationParameters();
+                navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
+                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
+
             }
             catch (Exception e)
             {
@@ -288,16 +327,7 @@ namespace Arqus
 
                 return;
             }
-           
-            // Send connection instance to settings service
-            SettingsService.Initialize();                
-            CameraStore.GenerateCameras();
-
-            // Connection was successfull                
-            // Navigate to camera page
-            NavigationParameters navigationParams = new NavigationParameters();
-            navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
-            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));           
+        
         }
 
         // Start app using demo mode

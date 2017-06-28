@@ -15,10 +15,6 @@ namespace Arqus.Visualization
 
     public class CarouselScreenLayout : CameraScreenLayout
     {
-
-        // Create carousel
-        private float carouselInitialDistance = -80;
-
         // TODO: Fix number of camerascreens
         private float speed = 0.025f;
 

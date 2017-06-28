@@ -33,7 +33,7 @@ namespace Arqus.Services
                 // camera if that is the case simply catch the exception and log it then keep streaming as usual.
                 try
                 {                    
-                    CameraStore.CurrentCamera.Parent?.OnMarkerUpdate(cameras[CameraStore.CurrentCamera.ID - 1]);
+                    CameraStore.CurrentCamera.Parent.MarkerData = cameras[CameraStore.CurrentCamera.ID - 1];
                 }
                 catch (Exception e)
                 {

@@ -60,10 +60,10 @@ namespace QTMRealTimeSDK.Data
         ComponentForceSingle,
         // Gaze vector data from eye tracker (GetGazeVectorData)
         ComponentGazeVector,
-        // Nothing
-        ComponentNone,
         // Timecode component
         ComponentTimecode,
+        // Nothing
+        ComponentNone,
         // Stream everything
         ComponentAll
     }
@@ -84,8 +84,8 @@ namespace QTMRealTimeSDK.Data
         EventCameraSettingsChanged,
         EventQTMShuttingDown,
         EventCaptureSaved,
-        EventReserved1,
-        EventReserved2,
+        EventReprocessingStarted,
+        EventReprocessingStopped,
         EventTrigger,
         EventNone
     }
@@ -456,7 +456,7 @@ namespace QTMRealTimeSDK.Data
         /// Set the data of packet.
         /// </summary>
         /// <param name="data">byte data recieved from server</param>
-		internal void SetData(ref byte[] data)
+		internal void SetData(byte[] data)
         {
             /*  === Data packet setup ===
 			 *  Packet size - 4 bytes
@@ -961,15 +961,6 @@ namespace QTMRealTimeSDK.Data
         private void SetPacketHeader(byte[] data)
         {
             mPacketSize = GetPacketSize(data);
-            SetPacketType();
-        }
-
-        /// <summary>
-        /// Get the packet type of this packet.
-        /// </summary>
-        /// <returns>Packet type</returns>
-        private void SetPacketType()
-        {
             if (mPacketSize < 4)
             {
                 mPacketType = PacketType.PacketNone;

@@ -4,7 +4,8 @@
              xmlns:ui="clr-namespace:Arqus.UI"
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True"   
+             prism:ViewModelLocator.AutowireViewModel="True"
+             xmlns:segcon="clr-namespace:SegmentedTabControl.FormsPlugin;assembly=SegmentedTabControl"
              x:Class="Arqus.CameraPage" >
     
     <ContentPage.ToolbarItems>
@@ -23,9 +24,7 @@
         </ui:BindableToolbarItem>
     </ContentPage.ToolbarItems>
 
-
     <StackLayout Margin="0" Style="{StaticResource Background}">
-
 
         <Frame Style="{StaticResource AppBar}"  Margin="0,0,0,-5" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" InputTransparent="False">
             <Grid VerticalOptions="End" Padding="0">
@@ -39,7 +38,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
+
                 <Button Grid.Row="0" 
                         Grid.Column="0"
                         Text="Marker"
@@ -48,7 +47,7 @@
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
                         Style="{StaticResource NoMarginButton}"
                         />
-                
+
                 <Button Grid.Row="0" 
                         Grid.Column="1"
                         Text="Video"
@@ -57,7 +56,7 @@
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
                         Style="{StaticResource NoMarginButton}"
                         />
-                
+
                 <Button Grid.Row="0" 
                         Grid.Column="2"
                         Text="Intensity"
@@ -70,22 +69,24 @@
         </Frame>
 
         <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Bisque">
-            <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
-            
+            <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>            
         </StackLayout>
 
         <Frame Style="{StaticResource AppBar}" 
                Padding="0"
                Margin="-5"
                IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" >
-            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent"
-                BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
+
+            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent" 
+                    BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
+
         </Frame>
 
         <!-- Drawers layout -->
         <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
             
             <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
+                
                 <StackLayout>
 
                     <!-- Marker-specific drawer -->
@@ -115,29 +116,43 @@
 
                     <!-- Video-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
+                        
+                        <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" 
+                                                    BackgroundColor="Chocolate" TintColor="#FFC107" SelectedSegment="0" 
+                                                    IsVisible="{Binding CurrentCamera.LensControlEnabled}">
+                            <segcon:SegmentedTabControl.Children>
+                                <Label Text="Video Settings" />
+                                <Label Text="Lens Control" />
+                            </segcon:SegmentedTabControl.Children>
+                        </segcon:SegmentedTabControl>
 
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Video Exposure"/>
-                            <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                        <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
+                        
+                            <StackLayout HorizontalOptions="Fill">
+                                <Label Text="Video Exposure"/>
+                                <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            </StackLayout>
+
+                            <Slider x:Name="videoExposureSlider"
+                                    HorizontalOptions="Fill" 
+                                    Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
+                                    Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
+                                    Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
+
+                            <StackLayout HorizontalOptions="Fill">
+                                <Label Text="Video Flash"/>
+                                <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            </StackLayout>
+
+                            <Slider x:Name="videoFlashTimeSlider"
+                                    HorizontalOptions="Fill" 
+                                    Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
+                                    Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
+                                    Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
                         </StackLayout>
-
-                        <Slider x:Name="videoExposureSlider"
-                                HorizontalOptions="Fill" 
-                                Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
-                                Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
-                                Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
-
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Video Flash"/>
-                            <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
-                        </StackLayout>
-
-                        <Slider x:Name="videoFlashTimeSlider"
-                                HorizontalOptions="Fill" 
-                                Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
-                                Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
-                                Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
-
+                            
+                        <StackLayout IsVisible="{Binding IsLensControlActive}">
+                        
                         <!-- Automated lens control for Oqus 700+ cameras -->
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Lens Focus"/>
@@ -157,10 +172,12 @@
 
                         <Slider x:Name="lensApertureSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding ApertureSnapMax}" 
+                                Maximum="{Binding ApertureSnapMax}"
                                 Minimum="0"                                
                                 Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay} "  />
-                        
+
+                        </StackLayout>
+
                     </StackLayout>
                 </StackLayout>
 

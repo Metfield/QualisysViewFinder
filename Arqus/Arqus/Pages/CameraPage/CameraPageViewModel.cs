@@ -34,6 +34,10 @@ namespace Arqus
         // Used for snapping slider to pre-determined values
         private LensApertureSnapper lensApertureSnapper;
 
+        // Used to know which video drawer is to be displayed
+        // Gets modified by the segmented controls in the view
+        private bool isLensControlActive;
+        
         public CameraPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;            
@@ -96,6 +100,9 @@ namespace Arqus
 
             // Switch them drawers now
             SwitchDrawers(CurrentCamera.Mode);
+
+            // No Lens control UI when we start (if even available)
+            IsLensControlActive = false;
         }
 
         public void SetCameraSetting(string setting, double value)
@@ -274,7 +281,6 @@ namespace Arqus
             set { SetProperty(ref isBottomSheetVisible, value); }
         }
 
-
         /// <summary>
         /// Shows current drawer
         /// </summary>
@@ -301,14 +307,14 @@ namespace Arqus
         private double snappedValue;
         public double SnappedValue
         {
-            get
-            {
-                return snappedValue;
-            }
-            set
-            {
-                SetProperty(ref snappedValue, value);
-            }
+            get { return snappedValue; }
+            set { SetProperty(ref snappedValue, value); }
+        }
+
+        public bool IsLensControlActive
+        {
+            get { return isLensControlActive; }
+            set { SetProperty(ref isLensControlActive, value); }
         }
 
         // Handles Aperture value snapping and sets the setting

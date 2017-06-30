@@ -422,18 +422,31 @@ namespace Arqus.Visualization
         // Toggles between gid label (id) and detail label ( #id + model)
         public void ToggleUIInfo(ScreenLayoutType layoutType)
         {
-            // Switch looks more neat
-            switch (layoutType)
+            try
             {
-                case ScreenLayoutType.Carousel:
-                    gridInfoLabel.Enabled = false;
-                    detailInfoLabel.Enabled = true;
-                    break;
+                // Switch looks more neat
+                switch (layoutType)
+                {
+                    case ScreenLayoutType.Carousel:
+                        gridInfoLabel.Enabled = false;
+                        detailInfoLabel.Enabled = true;
+                        break;
 
-                case ScreenLayoutType.Grid:
-                    gridInfoLabel.Enabled = true;
-                    detailInfoLabel.Enabled = false;
-                    break;
+                    case ScreenLayoutType.Grid:
+                        gridInfoLabel.Enabled = true;
+                        detailInfoLabel.Enabled = false;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                // An exception is sometimes thrown when switching layout mode.
+                // -----------------------------------------------------------
+                // Exception: Underlying native object was deleted for Handle=-1078990336. Node.SetEnabled
+                // -----------------------------------------------------------
+                // Attempting to access a node which is currently disabled? Either way,
+                // catch the little troll and all is well.
+                Debug.WriteLine("CameraScreen::ToggleUIInfo - " + e.Message);                
             }
         }
 

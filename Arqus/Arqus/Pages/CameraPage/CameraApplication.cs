@@ -97,7 +97,7 @@ namespace Arqus
                 currentScreenLayout = screenLayout[type];
 
                 // Switch camera info display based on layout 
-                ToggleCameraUIInfo(type);
+                InvokeOnMain(() => ToggleCameraUIInfo(type));
             });
         }
         
@@ -168,7 +168,6 @@ namespace Arqus
 
             currentScreenLayout.Select(CameraStore.CurrentCamera.ID);
         }
-
         
         List<CameraScreen> screenList;
         /// <summary>
@@ -282,7 +281,7 @@ namespace Arqus
                     currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
                     ToggleCameraUIInfo(ScreenLayoutType.Carousel);
                     currentScreenLayout.Select(cameraID);
-
+                                        
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
                 }
             }

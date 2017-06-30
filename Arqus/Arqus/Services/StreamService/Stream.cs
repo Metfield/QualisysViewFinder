@@ -91,7 +91,7 @@ namespace Arqus.Services
                         // Make sure this is a data packet
                         if (packetType == PacketType.PacketData)
                         {
-                            RetrieveDataAsync(connection.Protocol.GetRTPacket());
+                            Urho.Application.InvokeOnMain(() => RetrieveDataAsync(connection.Protocol.GetRTPacket()));
                         }
                     }
                     else
@@ -105,7 +105,9 @@ namespace Arqus.Services
                         if (now - then > frequency * 500)
                         {                            
                             // We don't need a packet for demo mode
-                            RetrieveDataAsync(null);
+                            Urho.Application.InvokeOnMainAsync(() => RetrieveDataAsync(null));
+
+                            // Update timestamp!
                             then = now;
                         }
 

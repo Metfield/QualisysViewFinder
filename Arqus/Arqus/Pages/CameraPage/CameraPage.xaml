@@ -54,7 +54,7 @@
                         Image="drawable-hdpi/ic_camera_white_24dp.png"
                         Command="{Binding SetCameraModeToVideoCommand}"
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
-                        Style="{StaticResource NoMarginButton}"
+                        Style="{StaticResource NoMarginButton}"                       
                         />
 
                 <Button Grid.Row="0" 
@@ -67,27 +67,35 @@
                         />
             </Grid>
         </Frame>
-
-        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Bisque">
+        
+        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Transparent" Padding="0" >
             <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>            
         </StackLayout>
 
-        <Frame Style="{StaticResource AppBar}" 
-               Padding="0"
-               Margin="-5"
-               IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" >
+        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" 
+                     Margin="0, -35, 0, -10" WidthRequest="45" Opacity="0.8">
 
-            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent" 
-                    BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
+            <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_settings_white_24dp"
+                    IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}"/>
 
-        </Frame>
+            <!--TODO: Show hiding button either here or inside drawer?-->
+            <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp" HeightRequest="35"
+                    IsVisible="{Binding IsBottomSheetVisible}"/>
+
+        </StackLayout>
 
         <!-- Drawers layout -->
         <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
             
             <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
-                
+
                 <StackLayout>
+
+                    <!--TODO: Show hiding button either here or outside drawer?->
+                    <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" IsEnabled="True" IsVisible="True" Margin="40, -20, 0, -10" WidthRequest="50" 
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp"/>-->
 
                     <!-- Marker-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
@@ -96,7 +104,7 @@
                             <Label BindingContext="{x:Reference Name=markerExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider x:Name="markerExposureSlider"
+                        <Slider x:Name="markerExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}" 
                                 Minimum="{Binding CurrentCamera.Settings.MarkerExposure.Min}"
@@ -107,8 +115,8 @@
                             <Label BindingContext="{x:Reference Name=markerThresholdSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider x:Name="markerThresholdSlider"
-                                HorizontalOptions="Fill" 
+                        <Slider x:Name="markerThresholdSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                                HorizontalOptions="Fill"
                                 Maximum="{Binding CurrentCamera.Settings.MarkerThreshold.Max}"
                                 Minimum="{Binding CurrentCamera.Settings.MarkerThreshold.Min}"
                                 Value="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" />
@@ -133,7 +141,7 @@
                                 <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                             </StackLayout>
 
-                            <Slider x:Name="videoExposureSlider"
+                            <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                     HorizontalOptions="Fill" 
                                     Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
                                     Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
@@ -144,7 +152,7 @@
                                 <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
                             </StackLayout>
 
-                            <Slider x:Name="videoFlashTimeSlider"
+                            <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                     HorizontalOptions="Fill" 
                                     Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
                                     Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"

@@ -26,7 +26,6 @@ namespace Arqus
             Container.RegisterTypeForNavigation<NavigationPage>();
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<CameraPage>();
-            Container.RegisterTypeForNavigation<GridPage>();
 
             Container.RegisterInstance<IUserDialogs>(UserDialogs.Instance);
         }

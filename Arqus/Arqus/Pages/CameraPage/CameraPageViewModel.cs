@@ -137,7 +137,7 @@ namespace Arqus
             try
             {
                 // Need to know if this is demo mode in order to start stream accordingly
-                isDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
+                IsDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
             }
             catch (Exception e)
             {
@@ -151,7 +151,7 @@ namespace Arqus
         private void StartStreaming()
         {
             // Notify UrhoSurface Application of the stream mode start intent
-            MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
+            MessagingService.Send(this, MessageSubject.STREAM_START, IsDemoModeActive);
 
             // Once this is done we unsubscribe to the msg
             MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
@@ -317,6 +317,12 @@ namespace Arqus
             set { SetProperty(ref isLensControlActive, value); }
         }
 
+        public bool IsDemoModeActive
+        {
+            get { return isDemoModeActive; }
+            set { SetProperty(ref isDemoModeActive, value); }
+        }
+
         // Handles Aperture value snapping and sets the setting
         public void SnapAperture(double value)
         {
@@ -330,7 +336,7 @@ namespace Arqus
         {
             navigationService = null;
             currentCamera = null;
-            isDemoModeActive = false;
+            IsDemoModeActive = false;
 
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
             MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);            

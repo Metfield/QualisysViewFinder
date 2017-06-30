@@ -22,7 +22,7 @@ namespace Arqus.Droid
 
             base.OnCreate (bundle);
 
-            UserDialogs.Init(this);
+            UserDialogs.Init(() => (Activity)global::Xamarin.Forms.Forms.Context);
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 			LoadApplication (new Arqus.App ());
         } 

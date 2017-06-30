@@ -29,11 +29,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml.cs">
-      <DependentUpon>GridPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
@@ -49,7 +44,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CarouselScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\InverseBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\Packet.cs" />
@@ -100,15 +94,6 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Running.qd" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Pages\GridPage\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">

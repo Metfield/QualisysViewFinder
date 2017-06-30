@@ -134,6 +134,9 @@
     <Reference Include="SegmentedTabControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SegmentedTabControl.FormsPlugin.1.0.0\lib\portable45-net45+win8+wp8+wpa81\SegmentedTabControl.dll</HintPath>
     </Reference>
+    <Reference Include="SixLabors.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SixLabors.Core.0.1.0-alpha0002\lib\netstandard1.1\SixLabors.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Splat.2.0.0\lib\MonoAndroid403\Splat.dll</HintPath>
     </Reference>
@@ -479,6 +482,33 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Drawable\arqus_logo_medium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\ic_camera_grey_700_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_camera_grey_700_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\ic_camera_grey_700_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_camera_grey_700_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxxhdpi\ic_camera_grey_700_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_camera_grey_800_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xxhdpi\ic_camera_grey_800_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_exposure_grey_800_24dp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\ic_arrow_drop_down_white_24dp.png" />
   </ItemGroup>
   <Import Project="..\Arqus\Arqus.projitems" Label="Shared" Condition="Exists('..\Arqus\Arqus.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

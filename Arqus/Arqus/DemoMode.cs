@@ -4,6 +4,7 @@ using QTMRealTimeSDK.Data;
 using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
 namespace Arqus
 {
@@ -29,10 +30,12 @@ namespace Arqus
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 frames = (List<List<Camera>>)binaryFormatter.Deserialize(stream);
             }
-
+            
             frameCount = frames.Count;
-
             assembly = null;
+
+            // Dismiss loading screen once file is loaded
+            Task.Run(() => Acr.UserDialogs.UserDialogs.Instance.HideLoading());
         }
 
         public int GetFrameCount()

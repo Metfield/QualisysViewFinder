@@ -192,6 +192,9 @@
     <Reference Include="SegmentedTabControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SegmentedTabControl.FormsPlugin.1.0.0\lib\portable45-net45+win8+wp8+wpa81\SegmentedTabControl.dll</HintPath>
     </Reference>
+    <Reference Include="SixLabors.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SixLabors.Core.0.1.0-alpha0002\lib\netstandard1.1\SixLabors.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Splat, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Splat.2.0.0\lib\Xamarin.iOS10\Splat.dll</HintPath>
     </Reference>

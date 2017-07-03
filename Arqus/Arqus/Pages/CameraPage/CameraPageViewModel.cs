@@ -82,7 +82,7 @@ namespace Arqus
                 {
                     skipCounter++;
                     // REMOVED FOR DEBUG PURPOSE
-                    //CurrentCamera.UpdateSettings();
+                    CurrentCamera.UpdateSettings();
                 });
 
             MessagingCenter.Subscribe<CameraPage>(this,
@@ -100,10 +100,12 @@ namespace Arqus
 
         public void SetCameraSetting(string setting, double value)
         {
-            if(skipCounter == 0)
+            // If nothing has been recieved from QTM then update the settings
+            // If one or several events has been recieved skip updating QTM an decrement the counter
+            if (skipCounter == 0)
                 CurrentCamera.SetSetting(setting, value);
             else
-                skipCounter--;
+                skipCounter--;    
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)

@@ -92,18 +92,21 @@
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Exposure" HorizontalOptions="Start"/>
-                            <Label BindingContext="{x:Reference Name=markerExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            <Label Text="{Binding  CurrentCamera.Settings.MarkerExposure.Current}" 
+                                   HorizontalOptions="End"/>
                         </StackLayout>
 
                         <Slider x:Name="markerExposureSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}" 
                                 Minimum="{Binding CurrentCamera.Settings.MarkerExposure.Min}"
-                                Value="{Binding CurrentCamera.Settings.MarkerExposure.Current}" />
+                                Value="{Binding CurrentCamera.Settings.MarkerExposure.Current}" 
+                                />
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Marker Threshold"/>
-                            <Label BindingContext="{x:Reference Name=markerThresholdSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            <Label Text="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" 
+                                   HorizontalOptions="End"/>
                         </StackLayout>
 
                         <Slider x:Name="markerThresholdSlider"
@@ -118,7 +121,8 @@
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Exposure"/>
-                            <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            <Label Text="{Binding CurrentCamera.Settings.VideoExposure.Current}" 
+                                   HorizontalOptions="End"/>
                         </StackLayout>
 
                         <Slider x:Name="videoExposureSlider"
@@ -129,7 +133,8 @@
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Flash"/>
-                            <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" 
+                                   HorizontalOptions="End"/>
                         </StackLayout>
 
                         <Slider x:Name="videoFlashTimeSlider"
@@ -141,7 +146,8 @@
                         <!-- Automated lens control for Oqus 700+ cameras -->
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Lens Focus"/>
-                            <Label BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            <Label Text="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" 
+                                   HorizontalOptions="End"/>
                         </StackLayout>
 
                         <Slider x:Name="lensFocusSlider"

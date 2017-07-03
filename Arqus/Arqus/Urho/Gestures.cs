@@ -70,7 +70,7 @@ namespace Arqus
         /// <param name="camera">the camera to be panned</param>
         /// <param name="dx">the pan value in x-direction</param>
         /// <param name="dy">the pan value in y-direction</param>
-        public static void Pan(this Urho.Camera camera, int dx, int dy, float precision = 0.005f, bool onZoom = true, float maxY = -99999, float minY = -99999)
+        public static void Pan(this Urho.Camera camera, int dx, int dy, float precision = 0.005f, bool onZoom = true, float maxY = -99999, float minY = -99999, float maxX = -99999, float minX = -99999)
         {
             // Only pan if camera is zoomed
             if (!onZoom || camera.Zoom > 1)
@@ -78,11 +78,18 @@ namespace Arqus
                 float x = camera.Node.Position.X + -dx * precision * camera.Zoom;
                 float y = camera.Node.Position.Y + dy * precision * camera.Zoom;
 
+                // TODO: create an extension method to handle clamping of values
                 if (maxY > -99999 && y > maxY)
                     y = maxY;
 
                 if (minY > -99999 && y < minY)
                     y = minY;
+
+                if (maxX > -99999 && x > maxX)
+                    x = maxX;
+
+                if (minX > -99999 && x < minX)
+                    x = minX;
 
                 camera.Node.Position = new Vector3(x, y, camera.Node.Position.Z);
             }

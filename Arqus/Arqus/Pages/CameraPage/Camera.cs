@@ -129,22 +129,24 @@ namespace Arqus.DataModels
             // Enable image mode if neccessary
             if (IsImageMode())
                 EnableImageMode();
+            
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
         }
         public void Deselect()
         {
             // Disable image mode when not selected to keep the transferred data to a minimum
-            // TODO: Fix QTM 16 crash 
-            //DisableImageMode();
+            DisableImageMode();
             Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.Off));
         }
+
+        private CameraMode tempMode;
 
         /// <summary>
         /// Disable image mode for streaming on the QTM host
         /// </summary>
         public void DisableImageMode()
         {
-           SettingsService.DisableImageMode(ID);
+            SettingsService.DisableImageMode(ID);
         }
 
         /// <summary>

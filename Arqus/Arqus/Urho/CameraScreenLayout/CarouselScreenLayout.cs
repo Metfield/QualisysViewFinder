@@ -95,6 +95,9 @@ namespace Arqus.Visualization
             double positionFromCameraFocus = 0;
 
 
+            if (Camera.Node.Position.Y != 0 || Camera.Node.Position.X != 0)
+                Camera.Node.SetPosition2D(0, 0);
+
             positionFromCameraFocus = screen.position - Selection;
 
             if (swipingDirection == SwipingDirection.RIGHT)
@@ -146,41 +149,50 @@ namespace Arqus.Visualization
             
             if (input.NumTouches == 1)
             {
-                
-                // We want to scroll 
-                Offset += eventArgs.DX * speed;
-
-                double deltaTime = Time.SystemTime - touchThrottleTime;
-
-                if (eventArgs.DX > 0)
-                    swipingDirection = SwipingDirection.RIGHT;
-                else if (eventArgs.DX < 0)
-                    swipingDirection = SwipingDirection.LEFT;
-
-                // Check if we are panning or just scrolling the carousel 
-                // based on current zoom
-                if (deltaTime > 200)
+                if(Camera.Zoom == 1)
                 {
-                    // If the offset is greater than half the screen distance then the neighbouring camera is closer 
-                    // to the center and thus is selected.
-                    if (Offset > halfScreenDistance)
-                    {
-                        int neighbour = (Selection - 1 < 1) ? ItemCount : Selection - 1;
-                        Select(neighbour);
-                    }
-                    else if (Offset < -halfScreenDistance)
-                    {
+                    // We want to scroll 
+                    Offset += eventArgs.DX * speed;
 
-                        int neighbour = (Selection + 1 > ItemCount) ? 1 : Selection + 1;
-                        Select(neighbour);
-                    }
+                    double deltaTime = Time.SystemTime - touchThrottleTime;
 
-                    touchThrottleTime = Time.SystemTime;
+                    if (eventArgs.DX > 0)
+                        swipingDirection = SwipingDirection.RIGHT;
+                    else if (eventArgs.DX < 0)
+                        swipingDirection = SwipingDirection.LEFT;
+
+                    // Check if we are panning or just scrolling the carousel 
+                    // based on current zoom
+                    if (deltaTime > 200)
+                    {
+                        // If the offset is greater than half the screen distance then the neighbouring camera is closer 
+                        // to the center and thus is selected.
+                        if (Offset > halfScreenDistance)
+                        {
+                            int neighbour = (Selection - 1 < 1) ? ItemCount : Selection - 1;
+                            Select(neighbour);
+                        }
+                        else if (Offset < -halfScreenDistance)
+                        {
+
+                            int neighbour = (Selection + 1 > ItemCount) ? 1 : Selection + 1;
+                            Select(neighbour);
+                        }
+
+                        touchThrottleTime = Time.SystemTime;
+                    }
                 }
                 else
                 {
                     // We want to Pan
-                    Camera.Pan(eventArgs.DX, eventArgs.DY);
+                    Camera.Pan(eventArgs.DX, 
+                        eventArgs.DY,
+                        0.005f,
+                        true,
+                        CameraStore.CurrentCamera.Parent.Height / 2,
+                        -CameraStore.CurrentCamera.Parent.Height / 2,
+                        CameraStore.CurrentCamera.Parent.Width / 2,
+                        -CameraStore.CurrentCamera.Parent.Width / 2);
                 }
 
             }
@@ -195,7 +207,8 @@ namespace Arqus.Visualization
                 {
                     Camera.Zoom = 1;
                     // Reset panning instantly instead of waiting for next finger touch
-                    Camera.Pan(eventArgs.DX, eventArgs.DY);
+                    Camera.Pan(eventArgs.DX, 
+                        eventArgs.DY);
                 }
             }
 

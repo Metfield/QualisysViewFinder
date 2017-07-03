@@ -34,8 +34,7 @@ namespace Arqus
         }
         
         private QTMNetworkConnection connection;
-        private PromptConfig passwordPromptConfig;
-
+        
         private IUserDialogs userDialogs;
         private IUnityContainer container;
         private INavigationService navigationService;

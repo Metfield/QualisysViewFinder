@@ -240,13 +240,13 @@ namespace Arqus
         void CastTouchRay(int x, int y)
         {
             // Shoot from camera to grid view
-            float rayDistance = camera.FarClip;
+            float rayDistance = camera.FarClip + 1;
             
             // Create ray with normalized screen coordinates
             Ray camRay = camera.GetScreenRay((float)x / Graphics.Width, (float)y / Graphics.Height);
 
             // Cast the ray looking for 3D geometry (our grid screen planes) and store result in variable
-            RayQueryResult? rayResult = octree.RaycastSingle(camRay, RayQueryLevel.Triangle, rayDistance, DrawableFlags.Geometry, uint.MaxValue);
+            RayQueryResult? rayResult = octree.RaycastSingle(camRay);
             
             // Check if there was a hit
             if (rayResult.HasValue)
@@ -261,8 +261,6 @@ namespace Arqus
 
                     // Get selected camera ID 
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
-                    
-                    camera.FarClip = 150.0f;
                     currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
                     currentScreenLayout.Select(cameraID);
 

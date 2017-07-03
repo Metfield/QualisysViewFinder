@@ -20,6 +20,7 @@ namespace Arqus
         CameraApplication application;
         CameraPageViewModel viewModel;
 
+        // NOTE: Using a really low throttle time will cause QTM to crash
         int throttleTime = 50;
 
         public CameraPage()
@@ -44,7 +45,7 @@ namespace Arqus
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.MARKER_EXPOSURE_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Constants.MARKER_EXPOSURE_PACKET_STRING, Math.Round(value, 1)));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(markerThresholdSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)

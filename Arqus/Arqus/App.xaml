@@ -63,6 +63,8 @@
             <converters:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
             <converters:DataSourceConverter x:Key="DataSourceConverter" />
             <converters:ThresholdConverter x:Key="ThresholdConverter" />
+            <converters:DoubleToRoundedDecimalConverter x:Key="DoubleToRoundedDecimalConverter" />
+
         </ResourceDictionary>
     </prism:PrismApplication.Resources>
 

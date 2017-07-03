@@ -68,12 +68,6 @@ namespace Arqus
         {
             UnhandledException += (s, e) =>
             {
-                // I KEEP GETTING THIS EXCEPTION EVERY TIME I SWITCH VIEW MODE
-                // ---------------------------------------------------------
-                //Sending events is only supported from the main thread.
-                //You can omit this exception by subscribing to Urho.Application.UnhandledException event and set Handled property to True.
-                //ApplicationOptions: args -w -p "CoreData" -hd -landscape -portrait
-                // ---------------------------------------------------------
                 if (Debugger.IsAttached)
                 {
                     Debugger.Break();
@@ -82,7 +76,6 @@ namespace Arqus
                 e.Handled = true;
             };
         }
-
         
         protected override void Start()
         {

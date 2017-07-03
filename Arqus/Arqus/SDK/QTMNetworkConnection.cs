@@ -345,7 +345,7 @@ namespace Arqus
         private void HandleHostResponse(string response)
         {
             // Right now just toast
-            SharedProjects.Notification.Show("Host Response", response);
+            Debug.Print("QTM Response: " + response);
         }
 
         private bool IsImage(string mode)

@@ -25,6 +25,12 @@ namespace Arqus.Helpers
         public const string LENS_FOCUS_PACKET_STRING = "Focus";
         public const string LENS_APERTURE_PACKET_STRING = "Aperture";
 
+        // Mode toolbar icon constants
+        public const string MODEBAR_ICON_VIDEO_NORMAL = "drawable-hdpi/ic_camera_white_24dp.png";
+        public const string MODEBAR_ICON_VIDEO_DEMO = "drawable-hdpi/ic_camera_grey_800_24dp.png";
+        public const string MODEBAR_ICON_INTENSITY_NORMAL = "drawable-hdpi/ic_exposure_white_24dp.png";
+        public const string MODEBAR_ICON_INTENSITY_DEMO = "drawable-hdpi/ic_exposure_grey_800_24dp.png";
+
         /// <summary>
         /// Navigation strings
         /// </summary>

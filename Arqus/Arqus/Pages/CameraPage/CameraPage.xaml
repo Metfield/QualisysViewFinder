@@ -39,7 +39,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Row="0" 
+                <Button Grid.Row="0"
                         Grid.Column="0"
                         Text="Marker"
                         Image="drawable-hdpi/ic_grain_white_24dp.png"
@@ -47,23 +47,25 @@
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
                         Style="{StaticResource NoMarginButton}"
                         />
-
-                <Button Grid.Row="0" 
+                
+                <Button Grid.Row="0"
                         Grid.Column="1"
                         Text="Video"
-                        Image="drawable-hdpi/ic_camera_white_24dp.png"
+                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Video}"
                         Command="{Binding SetCameraModeToVideoCommand}"
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
-                        Style="{StaticResource NoMarginButton}"                       
+                        Style="{StaticResource NoMarginButton}"
+                        IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />
 
-                <Button Grid.Row="0" 
+                <Button Grid.Row="0"
                         Grid.Column="2"
                         Text="Intensity"
-                        Image="drawable-hdpi/ic_exposure_white_24dp.png"
+                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Intensity}"
                         Command="{Binding SetCameraModeToIntensityCommand}"
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"
                         Style="{StaticResource NoMarginButton}"
+                        IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />
             </Grid>
         </Frame>

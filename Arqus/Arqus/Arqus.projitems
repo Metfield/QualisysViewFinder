@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)CameraProfiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\StringToBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DemoMode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ThresholdConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DemoStream.cs" />

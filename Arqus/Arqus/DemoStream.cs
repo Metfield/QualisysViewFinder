@@ -4,6 +4,7 @@ using System.Text;
 using QTMRealTimeSDK.Data;
 using Arqus.Service;
 using System.Diagnostics;
+using Arqus.Visualization;
 
 namespace Arqus.Services
 {
@@ -23,24 +24,27 @@ namespace Arqus.Services
             currentFrame = 0;
         }
 
+        CameraScreen cameraScreen;
+
         protected override void RetrieveDataAsync(RTPacket packet) // Ignore packet
         {
             cameras = demoMode.frames[currentFrame];
+            int id;
 
-            Urho.Application.InvokeOnMainAsync(() => 
+            for (int i = 0; i < cameras.Count; i++)
             {
-                // NOTE: There is a chance that the packet does not contain data for the currently selected 
-                // camera if that is the case simply catch the exception and log it then keep streaming as usual.
+                id = i + 1;
+
                 try
-                {                    
-                    CameraStore.CurrentCamera.Parent.MarkerData = cameras[CameraStore.CurrentCamera.ID - 1];
+                {
+                    CameraStore.Cameras[id].Parent.MarkerData = cameras[i];
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine("DemoStream:" + e.Message);
                 }
-            });
-            
+            }
+
             SetNextFrame();
         }
 

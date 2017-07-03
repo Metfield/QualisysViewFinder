@@ -252,7 +252,7 @@ namespace Arqus
         // Command button binding        
         public DelegateCommand ConnectCommand { private set;  get; }
         
-        private string ipAddress = "192.168.10.179";
+        private string ipAddress = "192.168.10.168";
 
         public string IPAddress
         {
@@ -340,6 +340,9 @@ namespace Arqus
             NavigationParameters navigationParams = new NavigationParameters();
             navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, true);
             Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
+
+            // Show loading screen while we load demo file
+            Task.Run(() => UserDialogs.Instance.ShowLoading("Just a moment..."));
         }
     }      
 }

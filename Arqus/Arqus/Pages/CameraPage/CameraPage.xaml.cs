@@ -33,10 +33,11 @@ namespace Arqus
 
             // Initialize slider observers
             InitSliderObservers();
+
+            // Subscribe to segmented control event
+            segmentedControls.ItemTapped += OnSegmentedControlSelection;
         }
-
-        DeviceOrientations orientation;
-
+        
         // Moved into a function to keep the constructor from getting bloated with code
         private void InitSliderObservers()
         {
@@ -78,6 +79,22 @@ namespace Arqus
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe((value) => viewModel.SnapAperture(value));
+        }
+
+        // Handles segment selection for segmented control
+        // Switches video drawer mode accordingly 
+        private void OnSegmentedControlSelection(object sender, int segment)
+        {
+            // 0: Left segment (standard settings)
+            // 1: Right segment (lens control)
+            if (Convert.ToBoolean(segment))
+            {
+                viewModel.IsLensControlActive = true;
+            }
+            else
+            {
+                viewModel.IsLensControlActive = false;
+            }
         }
 
         /// <summary>

@@ -31,13 +31,12 @@ namespace Arqus.Services
                         Camera camera = cameras[i];
                         CameraScreen cameraScreen = CameraStore.Cameras[id]?.Parent;
                         
-                            Urho.Application.InvokeOnMain(() =>
-                            {
+                           /* Urho.Application.InvokeOnMain(() =>
+                            {*/
                                 // NOTE: There is a chance that the packet does not contain data for the currently selected 
                                 // camera if that is the case simply catch the exception and log it then keep streaming as usual.
                                 try
                                 {
-
                                     if (cameraScreen != null)
                                     {
                                         cameraScreen.MarkerData = camera;
@@ -48,7 +47,7 @@ namespace Arqus.Services
                                     Debug.WriteLine("MarkerStream:" + e.Message);
                                     Debugger.Break();
                                 }
-                            });
+                            //});
                         
                         
                     }

@@ -106,7 +106,9 @@ namespace QTMRealTimeSDK
         [XmlEnum("SMPTE")]
         SourceSMPTE,
         [XmlEnum("Video sync")]
-        SourceVideoSync
+        SourceVideoSync,
+        [XmlEnum("IRIG")]
+        SourceIRIGSync
     }
 
     /// <summary>Signal modes</summary>
@@ -514,7 +516,7 @@ namespace QTMRealTimeSDK
                         }
                         receivedTotal += received;
                     }
-                    mPacket.SetData(ref data);
+                    mPacket.SetData(data);
                 }
                 while (skipEvents && packetType == PacketType.PacketEvent);
 

@@ -34,6 +34,10 @@ namespace Arqus
         // Used for snapping slider to pre-determined values
         private LensApertureSnapper lensApertureSnapper;
 
+        // Used to know which video drawer is to be displayed
+        // Gets modified by the segmented controls in the view
+        private bool isLensControlActive;
+        
         public CameraPageViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;            
@@ -96,6 +100,9 @@ namespace Arqus
 
             // Switch them drawers now
             SwitchDrawers(CurrentCamera.Mode);
+
+            // No Lens control UI when we start (if even available)
+            IsLensControlActive = false;
         }
 
         public void SetCameraSetting(string setting, double value)
@@ -132,7 +139,7 @@ namespace Arqus
             try
             {
                 // Need to know if this is demo mode in order to start stream accordingly
-                isDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
+                IsDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
             }
             catch (Exception e)
             {
@@ -146,7 +153,7 @@ namespace Arqus
         private void StartStreaming()
         {
             // Notify UrhoSurface Application of the stream mode start intent
-            MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
+            MessagingService.Send(this, MessageSubject.STREAM_START, IsDemoModeActive);
 
             // Once this is done we unsubscribe to the msg
             MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
@@ -276,7 +283,6 @@ namespace Arqus
             set { SetProperty(ref isBottomSheetVisible, value); }
         }
 
-
         /// <summary>
         /// Shows current drawer
         /// </summary>
@@ -303,14 +309,20 @@ namespace Arqus
         private double snappedValue;
         public double SnappedValue
         {
-            get
-            {
-                return snappedValue;
-            }
-            set
-            {
-                SetProperty(ref snappedValue, value);
-            }
+            get { return snappedValue; }
+            set { SetProperty(ref snappedValue, value); }
+        }
+
+        public bool IsLensControlActive
+        {
+            get { return isLensControlActive; }
+            set { SetProperty(ref isLensControlActive, value); }
+        }
+
+        public bool IsDemoModeActive
+        {
+            get { return isDemoModeActive; }
+            set { SetProperty(ref isDemoModeActive, value); }
         }
 
         // Handles Aperture value snapping and sets the setting
@@ -326,7 +338,7 @@ namespace Arqus
         {
             navigationService = null;
             currentCamera = null;
-            isDemoModeActive = false;
+            IsDemoModeActive = false;
 
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
             MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);            

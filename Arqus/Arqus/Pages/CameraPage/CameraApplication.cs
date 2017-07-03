@@ -76,7 +76,6 @@ namespace Arqus
                 e.Handled = true;
             };
         }
-
         
         protected override void Start()
         {
@@ -86,14 +85,15 @@ namespace Arqus
             SetupViewport();
             
             // Update the application when a new screen layout is set in the view model
-            MessagingService.Subscribe<CameraPageViewModel, ScreenLayoutType>
-            (
-                this, 
-                MessageSubject.SET_CAMERA_SCREEN_LAYOUT, 
-                (sender, type) => currentScreenLayout = screenLayout[type]
-            );
-        }
+            MessagingService.Subscribe<CameraPageViewModel, ScreenLayoutType>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender, type) =>
+            {
+                currentScreenLayout = screenLayout[type];
 
+                // Switch camera info display based on layout 
+                InvokeOnMain(() => ToggleCameraUIInfo(type));
+            });
+        }
+        
         // Starts streaming based on input
         private void StartStream(bool demoMode = false)
         {
@@ -117,7 +117,6 @@ namespace Arqus
         
         private async void CreateScene()
         {
-
             // Subscribe to touch event
             Input.TouchMove += OnTouched;
             Input.TouchBegin += OnTouchBegan;
@@ -158,9 +157,10 @@ namespace Arqus
             };
 
             currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
+            ToggleCameraUIInfo(ScreenLayoutType.Carousel);
+
             currentScreenLayout.Select(CameraStore.CurrentCamera.ID);
         }
-
         
         List<CameraScreen> screenList;
         /// <summary>
@@ -209,15 +209,14 @@ namespace Arqus
             {
                 if (i < currentScreenLayout.Selection + 1|| i > currentScreenLayout.Selection  - 1)
                 {
-                   screenList[i].Enabled = true;
-                   currentScreenLayout.SetCameraScreenPosition(screenList[i], Orientation);
+                    screenList[i].Enabled = true;
+                    currentScreenLayout.SetCameraScreenPosition(screenList[i], Orientation);
                 }
                 else
                 {
-                   screenList[i].Enabled = false;
+                    screenList[i].Enabled = false;
                 }
             }
-            
         }
 
         /// <summary>
@@ -230,7 +229,17 @@ namespace Arqus
             viewport.SetClearColor(Urho.Color.FromHex("#303030"));
 
             renderer.SetViewport(0, viewport);
-        }        
+        }
+
+        // Handles camera info depending on view mode
+        private void ToggleCameraUIInfo(ScreenLayoutType screenLayoutType)
+        {
+            // Iterate over screens and toggle the info
+            foreach (CameraScreen cameraScreen in screenList)
+            {
+                cameraScreen.ToggleUIInfo(screenLayoutType);
+            }
+        }
 
         /// <summary>
         /// Casts camera ray from the viewport's coordinates
@@ -258,12 +267,18 @@ namespace Arqus
                 // TODO: Add a public dictionary or query class for name?
                 if (screenNode.Name == "backdrop")
                 {
-
                     // Get selected camera ID 
+<<<<<<< HEAD
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
+=======
+                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
+                    
+                    camera.FarClip = 150.0f;
+>>>>>>> master
                     currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
+                    ToggleCameraUIInfo(ScreenLayoutType.Carousel);
                     currentScreenLayout.Select(cameraID);
-
+                                        
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
                 }
             }

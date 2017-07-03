@@ -4,7 +4,8 @@
              xmlns:ui="clr-namespace:Arqus.UI"
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
-             prism:ViewModelLocator.AutowireViewModel="True"   
+             prism:ViewModelLocator.AutowireViewModel="True"
+             xmlns:segcon="clr-namespace:SegmentedTabControl.FormsPlugin;assembly=SegmentedTabControl"
              x:Class="Arqus.CameraPage" >
     
     <ContentPage.ToolbarItems>
@@ -23,9 +24,7 @@
         </ui:BindableToolbarItem>
     </ContentPage.ToolbarItems>
 
-
     <StackLayout Margin="0" Style="{StaticResource Background}">
-
 
         <Frame Style="{StaticResource AppBar}"  Margin="0,0,0,-5" Padding="0" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" InputTransparent="False">
             <Grid VerticalOptions="End" Padding="0">
@@ -39,8 +38,8 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
-                <Button Grid.Row="0" 
+
+                <Button Grid.Row="0"
                         Grid.Column="0"
                         Text="Marker"
                         Image="drawable-hdpi/ic_grain_white_24dp.png"
@@ -49,44 +48,56 @@
                         Style="{StaticResource NoMarginButton}"
                         />
                 
-                <Button Grid.Row="0" 
+                <Button Grid.Row="0"
                         Grid.Column="1"
                         Text="Video"
-                        Image="drawable-hdpi/ic_camera_white_24dp.png"
+                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Video}"
                         Command="{Binding SetCameraModeToVideoCommand}"
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
                         Style="{StaticResource NoMarginButton}"
+                        IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />
-                
-                <Button Grid.Row="0" 
+
+                <Button Grid.Row="0"
                         Grid.Column="2"
                         Text="Intensity"
-                        Image="drawable-hdpi/ic_exposure_white_24dp.png"
+                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Intensity}"
                         Command="{Binding SetCameraModeToIntensityCommand}"
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"
                         Style="{StaticResource NoMarginButton}"
+                        IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />
             </Grid>
         </Frame>
-
-        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Bisque">
-            <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
-            
+        
+        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Transparent" Padding="0" >
+            <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>            
         </StackLayout>
 
-        <Frame Style="{StaticResource AppBar}" 
-               Padding="0"
-               Margin="-5"
-               IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" >
-            <Button x:Name="toggleButton" HorizontalOptions="Center" BorderWidth="0" BorderColor="Transparent"
-                BackgroundColor="Transparent" Margin="0"  Image="drawable-hdpi/ic_settings_white_24dp" Command="{Binding HideBottomSheetCommand}"  />
-        </Frame>
+        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" 
+                     Margin="0, -35, 0, -10" WidthRequest="45" Opacity="0.8">
+
+            <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_settings_white_24dp"
+                    IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}"/>
+
+            <!--TODO: Show hiding button either here or inside drawer?-->
+            <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp" HeightRequest="35"
+                    IsVisible="{Binding IsBottomSheetVisible}"/>
+
+        </StackLayout>
 
         <!-- Drawers layout -->
         <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
             
             <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
+
                 <StackLayout>
+
+                    <!--TODO: Show hiding button either here or outside drawer?->
+                    <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" IsEnabled="True" IsVisible="True" Margin="40, -20, 0, -10" WidthRequest="50" 
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp"/>-->
 
                     <!-- Marker-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
@@ -96,7 +107,7 @@
                                    HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider x:Name="markerExposureSlider"
+                        <Slider x:Name="markerExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}" 
                                 Minimum="{Binding CurrentCamera.Settings.MarkerExposure.Min}"
@@ -109,8 +120,8 @@
                                    HorizontalOptions="End"/>
                         </StackLayout>
 
-                        <Slider x:Name="markerThresholdSlider"
-                                HorizontalOptions="Fill" 
+                        <Slider x:Name="markerThresholdSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                                HorizontalOptions="Fill"
                                 Maximum="{Binding CurrentCamera.Settings.MarkerThreshold.Max}"
                                 Minimum="{Binding CurrentCamera.Settings.MarkerThreshold.Min}"
                                 Value="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" />
@@ -118,6 +129,7 @@
 
                     <!-- Video-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
+<<<<<<< HEAD
 
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Video Exposure"/>
@@ -135,14 +147,45 @@
                             <Label Text="Video Flash"/>
                             <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" 
                                    HorizontalOptions="End"/>
+=======
+                        
+                        <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" 
+                                                    BackgroundColor="Chocolate" TintColor="#FFC107" SelectedSegment="0" 
+                                                    IsVisible="{Binding CurrentCamera.LensControlEnabled}">
+                            <segcon:SegmentedTabControl.Children>
+                                <Label Text="Video Settings" />
+                                <Label Text="Lens Control" />
+                            </segcon:SegmentedTabControl.Children>
+                        </segcon:SegmentedTabControl>
+
+                        <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
+                        
+                            <StackLayout HorizontalOptions="Fill">
+                                <Label Text="Video Exposure"/>
+                                <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            </StackLayout>
+
+                            <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                                    HorizontalOptions="Fill" 
+                                    Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
+                                    Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
+                                    Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
+
+                            <StackLayout HorizontalOptions="Fill">
+                                <Label Text="Video Flash"/>
+                                <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                            </StackLayout>
+
+                            <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                                    HorizontalOptions="Fill" 
+                                    Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
+                                    Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
+                                    Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
+>>>>>>> master
                         </StackLayout>
-
-                        <Slider x:Name="videoFlashTimeSlider"
-                                HorizontalOptions="Fill" 
-                                Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
-                                Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
-                                Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
-
+                            
+                        <StackLayout IsVisible="{Binding IsLensControlActive}">
+                        
                         <!-- Automated lens control for Oqus 700+ cameras -->
                         <StackLayout HorizontalOptions="Fill">
                             <Label Text="Lens Focus"/>
@@ -163,10 +206,12 @@
 
                         <Slider x:Name="lensApertureSlider"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding ApertureSnapMax}" 
+                                Maximum="{Binding ApertureSnapMax}"
                                 Minimum="0"                                
                                 Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay} "  />
-                        
+
+                        </StackLayout>
+
                     </StackLayout>
                 </StackLayout>
 

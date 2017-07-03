@@ -12,6 +12,7 @@ using System.Diagnostics;
 using Urho.Gui;
 using System;
 using ImageSharp;
+using static Arqus.CameraApplication;
 
 namespace Arqus.Visualization
 {
@@ -30,8 +31,10 @@ namespace Arqus.Visualization
         private bool dirty;
         private Node backdropNode;
         private Node cameraNode;
-        private Node labelNode;
+
+        private Node gridInfoLabel, detailInfoLabel;
         private Text3D label;
+
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane markerScreen;
@@ -163,34 +166,44 @@ namespace Arqus.Visualization
 
             SetImageTexture(Camera.ImageResolution.Width, Camera.ImageResolution.Height);
 
-
-            labelNode = screenNode.CreateChild();
-            label = labelNode.CreateComponent<Text3D>();
-
+            // Set detail info label
             // TODO: Fix magic numbers
+            detailInfoLabel = screenNode.CreateChild();
+            label = detailInfoLabel.CreateComponent<Text3D>();
+            
             if(Camera.Orientation == 0)
-                labelNode.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 1f, -0.1f);
+                detailInfoLabel.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 0.5f, -0.1f);
             else
-                labelNode.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 1f, -0.1f);
+                detailInfoLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 0.5f, -0.1f);
+
+            label.Text = "#" + Camera.ID.ToString() + " " + Camera.Model;
+            label.SetFont(CoreAssets.Fonts.AnonymousPro, 30);
+            label.TextEffect = TextEffect.Stroke;
+
+            // Set grid view info label
+            gridInfoLabel = screenNode.CreateChild();
+            label = gridInfoLabel.CreateComponent<Text3D>();
+                        
+            if (Camera.Orientation == 0)
+                gridInfoLabel.Position = new Vector3(-Width / 2 + 0.2f, -Height / 2 + 1f, -0.1f);
+            else
+                gridInfoLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 1f, -0.1f);
 
             label.Text = Camera.ID.ToString();
             label.SetFont(CoreAssets.Fonts.AnonymousPro, 100);
             label.TextEffect = TextEffect.Stroke;
 
+            // Disable both label nodes at start
+            gridInfoLabel.Enabled = false;
+            detailInfoLabel.Enabled = false;
+
             // Initialize current camera mode
             SetImageMode(Camera.IsImageMode());
 
+            // Subscribe to messages
             SubscribeToDataEvents();
         }
-
-        protected override void Dispose(bool disposing)
-        {
-            MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
-            MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
-            base.Dispose(disposing);
-        }
         
-
         public void SubscribeToDataEvents()
         {
             // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
@@ -261,7 +274,7 @@ namespace Arqus.Visualization
                 ReinitializeImagePlane(imageData.Width, imageData.Height);
             }
 
-            fixed (ImageSharp.Rgba32* bptr = imageData.Pixels)
+            fixed (ImageSharp.Rgba32* bptr = &imageData.Pixels.DangerousGetPinnableReference())
             {
                 texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
             }
@@ -404,6 +417,44 @@ namespace Arqus.Visualization
 
             framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
             framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
+        }
+
+        // Toggles between gid label (id) and detail label ( #id + model)
+        public void ToggleUIInfo(ScreenLayoutType layoutType)
+        {
+            try
+            {
+                // Switch looks more neat
+                switch (layoutType)
+                {
+                    case ScreenLayoutType.Carousel:
+                        gridInfoLabel.Enabled = false;
+                        detailInfoLabel.Enabled = true;
+                        break;
+
+                    case ScreenLayoutType.Grid:
+                        gridInfoLabel.Enabled = true;
+                        detailInfoLabel.Enabled = false;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                // An exception is sometimes thrown when switching layout mode.
+                // -----------------------------------------------------------
+                // Exception: Underlying native object was deleted for Handle=-1078990336. Node.SetEnabled
+                // -----------------------------------------------------------
+                // Attempting to access a node which is currently disabled? Either way,
+                // catch the little troll and all is well.
+                Debug.WriteLine("CameraScreen::ToggleUIInfo - " + e.Message);                
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
+            base.Dispose(disposing);
         }
     }
 }

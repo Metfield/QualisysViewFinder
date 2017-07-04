@@ -66,6 +66,8 @@ namespace Arqus
             ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 
             ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
+
+            OnAboutButtonPressedCommand = new DelegateCommand(() => OnAboutButtonPressed());
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -121,6 +123,7 @@ namespace Arqus
         public DelegateCommand ConnectionModeDiscoveryCommand { private set; get; }
         public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
         public DelegateCommand ConnectionModeDemoCommand { private set; get; }
+        public DelegateCommand OnAboutButtonPressedCommand { private set; get; }
 
         private ConnectionMode currentConnectionMode;
 
@@ -343,6 +346,12 @@ namespace Arqus
 
             // Show loading screen while we load demo file
             Task.Run(() => UserDialogs.Instance.ShowLoading("Just a moment..."));
+        }
+
+        // Navigate to AboutPage when "i" icon has been pressed
+        void OnAboutButtonPressed()
+        {
+            navigationService.NavigateAsync("AboutPage");
         }
     }      
 }

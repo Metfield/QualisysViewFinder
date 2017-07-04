@@ -24,6 +24,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LensApertureSnapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
@@ -112,5 +116,14 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Pages\AboutPage\" />
   </ItemGroup>
 </Project>

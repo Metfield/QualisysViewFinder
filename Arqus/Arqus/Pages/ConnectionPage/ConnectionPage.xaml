@@ -85,6 +85,17 @@
 
         </StackLayout>
 
+
+        
+        <ui:JiggleButton VerticalOptions="EndAndExpand" HorizontalOptions="End"
+                Image="drawable-hdpi/ic_info_outline_white_24dp.png" 
+                Command="{Binding OnAboutButtonPressedCommand}" 
+                BackgroundColor="#444444" Scale="1" WidthRequest="50" 
+                BorderRadius="10"/>
+        
+        
     </StackLayout>
+   
+
 
 </ContentPage>

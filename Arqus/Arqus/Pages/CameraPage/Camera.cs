@@ -20,7 +20,8 @@ namespace Arqus.DataModels
     /// </summary>
     public class Camera : BindableBase
     {
-        
+        public string PageTitle { get; private set; }
+
         public int ID { get; private set; }
 
         // public properties
@@ -56,6 +57,8 @@ namespace Arqus.DataModels
             ImageResolution = imageResolution;
             Model = GetModelName(settings.Model);
             Orientation = settings.Orientation;
+
+            PageTitle = "#" + ID + " " + Model;
 
             LensControlEnabled = CheckForLensControl();
 

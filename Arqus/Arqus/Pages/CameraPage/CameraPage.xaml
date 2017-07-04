@@ -6,7 +6,8 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
              xmlns:segcon="clr-namespace:SegmentedTabControl.FormsPlugin;assembly=SegmentedTabControl"
-             x:Class="Arqus.CameraPage" >
+             x:Class="Arqus.CameraPage" 
+             Title="{Binding CurrentCamera.PageTitle}">
     
     <ContentPage.ToolbarItems>
        

@@ -46,17 +46,6 @@
                             VerticalOptions="FillAndExpand"
                              Style="{StaticResource primaryButton}"
                             Command="{Binding ConnectionModeManuallyCommand}"/>
-
-
-            <ui:JiggleButton HorizontalOptions="Center" 
-                        VerticalOptions="FillAndExpand"
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
-                        Text="Demo Mode"
-                        Style="{StaticResource primaryButton}"
-                        Command="{Binding ConnectionModeDemoCommand}"/>
-            
         </Grid>
 
         <Frame IsVisible="{Binding IsDiscovery}"
@@ -85,15 +74,20 @@
 
         </StackLayout>
 
+        <StackLayout VerticalOptions="EndAndExpand" Orientation="Horizontal">
 
-        
-        <ui:JiggleButton VerticalOptions="EndAndExpand" HorizontalOptions="End"
-                Image="drawable-hdpi/ic_info_outline_white_24dp.png" 
-                Command="{Binding OnAboutButtonPressedCommand}" 
-                BackgroundColor="#444444" Scale="1" WidthRequest="50" 
-                BorderRadius="10"/>
-        
-        
+            <ui:JiggleButton HorizontalOptions="StartAndExpand"                            
+                             Text="Demo Mode"
+                             BackgroundColor="#303030"                             
+                             Command="{Binding ConnectionModeDemoCommand}"/>
+
+            <ui:JiggleButton HorizontalOptions="EndAndExpand"                             
+                             Image="drawable-hdpi/ic_info_outline_white_24dp.png" 
+                             Command="{Binding OnAboutButtonPressedCommand}" 
+                             BackgroundColor="#303030" WidthRequest="60"
+                             BorderRadius="10"/>
+
+        </StackLayout>
     </StackLayout>
    
 

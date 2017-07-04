@@ -274,6 +274,9 @@ namespace Arqus.Visualization
                 ReinitializeImagePlane(imageData.Width, imageData.Height);
             }
 
+            if (imageData.Pixels.IsEmpty)
+                return;
+
             fixed (ImageSharp.Rgba32* bptr = &imageData.Pixels.DangerousGetPinnableReference())
             {
                 texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);

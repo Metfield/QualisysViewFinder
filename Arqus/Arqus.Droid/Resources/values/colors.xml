@@ -2,5 +2,5 @@
 <resources>
   <color name="primary">#2196F3</color>
   <color name="primaryDark">#1976D2</color>
-  <color name="accent">#FFC107</color>
+  <color name="accent">#008CA0</color> <!--Mid Blue 5186B6--> <!--Mid Green 499F84-->
 </resources>

@@ -4489,6 +4489,9 @@ namespace Arqus
 			// aapt resource value: 0x7f0b018a
 			public const int MyTheme_Base = 2131427722;
 			
+			// aapt resource value: 0x7f0b018b
+			public const int NoShadowButton = 2131427723;
+			
 			// aapt resource value: 0x7f0b002d
 			public const int Platform_AppCompat = 2131427373;
 			

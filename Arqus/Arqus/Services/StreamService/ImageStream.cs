@@ -38,7 +38,8 @@ namespace Arqus.Services
 
                         try
                         {
-                            if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID)
+                            if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID
+                                && cameraImage.ImageData.Length > 0)
                             {
                                 Task.Run(() =>
                                 {

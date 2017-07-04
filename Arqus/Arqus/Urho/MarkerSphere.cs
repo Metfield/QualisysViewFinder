@@ -12,12 +12,12 @@ namespace Arqus.Visualization
     /// <summary>
     /// Marker node with an attached sphere component
     /// </summary>
-    public class MarkerSphere : CustomGeometry
+    public class Circle : CustomGeometry
     {
         public Color SphereColor { get; set; }
         public uint Quality { get; set; }
 
-        public MarkerSphere()
+        public Circle()
         {
             Quality = 40;
             markerAngle = 2 * Math.PI / Quality;

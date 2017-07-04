@@ -29,7 +29,7 @@ namespace Arqus.Services
                     if (CameraStore.Cameras.ContainsKey(id))
                     {
                         Camera camera = cameras[i];
-                        CameraScreen cameraScreen = CameraStore.Cameras[id]?.Parent;
+                        CameraScreen cameraScreen = CameraStore.Cameras[id]?.Screen;
                         
                            /* Urho.Application.InvokeOnMain(() =>
                             {*/

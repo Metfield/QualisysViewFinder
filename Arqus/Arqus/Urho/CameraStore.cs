@@ -74,9 +74,14 @@ namespace Arqus
             return true;
         }
 
-        public static List<CameraScreen> GenerateCameraScreens(Urho.Node cameraNode)
+        public static void GenerateCameraScreens(Urho.Node node)
         {
-            return Cameras.Values.Select(camera => new CameraScreen(camera, cameraNode)).ToList();
+            Cameras.Values.ToList().ForEach(camera => camera.GenerateScreen(node));
+        }
+
+        public static List<Camera> GetCameras()
+        {
+            return Cameras.Values.ToList();
         }
 
         // Set the currently selected camera

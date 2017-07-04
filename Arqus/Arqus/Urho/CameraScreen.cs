@@ -37,7 +37,7 @@ namespace Arqus.Visualization
 
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
-        private Urho.Shapes.Plane markerScreen;
+        private Urho.Shapes.Plane defaultScreen;
 
         public double targetDistanceFromCamera;
         private int orientation;
@@ -86,6 +86,7 @@ namespace Arqus.Visualization
                 return markerData;
             }
         }
+        
 
 
         public bool IsImageMode()
@@ -96,16 +97,22 @@ namespace Arqus.Visualization
         // Intensity mode properties
         private Texture2D texture;
 
-        private ImageSharp.Rgba32[] imageData;
+        private ImageSharp.Image<Rgba32> imageData;
 
-        public ImageSharp.Rgba32[] ImageData
+        public ImageSharp.Image<Rgba32> ImageData
         {
             set
             {
                 dirty = true;
                 imageData = value;
             }
+            get
+            {
+                return imageData;
+            }
         }
+
+        private LoadingSpinner loadingSpinner;
 
         // TODO: Add initialization for float frameHeight, float frameWidth, float min
         public CameraScreen(DataModels.Camera camera, Node cameraNode)
@@ -143,7 +150,9 @@ namespace Arqus.Visualization
             screenNode = node.CreateChild("screenNode");
             markerSphereNode = node.CreateChild("markerSphereNode"); 
             backdropNode = node.CreateChild("backdrop");
-            
+
+            loadingSpinner = new LoadingSpinner(node.CreateChild("spinner"), 40, 1);
+
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, markerSphereNode);
             
@@ -157,8 +166,8 @@ namespace Arqus.Visualization
             markerSphereNode.Rotate(new Quaternion(0, 0, -Camera.Orientation), TransformSpace.Local);
 
             // Create marker screen node and its plane
-            markerScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
-            markerScreen.SetMaterial(Material.FromColor(Urho.Color.Black, true));
+            defaultScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
+            defaultScreen.SetMaterial(Material.FromColor(Urho.Color.Black, true));
 
             // Create intensity plane, its material and assign it
             imageScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
@@ -206,13 +215,6 @@ namespace Arqus.Visualization
         
         public void SubscribeToDataEvents()
         {
-            // Every time we recieve new data we invoke it on the main thread to update the graphics accordingly
-            MessagingService.Subscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
-            {
-                if(!IsImageMode())
-                    Urho.Application.InvokeOnMain(() => MarkerData = markerData);
-            });
-
             // Subscribe to demoMode stream data as well
             MessagingService.Subscribe<DemoStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
             {
@@ -232,6 +234,13 @@ namespace Arqus.Visualization
             // methods will be called during update
             OnUpdateHandler = null;
 
+            Urho.Application.InvokeOnMainAsync(() =>
+            {
+                defaultScreen.Enabled = true;
+                imageScreen.Enabled = false;
+                loadingSpinner.Start();
+            });
+
             if (enable)
             {
                 CleanMarkerScreen();
@@ -239,50 +248,51 @@ namespace Arqus.Visualization
             }
             else
             {
-                CleanImageScreen();
                 SetMarkerMode();
             }
         }
     
-        private void CleanImageScreen(){ }
         private void CleanMarkerScreen() { Urho.Application.InvokeOnMainAsync(() => Pool.Hide());  }
 
         private void SetImageMode()
         {
             OnUpdateHandler = OnImageUpdate;
-            Urho.Application.InvokeOnMainAsync(() =>
-            {
-                markerScreen.Enabled = false;
-                imageScreen.Enabled = true;
-            });
         }
 
         private void SetMarkerMode()
         {
-            Urho.Application.InvokeOnMainAsync(() =>
-            {
-                imageScreen.Enabled = false;
-                markerScreen.Enabled = true;
-            });
+            
             OnUpdateHandler = OnMarkerUpdate;
         }
         
-        public unsafe void UpdateMaterialTexture(Image<Rgba32> imageData)
+        public void OnImageUpdate()
         {
-            if(imageData.Width != Camera.ImageResolution.Width || imageData.Height != Camera.ImageResolution.Height)
+            if(loadingSpinner.Running)
             {
-                ReinitializeImagePlane(imageData.Width, imageData.Height);
+                loadingSpinner.Stop();
             }
 
-            if (imageData.Pixels.IsEmpty)
-                return;
-
-            fixed (ImageSharp.Rgba32* bptr = &imageData.Pixels.DangerousGetPinnableReference())
+            if (!imageScreen.Enabled)
             {
-                texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, bptr);
+                imageScreen.Enabled = true;
             }
 
-            imageData.Dispose();
+            if(defaultScreen.Enabled)
+            {
+                defaultScreen.Enabled = false;
+            }
+
+            if(ImageData != null)
+            {
+                if (ImageData.Width != Camera.ImageResolution.Width || ImageData.Height != Camera.ImageResolution.Height)
+                {
+                    ReinitializeImagePlane(ImageData.Width, ImageData.Height);
+                }
+
+                texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, ImageData.Pixels.AsBytes().ToArray());
+            }
+
+            //ImageData.Dispose();
         }
 
         private void ReinitializeImagePlane(int width, int height)
@@ -316,7 +326,8 @@ namespace Arqus.Visualization
                 //Camera.EnableImageMode();
                 Node.Enabled = true;
             }
-                
+
+            loadingSpinner.UpdateSpinner(timeStep);
             
             if (Node.Enabled && dirty)
             {
@@ -329,6 +340,21 @@ namespace Arqus.Visualization
 
         public void OnMarkerUpdate()
         {
+            if (loadingSpinner.Running)
+            {
+                loadingSpinner.Stop();
+            }
+
+            if (imageScreen.Enabled)
+            {
+                imageScreen.Enabled = false;
+            }
+
+            if (!defaultScreen.Enabled)
+            {
+                defaultScreen.Enabled = true;
+            }
+            
             // This index will be used as an array pointer to help identify and disable
             // markers which are not being currently used
             int lastUsedInArray = 0;
@@ -356,72 +382,8 @@ namespace Arqus.Visualization
             // Hide the markers which were not used on this frame
             Pool.HideUnused(lastUsedInArray);
         }
-
-        private void OnImageUpdate()
-        {
-        }        
         
-
-        /// <summary>
-        /// Creates nice frame around the screen
-        /// </summary>
-        /// <param name="node"></param>
-        /// <param name="color"></param>
-        /// <param name="frameWidth"></param>
-        private void CreateFrame(Node node, Urho.Color color, float frameWidth)
-        {
-            float originX = node.Position.X - Width / 2;
-            float originY = Height / 2;
-
-            // Top frame
-            Node framePieceNode = node.CreateChild("FrameTop");
-
-            framePieceNode.Scale = new Vector3(Width + frameWidth, 0, frameWidth);
-            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            framePieceNode.Position = new Vector3(node.Position.X,
-                                                 originY,
-                                                 node.Position.Z);
-
-            Urho.Shapes.Plane framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
-            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
-
-            // Right frame
-            framePieceNode = node.CreateChild("FrameRight");
-
-            framePieceNode.Scale = new Vector3(frameWidth, 0, Height + frameWidth);
-            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            framePieceNode.Position = new Vector3(originX + Width,
-                                                 node.Position.Y,
-                                                 node.Position.Z);
-
-            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
-            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
-
-            // Bottom frame
-            framePieceNode = node.CreateChild("FrameBottom");
-
-            framePieceNode.Scale = new Vector3(Width + frameWidth, 0, frameWidth);
-            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            framePieceNode.Position = new Vector3(node.Position.X,
-                                                 -originY,
-                                                 node.Position.Z);
-
-            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
-            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
-
-            // Left frame
-            framePieceNode = node.CreateChild("FrameLeft");
-
-            framePieceNode.Scale = new Vector3(frameWidth, 0, Height + frameWidth);
-            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
-            framePieceNode.Position = new Vector3(originX,
-                                                 node.Position.Y,
-                                                 node.Position.Z);
-
-            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
-            framePiece.SetMaterial(Material.FromColor(new Urho.Color(0.305f, 0.388f, 0.415f), true));
-        }
-
+        
         // Toggles between gid label (id) and detail label ( #id + model)
         public void ToggleUIInfo(ScreenLayoutType layoutType)
         {

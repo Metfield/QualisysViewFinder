@@ -86,6 +86,7 @@ namespace Arqus.Visualization
                 return markerData;
             }
         }
+        
 
 
         public bool IsImageMode()
@@ -96,14 +97,18 @@ namespace Arqus.Visualization
         // Intensity mode properties
         private Texture2D texture;
 
-        private ImageSharp.Rgba32[] imageData;
+        private ImageSharp.Image<Rgba32> imageData;
 
-        public ImageSharp.Rgba32[] ImageData
+        public ImageSharp.Image<Rgba32> ImageData
         {
             set
             {
                 dirty = true;
                 imageData = value;
+            }
+            get
+            {
+                return imageData;
             }
         }
 
@@ -118,8 +123,6 @@ namespace Arqus.Visualization
             urhoCamera = cameraNode.GetComponent<Urho.Camera>();
 
             orientation = camera.Orientation;
-            
-            
 
             ReceiveSceneUpdates = true;
             //OnUpdateHandler += OnMarkerUpdate;
@@ -262,7 +265,7 @@ namespace Arqus.Visualization
             OnUpdateHandler = OnMarkerUpdate;
         }
         
-        public void UpdateMaterialTexture(Image<Rgba32> imageData)
+        public void OnImageUpdate()
         {
             if(loadingSpinner.Running)
             {
@@ -279,13 +282,17 @@ namespace Arqus.Visualization
                 defaultScreen.Enabled = false;
             }
 
-            if (imageData.Width != Camera.ImageResolution.Width || imageData.Height != Camera.ImageResolution.Height)
+            if(ImageData != null)
             {
-                ReinitializeImagePlane(imageData.Width, imageData.Height);
+                if (ImageData.Width != Camera.ImageResolution.Width || ImageData.Height != Camera.ImageResolution.Height)
+                {
+                    ReinitializeImagePlane(ImageData.Width, ImageData.Height);
+                }
+
+                texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, ImageData.Pixels.AsBytes().ToArray());
             }
-            
-            texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, imageData.Pixels.AsBytes().ToArray());
-            imageData.Dispose();
+
+            //ImageData.Dispose();
         }
 
         private void ReinitializeImagePlane(int width, int height)
@@ -375,10 +382,6 @@ namespace Arqus.Visualization
             // Hide the markers which were not used on this frame
             Pool.HideUnused(lastUsedInArray);
         }
-
-        private void OnImageUpdate()
-        {
-        }        
         
         
         // Toggles between gid label (id) and detail label ( #id + model)

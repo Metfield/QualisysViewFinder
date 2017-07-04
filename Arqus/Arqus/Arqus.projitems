@@ -58,6 +58,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\LoadingSpinner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
@@ -112,5 +113,11 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Urho\LoadingSpinner\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)spinner.gif" />
   </ItemGroup>
 </Project>

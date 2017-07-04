@@ -64,7 +64,7 @@
             <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
             <converters:DataSourceConverter x:Key="DataSourceConverter" />
             <converters:ThresholdConverter x:Key="ThresholdConverter" />
-            <converters:DoubleToRoundedDecimalConverter x:Key="DoubleToRoundedDecimalConverter" />
+            <converters:FlashTimeToPercentageConverter x:Key="FlashTimeToPercentageConverter" />
 
         </ResourceDictionary>
     </prism:PrismApplication.Resources>

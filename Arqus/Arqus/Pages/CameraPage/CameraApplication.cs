@@ -268,13 +268,8 @@ namespace Arqus
                 if (screenNode.Name == "backdrop")
                 {
                     // Get selected camera ID 
-<<<<<<< HEAD
                     int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
-=======
-                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
-                    
-                    camera.FarClip = 150.0f;
->>>>>>> master
+
                     currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
                     ToggleCameraUIInfo(ScreenLayoutType.Carousel);
                     currentScreenLayout.Select(cameraID);

@@ -129,26 +129,7 @@
 
                     <!-- Video-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
-<<<<<<< HEAD
 
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Video Exposure"/>
-                            <Label Text="{Binding CurrentCamera.Settings.VideoExposure.Current}" 
-                                   HorizontalOptions="End"/>
-                        </StackLayout>
-
-                        <Slider x:Name="videoExposureSlider"
-                                HorizontalOptions="Fill" 
-                                Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
-                                Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
-                                Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
-
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Video Flash"/>
-                            <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" 
-                                   HorizontalOptions="End"/>
-=======
-                        
                         <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" 
                                                     BackgroundColor="Chocolate" TintColor="#FFC107" SelectedSegment="0" 
                                                     IsVisible="{Binding CurrentCamera.LensControlEnabled}">
@@ -162,7 +143,7 @@
                         
                             <StackLayout HorizontalOptions="Fill">
                                 <Label Text="Video Exposure"/>
-                                <Label BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                                <Label Text="{Binding CurrentCamera.Settings.VideoExposure.Current}" HorizontalOptions="End"/>
                             </StackLayout>
 
                             <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
@@ -173,7 +154,7 @@
 
                             <StackLayout HorizontalOptions="Fill">
                                 <Label Text="Video Flash"/>
-                                <Label BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                                <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current, Converter={StaticResource FlashTimeToPercentageConverter}}" HorizontalOptions="End"/>
                             </StackLayout>
 
                             <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
@@ -181,7 +162,6 @@
                                     Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
                                     Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
                                     Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
->>>>>>> master
                         </StackLayout>
                             
                         <StackLayout IsVisible="{Binding IsLensControlActive}">

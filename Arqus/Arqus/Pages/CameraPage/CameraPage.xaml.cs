@@ -106,7 +106,7 @@ namespace Arqus
         {
             base.OnSizeAllocated(width, height);
 
-            // If the width is greated than the height the device is in landscape mode,
+            // If the width is greater than the height the device is in landscape mode,
             // otherwise it is in portrait
             if(width > height)
             {
@@ -121,6 +121,8 @@ namespace Arqus
             if (application != null)
                 application.Orientation = orientation;
         }
+
+        DeviceOrientations orientation;
 
         protected override void OnAppearing()
         {

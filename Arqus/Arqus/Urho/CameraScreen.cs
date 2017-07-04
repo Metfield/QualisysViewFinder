@@ -148,7 +148,7 @@ namespace Arqus.Visualization
             markerSphereNode = node.CreateChild("markerSphereNode"); 
             backdropNode = node.CreateChild("backdrop");
 
-            loadingSpinner = new LoadingSpinner(node.CreateChild("spinner"), 8, 1);
+            loadingSpinner = new LoadingSpinner(node.CreateChild("spinner"), 40, 1);
 
             // Initialize marker sphere pool with arbitrary number of spheres
             Pool = new MarkerSpherePool(20, markerSphereNode);

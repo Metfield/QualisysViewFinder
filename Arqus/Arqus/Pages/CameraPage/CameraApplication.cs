@@ -149,11 +149,13 @@ namespace Arqus
             // Initialize marker sphere meshes   
             InitializeCameras(cameraNode);
 
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
             // Set the default layout
             screenLayout = new Dictionary<ScreenLayoutType, CameraScreenLayout>()
             {
-                { ScreenLayoutType.Grid,  new GridScreenLayout(screenList.Count, 2, camera)},
-                { ScreenLayoutType.Carousel, new CarouselScreenLayout(screenList.Count, camera)}
+                { ScreenLayoutType.Grid,  new GridScreenLayout(cameras.Count, 2, camera)},
+                { ScreenLayoutType.Carousel, new CarouselScreenLayout(cameras.Count, camera)}
             };
 
             currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
@@ -162,7 +164,6 @@ namespace Arqus
             currentScreenLayout.Select(CameraStore.CurrentCamera.ID);
         }
         
-        List<CameraScreen> screenList;
         /// <summary>
         /// Creates the cameras and attaches markersphers to them
         /// </summary>
@@ -170,14 +171,14 @@ namespace Arqus
         {
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
-            screenList = CameraStore.GenerateCameraScreens(cameraNode);
+            CameraStore.GenerateCameraScreens(cameraNode);
             
-            foreach (CameraScreen screen in screenList)
+            foreach(DataModels.Camera camera in CameraStore.GetCameras())
             {
                 Node screenNode = meshNode.CreateChild();
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                screen.Scale = 10;
-                screenNode.AddComponent(screen);
+                camera.Screen.Scale = 10;
+                screenNode.AddComponent(camera.Screen);
             }            
         }
 
@@ -201,20 +202,22 @@ namespace Arqus
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
-            
+
             // Update camera offset and reset 
             //UpdateCameraPosition();
-            
-            for (int i = 0; i < screenList.Count; i++)
+
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
+            for (int i = 0; i < cameras.Count; i++)
             {
                 if (i < currentScreenLayout.Selection + 1|| i > currentScreenLayout.Selection  - 1)
                 {
-                    screenList[i].Enabled = true;
-                    currentScreenLayout.SetCameraScreenPosition(screenList[i], Orientation);
+                    cameras[i].Screen.Enabled = true;
+                    currentScreenLayout.SetCameraScreenPosition(cameras[i].Screen, Orientation);
                 }
                 else
                 {
-                    screenList[i].Enabled = false;
+                    cameras[i].Screen.Enabled = false;
                 }
             }
         }
@@ -234,10 +237,12 @@ namespace Arqus
         // Handles camera info depending on view mode
         private void ToggleCameraUIInfo(ScreenLayoutType screenLayoutType)
         {
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
             // Iterate over screens and toggle the info
-            foreach (CameraScreen cameraScreen in screenList)
+            foreach (DataModels.Camera camera in cameras)
             {
-                cameraScreen.ToggleUIInfo(screenLayoutType);
+                camera.Screen.ToggleUIInfo(screenLayoutType);
             }
         }
 

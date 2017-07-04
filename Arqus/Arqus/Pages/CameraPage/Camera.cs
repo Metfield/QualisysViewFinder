@@ -25,8 +25,8 @@ namespace Arqus.DataModels
 
         // public properties
         public ImageResolution ImageResolution { get; set; }
+        // TODO: See if there is a better way to combine the camera with the camera screen
         public CameraScreen Parent { get; set; }
-
         public bool LensControlEnabled { get; private set; }
 
         public string Model { get; private set; }
@@ -238,6 +238,17 @@ namespace Arqus.DataModels
                 default:
                     return "Model Unknown";
             }
+        }
+
+        public CameraScreen Screen { get; set; }
+
+        /// <summary>
+        /// Generates a screen for a camera instance
+        /// </summary>
+        /// <param name="node"></param>
+        public void GenerateScreen(Urho.Node node)
+        {
+            Screen = new CameraScreen(this, node);
         }
     }
 }

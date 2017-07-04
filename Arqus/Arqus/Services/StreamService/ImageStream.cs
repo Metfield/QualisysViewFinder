@@ -51,7 +51,7 @@ namespace Arqus.Services
 
                                         ImageSharp.Image<Rgba32> imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
                                         Urho.Application.InvokeOnMainAsync(() => 
-                                            CameraStore.CurrentCamera?.Parent.UpdateMaterialTexture(imageData)
+                                            CameraStore.CurrentCamera?.Screen.UpdateMaterialTexture(imageData)
                                         );
                                     }
                                     

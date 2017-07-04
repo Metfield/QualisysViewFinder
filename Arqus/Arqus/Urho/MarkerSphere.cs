@@ -39,7 +39,7 @@ namespace Arqus.Visualization
 
         private double markerAngle;
 
-        public void Redraw(float x, float y, float width, float height, float clampWidth, float clampHeight)
+        public void Redraw(float x, float y, float width, float height, float clampWidth, float clampHeight, float z = -0.01f)
         {
 
             for (uint k = 0; k <= Quality + 1; k++)
@@ -52,7 +52,7 @@ namespace Arqus.Visualization
                     CustomGeometryVertex* vertex = GetVertex(0, k);
                     if (vertex != null)
                     {
-                        vertex->Position = new Vector3(vx, vy, 0);
+                        vertex->Position = new Vector3(vx, vy, z);
                     }
                 }
             }

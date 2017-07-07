@@ -14,15 +14,10 @@
         <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_grid_on_white_24dp.png"/>
+                                Android="ic_grid_white_24dp"/>
             </ToolbarItem.Icon>
         </ui:BindableToolbarItem>
-        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="drawable-hdpi/ic_view_carousel_white_24dp.png"/>
-            </ToolbarItem.Icon>
-        </ui:BindableToolbarItem>
+
     </ContentPage.ToolbarItems>
 
     <StackLayout Margin="0" Style="{StaticResource Background}">
@@ -43,7 +38,7 @@
                 <Button Grid.Row="0"
                         Grid.Column="0"
                         Text="Marker"
-                        Image="drawable-hdpi/ic_grain_white_24dp.png"
+                        Image="ic_markers_white_24dp"
                         Command="{Binding SetCameraModeToMarkerCommand}"
                         BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
                         Style="{StaticResource NoMarginButton}"

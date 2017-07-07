@@ -10,6 +10,7 @@ using ImageSharp.Formats;
 using Arqus.Service;
 using System.Diagnostics;
 using Arqus.Visualization;
+using System.Collections.Generic;
 
 namespace Arqus.Services
 {
@@ -17,60 +18,43 @@ namespace Arqus.Services
     {
         int limiter = 0;
         public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency, false){ }
-
-        private readonly object streamLock = new object();
-
+        
+        // Re-use Jpeg decoder for every frame
         private JpegDecoder decoder = new JpegDecoder();
-        private long lastDecodeTimestamp;
+
+        // Used for task-workload leveling
+        static bool isDecoding = false;
 
         protected override void RetrieveDataAsync(RTPacket packet)
         {
-            var data = packet.GetImageData();
-            
-            if(data.Count > 0)
+            // TODO: Implement video buffer instead
+            // Don't pull another frame if previous one has not yet been consumed
+            if (isDecoding)
+                return;
+
+            // Get image data if another process has finished decoding
+            List<CameraImage> data = packet.GetImageData();
+
+            if (data.Count == 0)
+                return;
+
+            try
             {
-                foreach (var cameraImage in data)
-                {
-                    if (cameraImage.ImageData != null && cameraImage.ImageData.Length > 0)
-                    {
-                        if (limiter > 10)
-                            return;
+                // Decode and load image
+                isDecoding = true;
+                    Image<Rgba32> imageData = ImageSharp.Image.Load(data[0].ImageData, decoder);
+                isDecoding = false;
 
-                        try
-                        {
-                            if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID
-                                && cameraImage.ImageData.Length > 0)
-                            {
-                                Task.Run(() =>
-                                {
-                                    limiter++;
-                                    long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-                                    if (timestamp > lastDecodeTimestamp)
-                                    {
-                                        lastDecodeTimestamp = timestamp;
-
-                                        ImageSharp.Image<Rgba32> imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
-                                        Urho.Application.InvokeOnMainAsync(() =>
-                                        {
-                                            if (CameraStore.CurrentCamera.Screen != null)
-                                                CameraStore.CurrentCamera.Screen.ImageData = imageData;
-                                        });
-                                    }
-                                    
-                                    limiter--;
-                                });
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine(e);
-                            Debugger.Break();
-                        }
-                    }
-                }
+                // Set current camera's image data and ready it 
+                // to create a texture
+                if (CameraStore.CurrentCamera.Screen != null)
+                    CameraStore.CurrentCamera.Screen.ImageData = imageData;              
             }
-        }
-        
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                Debugger.Break();
+            }
+        }        
     }
 }

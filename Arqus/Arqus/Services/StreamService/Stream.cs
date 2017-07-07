@@ -47,8 +47,25 @@ namespace Arqus.Services
 
                 if (!demoMode)
                 {
+                    // Start stream
                     if (connection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type))
+                    {
+                        // Disable other image-streaming cameras
+                        if(type == ComponentType.ComponentImage)
+                        {
+                            for(int i = 1; i <= CameraStore.Cameras.Count; i++)
+                            {
+                                // Disable every camera but the current one
+                                if(CameraStore.Cameras[i].Mode != CameraMode.ModeMarker && CameraStore.Cameras[i].ID != CameraStore.CurrentCamera.ID)
+                                {
+                                    SettingsService.DisableImageMode(i);
+                                }
+                            }
+                        }
+
+                        // Run continuous stream method
                         streamTask = Task.Run(() => ContinuousStream());
+                    }
                 }
                 else
                 {
@@ -76,10 +93,8 @@ namespace Arqus.Services
         /// with the QTM server. If it manages to process packets faster that expected
         /// it will wait.
         /// </summary>
-        protected void ContinuousStream()
+        protected async void ContinuousStream()
         {
-            long then = DateTime.Now.Ticks, now;
-
             while(streaming)
             {
                 try
@@ -91,28 +106,23 @@ namespace Arqus.Services
                         // Make sure this is a data packet
                         if (packetType == PacketType.PacketData)
                         {
-                            Urho.Application.InvokeOnMain(() => RetrieveDataAsync(connection.Protocol.GetRTPacket()));
+                            // IMPORTANT: Video stream needs to run as an asynchronous task in 
+                            // order to work properly
+                            Task.Run(() => RetrieveDataAsync(connection.Protocol.GetRTPacket()));
                         }
                     }
                     else
                     {
-                        now = DateTime.Now.Ticks;
-
-                        // Task.Delay causes some overhead and slows down
-                        // execution a bit. This solution will work at different
-                        // speeds depending on cpu. Find cross-platform way of 
-                        // getting clock speed
-                        if (now - then > frequency * 500)
-                        {                            
-                            // We don't need a packet for demo mode
-                            Urho.Application.InvokeOnMainAsync(() => RetrieveDataAsync(null));
-
-                            // Update timestamp!
-                            then = now;
-                        }
+                        // We don't need a packet for demo mode
+                        // IMPORTANT: Demo mode will crash application after ~10 seconds
+                        // if RetreiveDataAsync is not called on the main thread
+                        Urho.Application.InvokeOnMainAsync(() => RetrieveDataAsync(null));
 
                         // Sleep thread to match desired frequency
-                        //await Task.Delay(160 / frequency);                        
+                        // NOTE: Task.Delay was causing some overhead and slowed down
+                        // the execution quite noticeably. It seems to be working properly
+                        // now, but if for some demo stream becomes slow again. CHECK HERE!
+                        await Task.Delay(160 / frequency);
                     }
                 }
                 catch (Exception e)

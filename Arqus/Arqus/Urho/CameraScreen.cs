@@ -282,17 +282,28 @@ namespace Arqus.Visualization
                 defaultScreen.Enabled = false;
             }
 
-            if(ImageData != null)
+            if (ImageData != null)
             {
-                if (ImageData.Width != Camera.ImageResolution.Width || ImageData.Height != Camera.ImageResolution.Height)
+                try
                 {
-                    ReinitializeImagePlane(ImageData.Width, ImageData.Height);
+                    if (ImageData.Width != Camera.ImageResolution.Width || ImageData.Height != Camera.ImageResolution.Height)
+                    {
+                        ReinitializeImagePlane(ImageData.Width, ImageData.Height);
+                    }
+
+                    unsafe
+                    {
+                        // Don't allocate memory!!!
+                        fixed (Rgba32* data = &ImageData.Pixels.DangerousGetPinnableReference())
+                            texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, data);
+                    }
                 }
-
-                texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, ImageData.Pixels.AsBytes().ToArray());
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                    Debugger.Break();
+                }
             }
-
-            //ImageData.Dispose();
         }
 
         private void ReinitializeImagePlane(int width, int height)
@@ -371,7 +382,6 @@ namespace Arqus.Visualization
                 float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
                 float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, cameraScreenHalfWidth, markerData.MarkerData2D[i].DiameterX);
                 float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, cameraScreenHalfHeight, markerData.MarkerData2D[i].DiameterY);
-
 
                 Pool.Get(i).Redraw(x, y, width, height, cameraScreenHalfWidth, cameraScreenHalfHeight);
     

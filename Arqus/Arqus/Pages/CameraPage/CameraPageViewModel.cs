@@ -37,10 +37,13 @@ namespace Arqus
         // Used to know which video drawer is to be displayed
         // Gets modified by the segmented controls in the view
         private bool isLensControlActive;
+
+        // Holds current title for camera page
+        private string pageTitle;
         
         public CameraPageViewModel(INavigationService navigationService)
         {
-            this.navigationService = navigationService;            
+            this.navigationService = navigationService;
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
@@ -71,6 +74,8 @@ namespace Arqus
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid, payload: new { cameraScreenLayout });
                 }
 
+                // Update the page title 
+                UpdatePageTitle();
             });
 
             // We're starting with carousel mode
@@ -103,6 +108,8 @@ namespace Arqus
 
             // No Lens control UI when we start (if even available)
             IsLensControlActive = false;
+
+            UpdatePageTitle();
         }
 
         public void SetCameraSetting(string setting, double value)
@@ -112,7 +119,7 @@ namespace Arqus
             if (skipCounter == 0)
                 CurrentCamera.SetSetting(setting, value);
             else
-                skipCounter--;    
+                skipCounter--;
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -169,20 +176,18 @@ namespace Arqus
             // Set current camera
             CameraStore.SetCurrentCamera(cameraID);
             CurrentCamera = CameraStore.CurrentCamera;
-
+            
             // Check if camera selection was done through grid mode
             if (IsGridLayoutActive)
             {
                 IsGridLayoutActive = false;
-
-                // Invoke on main thread to avoid exception
-                Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
-
-                return;
             }
 
             // Switch drawer mode
             Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
+
+            // Change camera page title
+            UpdatePageTitle();
         }
 
         private void SetCameraMode(CameraMode mode)
@@ -332,6 +337,21 @@ namespace Arqus
 
             // Once value is snapped, set the aperture setting
             SetCameraSetting(Constants.LENS_APERTURE_PACKET_STRING, SnappedValue);
+        }
+
+        public string PageTitle
+        { 
+            get { return pageTitle; }
+            private set { SetProperty(ref pageTitle, value); }
+        }
+
+        private void UpdatePageTitle()
+        {
+            // Set page title
+            if (IsGridLayoutActive)
+                PageTitle = Constants.TITLE_GRIDVIEW;
+            else
+                PageTitle = CurrentCamera.PageTitle;
         }
 
         public void Dispose()

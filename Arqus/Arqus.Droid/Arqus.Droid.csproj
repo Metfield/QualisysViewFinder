@@ -353,8 +353,6 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_grain_black_24dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Pages\CameraPage\" />
-    <Folder Include="Pages\ConnectionPage\" />
     <Folder Include="Resources\images\" />
   </ItemGroup>
   <ItemGroup>

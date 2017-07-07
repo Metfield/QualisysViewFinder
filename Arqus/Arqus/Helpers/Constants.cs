@@ -35,5 +35,8 @@ namespace Arqus.Helpers
         /// Navigation strings
         /// </summary>
         public const string NAVIGATION_DEMO_MODE_STRING = "demoMode";
+
+        // Page titles
+        public const string TITLE_GRIDVIEW = "Camera Overview";
     }
 }

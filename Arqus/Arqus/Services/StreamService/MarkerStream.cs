@@ -17,8 +17,9 @@ namespace Arqus.Services
         public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency, false){}
 
         List<Camera> cameras;
-        protected override void RetrieveDataAsync(RTPacket packet)
+        protected override void RetrieveDataAsync()
         {
+            RTPacket packet = connection.Protocol.GetRTPacket();
             cameras = packet.Get2DMarkerData();
 
             if (cameras != null)

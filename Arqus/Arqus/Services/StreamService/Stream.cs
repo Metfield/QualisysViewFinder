@@ -108,7 +108,8 @@ namespace Arqus.Services
                         {
                             // IMPORTANT: Video stream needs to run as an asynchronous task in 
                             // order to work properly
-                            Task.Run(() => RetrieveDataAsync(connection.Protocol.GetRTPacket()));
+                            
+                            Task.Run(() => RetrieveDataAsync());
                         }
                     }
                     else
@@ -116,7 +117,7 @@ namespace Arqus.Services
                         // We don't need a packet for demo mode
                         // IMPORTANT: Demo mode will crash application after ~10 seconds
                         // if RetreiveDataAsync is not called on the main thread
-                        Urho.Application.InvokeOnMainAsync(() => RetrieveDataAsync(null));
+                        Urho.Application.InvokeOnMainAsync(() => RetrieveDataAsync());
 
                         // Sleep thread to match desired frequency
                         // NOTE: Task.Delay was causing some overhead and slowed down
@@ -133,7 +134,7 @@ namespace Arqus.Services
             }
         }
         
-        protected abstract void RetrieveDataAsync(RTPacket packet);
+        protected abstract void RetrieveDataAsync();
         
         public void Dispose()
         {

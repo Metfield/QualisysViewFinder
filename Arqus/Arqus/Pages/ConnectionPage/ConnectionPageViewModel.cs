@@ -343,9 +343,6 @@ namespace Arqus
             NavigationParameters navigationParams = new NavigationParameters();
             navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, true);
             Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
-
-            // Show loading screen while we load demo file
-            Task.Run(() => UserDialogs.Instance.ShowLoading("Just a moment..."));
         }
 
         // Navigate to AboutPage when "i" icon has been pressed

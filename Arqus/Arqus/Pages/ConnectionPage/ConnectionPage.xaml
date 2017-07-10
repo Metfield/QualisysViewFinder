@@ -76,9 +76,10 @@
 
         <StackLayout VerticalOptions="EndAndExpand" Orientation="Horizontal">
 
-            <Button HorizontalOptions="StartAndExpand"                            
+            <Button HorizontalOptions="StartAndExpand"
                              Text="Demo Mode"
-                             BackgroundColor="#303030"                             
+                             BackgroundColor="#303030"
+                             TextColor="#1976D2"
                              Command="{Binding ConnectionModeDemoCommand}">
                 <Button.Effects>
                     <local:FlatButtonEffect />

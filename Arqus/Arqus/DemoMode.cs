@@ -33,9 +33,6 @@ namespace Arqus
             
             frameCount = frames.Count;
             assembly = null;
-
-            // Dismiss loading screen once file is loaded
-            Task.Run(() => Acr.UserDialogs.UserDialogs.Instance.HideLoading());
         }
 
         public int GetFrameCount()

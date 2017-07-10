@@ -31,41 +31,39 @@ namespace QTMRealTimeSDK.Data
         // Labeled 3d markers (Get3DMarkerData)
         Component3d = 1,
         // Unidentified 3d markers (Get3DMarkerNoLabelsData)
-        Component3dNoLabels,
+        Component3dNoLabels = 2,
         // Analog data (GetAnalogData)
-        ComponentAnalog,
+        ComponentAnalog = 3,
         // Force data (GetForceData)
-        ComponentForce,
+        ComponentForce = 4,
         // 6D data - position and rotation matrix (Get6DOFData)
-        Component6d,
+        Component6d = 5,
         // 6D data - position and Euler angles (Get6DOFEulerData)
-        Component6dEuler,
+        Component6dEuler = 6,
         // 2D marker data (Get2DMarkerData)
-        Component2d,
+        Component2d = 7,
         // Linearized 2D marker data (Get2DLinearizedMarkerDAta)
-        Component2dLinearized,
+        Component2dLinearized = 8,
         // Labeled 3d markers with residual (Get3DMarkerResidualData)
-        Component3dResidual,
+        Component3dResidual = 9,
         // Unidentified 3d markers with residual (Get3DMarkerNoLabelsResidualData)
-        Component3dNoLabelsResidual,
+        Component3dNoLabelsResidual = 10,
         // 6D data - position and rotation matrix with residuals with residual (Get6DOFResidualData)
-        Component6dResidual,
+        Component6dResidual = 11,
         // 6D data - position and Euler angles with residual (Get6DOFEulerResidualData)
-        Component6dEulerResidual,
+        Component6dEulerResidual = 12,
         // Analog data from available analog devices. Only one sample per channel and camera frame. The latest sample is used if more than one sample is available. (GetAnalogSingleData)
-        ComponentAnalogSingle,
+        ComponentAnalogSingle = 13,
         // Image frame from a specific camera. Image size and format is set with the XML settings, see Image settings. (GetImageData)
-        ComponentImage,
+        ComponentImage = 14,
         // Force data from available force plates. Only one sample per plate and camera frame. The latest sample is used if more than one sample is available. (GetForceSingleData)
-        ComponentForceSingle,
+        ComponentForceSingle = 15,
         // Gaze vector data from eye tracker (GetGazeVectorData)
-        ComponentGazeVector,
+        ComponentGazeVector = 16,
         // Timecode component
-        ComponentTimecode,
+        ComponentTimecode = 17,
         // Nothing
-        ComponentNone,
-        // Stream everything
-        ComponentAll
+        ComponentNone = 18,
     }
 
     /// <summary>Events sent from QTM via RT</summary>
@@ -267,11 +265,17 @@ namespace QTMRealTimeSDK.Data
         /// <summary>Gaze vector</summary>
         public TimecodeType Type;
         /// <summary>Gaze vector position</summary>
-        public uint Hi;
+        public uint High;
         /// <summary>Sample number</summary>
         public uint Low;
+
+        public override string ToString()
+        {
+            return this.FormatTimestamp();
+        }
+
     }
-    
+
     /// <summary> IRIG timecode struct </summary>
     public struct IRIGTimecode
     {
@@ -892,7 +896,7 @@ namespace QTMRealTimeSDK.Data
                             {
                                 Timecode timecode = new Timecode();
                                 timecode.Type = (TimecodeType)BitConvert.GetUInt32(mData, ref position);
-                                timecode.Hi = BitConvert.GetUInt32(mData, ref position);
+                                timecode.High = BitConvert.GetUInt32(mData, ref position);
                                 timecode.Low = BitConvert.GetUInt32(mData, ref position);
 
                                 mTimecodeData.Add(timecode);
@@ -947,6 +951,10 @@ namespace QTMRealTimeSDK.Data
                                 }
                                 mGazeVectorData.Add(gazeVector);
                             }
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.Fail("For what componenttype are we missing support?");
                         }
                     }
                 }
@@ -1485,7 +1493,7 @@ namespace QTMRealTimeSDK.Data
         }
 
         /// <summary>
-        /// Get all timecodes
+        /// Get timecode information from packet
         /// </summary>
         /// <returns>list of all timecodes</returns>
         public List<Timecode> GetTimecodeData()
@@ -1519,72 +1527,6 @@ namespace QTMRealTimeSDK.Data
             lock (packetLock)
             {
                 return mTimecodeData[index].Type;
-            }
-        }
-
-        /// <summary>
-        /// Get irig timecode at index
-        /// </summary>
-        /// <param name="index">index to get data from.(not camera index!)</param>
-        /// <returns>IRIG timecode from index</returns>
-        public bool GetIRIGTimecode(ref IRIGTimecode irig, int index=0)
-        {
-            lock (packetLock)
-            {
-                var timecode = mTimecodeData[index];
-                if(timecode.Type == TimecodeType.IRIG)
-                {
-                    irig.Year = 0x7f &  timecode.Hi;
-                    irig.Day = 0x1FF & (timecode.Hi >> 7);
-                    irig.Hour = 0x1f & timecode.Low;
-                    irig.Minute = 0x3F & (timecode.Low >> 5);
-                    irig.Second = 0x3F & (timecode.Low >> 11);
-                    irig.Tenth = 0xF & (timecode.Low >> 17);
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Get smpte timecode at index
-        /// </summary>
-        /// <param name="index">index to get data from.(not camera index!)</param>
-        /// <returns>SMPTE timecode from index</returns>
-        public bool GetSMPTETimecode(ref SMPTETimecode smpte, int index=0)
-        {
-            lock (packetLock)
-            {
-                var timecode = mTimecodeData[index];
-                if (timecode.Type == TimecodeType.SMPTE)
-                {
-                    smpte.Hour = 0x1f & timecode.Low;
-                    smpte.Minute = 0x3F & (timecode.Low >> 5);
-                    smpte.Second = 0x3F & (timecode.Low >> 11);
-                    smpte.Frame = 0x1F & (timecode.Low >> 17);
-                    return true;
-                }
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Get camera time at index
-        /// </summary>
-        /// <param name="index">index to get data from.(not camera index!)</param>
-        /// <returns>Camera time from index</returns>
-        public bool GetCaptureTimeTimecode(out UInt64 cameratime, int index=0)
-        {
-            lock (packetLock)
-            {
-                var timecode = mTimecodeData[index];
-                if (timecode.Type == TimecodeType.CameraTime)
-                {
-                    cameratime = timecode.Hi << 32 | timecode.Low;
-                    return true;
-                }
-                cameratime = 0;
-                return false;
             }
         }
 

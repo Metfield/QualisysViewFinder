@@ -90,7 +90,6 @@ namespace Arqus
 
                     // Make sure everything is clean
                     SettingsService.Clean();
-                    //CameraStore.Clean();
 
                     //GC.Collect();
                 }
@@ -114,6 +113,7 @@ namespace Arqus
                 {
                     IPAddress = selectedServer.IPAddress;
                     OnConnectionStarted();
+                    selectedServer = null;
                 }
             }
             get { return selectedServer; }
@@ -298,14 +298,20 @@ namespace Arqus
                         .PromptAsync(
                             new PromptConfig()
                             .SetTitle("Please enter a password")
-                            .SetOkText("Connect")
-                            );
+                            .SetOkText("Connect"));
+
+                    if (!result.Ok)
+                        return;
 
                     connection.Connect(IPAddress, result.Text);
 
                     if (!connection.TakeControl() && result.Text != "")
                     {
-                        userDialogs.Toast(new ToastConfig("Incorrect Password"));
+                        ToastAction toastAction = new ToastAction().SetText("Retry").SetAction(() => OnConnectionStarted());
+                        ToastConfig toastConfig = new ToastConfig("Incorrect Password")
+                            .SetAction(toastAction);
+
+                        userDialogs.Toast(toastConfig);
                         return;
                     }
                 }

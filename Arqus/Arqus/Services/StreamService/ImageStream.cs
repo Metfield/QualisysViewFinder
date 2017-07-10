@@ -11,7 +11,6 @@ using Arqus.Service;
 using System.Diagnostics;
 using Arqus.Visualization;
 using System.Collections.Generic;
-using Priority_Queue;
 
 namespace Arqus.Services
 {
@@ -51,6 +50,7 @@ namespace Arqus.Services
                 // to create a texture
                 if (CameraStore.CurrentCamera.Screen != null)
                     CameraStore.CurrentCamera.Screen.ImageData = imageData;
+
             }
             catch (Exception e)
             {

@@ -38,8 +38,7 @@ namespace Arqus.Visualization
 
         public float Min { get; set; }
         public override Camera Camera { get; }
-
-        private Orientation orientation;
+        
 
         public CarouselScreenLayout(int itemCount, Camera camera)
         {
@@ -67,7 +66,7 @@ namespace Arqus.Visualization
             return (2 * Math.PI / (float) ItemCount) * (float) position + Offset - Math.PI/2;
         }
 
-        float screenDistance = 25;
+        float screenDistance = 15;
         float halfScreenDistance {
             get
             {
@@ -93,10 +92,6 @@ namespace Arqus.Visualization
         {
             double x;
             double positionFromCameraFocus = 0;
-
-
-            if (Camera.Node.Position.Y != 0 || Camera.Node.Position.X != 0)
-                Camera.Node.SetPosition2D(0, 0);
 
             positionFromCameraFocus = screen.position - Selection;
 
@@ -144,6 +139,9 @@ namespace Arqus.Visualization
 
         SwipingDirection swipingDirection;
 
+        private float swipeThreshold = 75.0f;
+        private float swipeSelectionThrottle = 500;
+
         public override void OnTouch(Input input, TouchMoveEventArgs eventArgs)
         {
             
@@ -151,6 +149,15 @@ namespace Arqus.Visualization
             {
                 if(Camera.Zoom == 1)
                 {
+
+                    if (Math.Abs(eventArgs.DX) > swipeThreshold && swipeSelectionThrottle < Time.SystemTime)
+                    {
+                        swipeSelectionThrottle = Time.SystemTime + 500;
+                        SelectNeighbour(eventArgs.DX > swipeThreshold);
+                        return;
+                    }
+
+
                     // We want to scroll 
                     Offset += eventArgs.DX * speed;
 
@@ -167,16 +174,9 @@ namespace Arqus.Visualization
                     {
                         // If the offset is greater than half the screen distance then the neighbouring camera is closer 
                         // to the center and thus is selected.
-                        if (Offset > halfScreenDistance)
+                        if (Math.Abs(Offset) > Math.Abs(halfScreenDistance))
                         {
-                            int neighbour = (Selection - 1 < 1) ? ItemCount : Selection - 1;
-                            Select(neighbour);
-                        }
-                        else if (Offset < -halfScreenDistance)
-                        {
-
-                            int neighbour = (Selection + 1 > ItemCount) ? 1 : Selection + 1;
-                            Select(neighbour);
+                            SelectNeighbour(Offset > halfScreenDistance);
                         }
 
                         touchThrottleTime = Time.SystemTime;
@@ -214,11 +214,20 @@ namespace Arqus.Visualization
 
         }
 
-        float zoom = 1;
+        private void SelectNeighbour(bool leftNeighbour)
+        {
+            if (leftNeighbour)
+            {
+                int neighbour = (Selection - 1 < 1) ? ItemCount : Selection - 1;
+                Select(neighbour);
+            }
+            else
+            {
 
-        int tapTouchID;
-        float startTouchTime;
-        //float tapTimeMargin = 0.1f;
+                int neighbour = (Selection + 1 > ItemCount) ? 1 : Selection + 1;
+                Select(neighbour);
+            }
+        }
 
         public override void OnTouchBegan(TouchBeginEventArgs eventArgs)
         {

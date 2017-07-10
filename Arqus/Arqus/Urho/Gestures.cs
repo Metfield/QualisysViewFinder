@@ -91,7 +91,7 @@ namespace Arqus
                 if (minX > -99999 && x < minX)
                     x = minX;
 
-                camera.Node.Position = new Vector3(x, y, camera.Node.Position.Z);
+                Urho.Application.InvokeOnMain(() => camera.Node.SetPosition2D(new Vector2(x, y)));
             }
             else
             {

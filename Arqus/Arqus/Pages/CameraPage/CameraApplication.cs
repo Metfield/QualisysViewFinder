@@ -194,6 +194,7 @@ namespace Arqus
             // Fill out variables for tap gesture
             tapTouchID = eventArgs.TouchID;
             tapTimeStamp = Time.ElapsedTime;
+
             currentScreenLayout.OnTouchBegan(eventArgs);
         }
         
@@ -273,12 +274,16 @@ namespace Arqus
                 if (screenNode.Name == "backdrop")
                 {
                     // Get selected camera ID 
-                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
+                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
+
+                    // Reset the camera position when going to the carousel mode
+                    if (camera.Node.Position.Y != 0 || camera.Node.Position.X != 0)
+                        Urho.Application.InvokeOnMain(() => camera.Node.SetPosition2D(0, 0));
 
                     currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
                     ToggleCameraUIInfo(ScreenLayoutType.Carousel);
                     currentScreenLayout.Select(cameraID);
-                                        
+
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
                 }
             }
@@ -308,12 +313,6 @@ namespace Arqus
             if (dt < tapTimeMargin && currentScreenLayout.GetType() == typeof(GridScreenLayout))
             {
                 CastTouchRay(eventArgs.X, eventArgs.Y);
-            }
-            else if(currentScreenLayout.GetType() == typeof(CarouselScreenLayout))
-            {
-                //List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
-                //CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
-                //currentScreenLayout.Select(focus.position);
             }
         }    
     }

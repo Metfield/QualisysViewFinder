@@ -28,8 +28,10 @@
 
                         <Label TextColor="White" Margin="0, 0, 0, 0" Text="- Check that Qualisys Track Manager (QTM) is up and running on your Windows PC "/>
                         <Label TextColor="White" Margin="0, -5, 0, 0" Text="- Ensure that both this device and the computer running QTM are connected to the same LAN "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- If you cannot see your QTM host PC in the host discovery list, try refreshing it by swipping down "/>
                         <Label TextColor="White" Margin="0, -5, 0, 0" Text="- If you are experiencing problems with the automatic QTM host discovery function, try manually introducing the IP address of the QTM host "/>
                         <Label TextColor="White" Margin="0, -5, 0, 0" Text="- Make sure that the manually introduced IP is correct "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- If a camera displays a black screen when on the camera overview (grid layout), select it to refresh the video buffer "/>
                     </StackLayout>
                 </Frame>
 

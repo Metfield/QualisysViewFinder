@@ -181,12 +181,12 @@ namespace Arqus.Visualization
             label = detailInfoLabel.CreateComponent<Text3D>();
             
             if(Camera.Orientation == 0)
-                detailInfoLabel.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 0.5f, -0.1f);
+                detailInfoLabel.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 0.7f, -0.1f);
             else
-                detailInfoLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 0.5f, -0.1f);
+                detailInfoLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 0.7f, -0.1f);
 
-            label.Text = "#" + Camera.ID.ToString() + " " + Camera.Model;
-            label.SetFont(CoreAssets.Fonts.AnonymousPro, 30);
+            label.Text = Camera.ID.ToString();
+            label.SetFont(CoreAssets.Fonts.AnonymousPro, 55);
             label.TextEffect = TextEffect.Stroke;
 
             // Set grid view info label

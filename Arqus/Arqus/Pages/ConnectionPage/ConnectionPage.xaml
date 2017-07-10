@@ -67,7 +67,7 @@
                     HorizontalOptions="Center" 
                     WidthRequest="300" >
 
-            <Entry Placeholder="Ip Address" Text="{Binding IPAddress}" />
+            <ui:IpAdressEntryRenderer Placeholder="Ip Address" Text="{Binding IPAddress}"/>
 
             <ui:JiggleButton Text="Connect"
                     Style="{StaticResource primaryButton}"

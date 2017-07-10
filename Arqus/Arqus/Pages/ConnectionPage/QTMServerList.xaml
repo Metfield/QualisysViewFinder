@@ -27,8 +27,7 @@
             IsPullToRefreshEnabled="true"
             RefreshCommand="{Binding RefreshQTMServers}"
             IsRefreshing="{Binding IsRefreshing}"
-            HasUnevenRows="true"
-          >
+            HasUnevenRows="true" >
 
             <ListView.ItemTemplate>
 

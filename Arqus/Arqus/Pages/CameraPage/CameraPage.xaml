@@ -40,7 +40,7 @@
                         Text="Marker"
                         Image="ic_markers_white_24dp"
                         Command="{Binding SetCameraModeToMarkerCommand}"
-                        BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
+                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
                         Style="{StaticResource NoMarginButton}"
                         />
                 
@@ -49,7 +49,7 @@
                         Text="Video"
                         Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Video}"
                         Command="{Binding SetCameraModeToVideoCommand}"
-                        BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
+                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
                         Style="{StaticResource NoMarginButton}"
                         IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />
@@ -59,7 +59,7 @@
                         Text="Intensity"
                         Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Intensity}"
                         Command="{Binding SetCameraModeToIntensityCommand}"
-                        BackgroundColor="{Binding CurrentCamera.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"
+                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"
                         Style="{StaticResource NoMarginButton}"
                         IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />

@@ -91,7 +91,9 @@ namespace Arqus
                 {
                     skipCounter++;
                     // REMOVED FOR DEBUG PURPOSE
+
                     CurrentCamera.UpdateSettings();
+                    SetCameraMode(CurrentCamera.Settings.Mode);
                 });
 
             MessagingCenter.Subscribe<CameraPage>(this,
@@ -196,7 +198,7 @@ namespace Arqus
             CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
-            SwitchDrawers(CurrentCamera.Mode);
+            SwitchDrawers(mode);
         }
         
         private void SendCameraSettingValue(string setting, double value)

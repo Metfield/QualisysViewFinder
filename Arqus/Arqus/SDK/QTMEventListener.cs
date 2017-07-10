@@ -45,10 +45,10 @@ namespace Arqus
             // For now just ignore one.. 
             //TODO: Fix this issue!
             bool ignoreNextPacket = false;
+            QTMEvent eventPacket;
 
             while (networkConnection.Protocol.IsConnected())
             {
-
                 PacketType packetType;
                 // Get Packet and don't skip events
                 networkConnection.Protocol.ReceiveRTPacket(out packetType, false);
@@ -56,8 +56,10 @@ namespace Arqus
                 // Check if this is an event packet
                 if (packetType == PacketType.PacketEvent)
                 {
+                    eventPacket = networkConnection.Protocol.GetRTPacket().GetEvent();
+
                     // Check if camera settings have changed
-                    if (networkConnection.Protocol.GetRTPacket().GetEvent() == QTMEvent.EventCameraSettingsChanged)
+                    if (eventPacket == QTMEvent.EventCameraSettingsChanged)
                     {
                         if (ignoreNextPacket)
                         {

@@ -303,7 +303,7 @@ namespace Arqus
 
                     connection.Connect(IPAddress, result.Text);
 
-                    if (!connection.TakeControl())
+                    if (!connection.TakeControl() && result.Text != "")
                     {
                         userDialogs.Toast(new ToastConfig("Incorrect Password"));
                         return;

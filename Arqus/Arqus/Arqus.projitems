@@ -1,130 +1,131 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
-    <HasSharedItems>true</HasSharedItems>
-    <SharedGUID>3988e928-8c20-495e-91d6-58c10739b4c8</SharedGUID>
-  </PropertyGroup>
-  <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Arqus</Import_RootNamespace>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)CameraProfile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)CameraProfiler.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\DoubleToRoundedDecimalConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\FlashTimeToPercentageConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\StringToBoolConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DemoMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\ThresholdConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DemoStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)LensApertureSnapper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml.cs">
-      <DependentUpon>AboutPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IOrientation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\MobileCenterService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\SettingsSlider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayoutManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CarouselScreenLayout.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\InverseBoolConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\Packet.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
-      <DependentUpon>CameraPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\LoadingSpinner.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml.cs">
-      <DependentUpon>ConnectionPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMNetworkConnection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml.cs">
-      <DependentUpon>QTMServerList.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\NodeExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Running.qd" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningGeneralSettings.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningImageSettings.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Pages\AboutPage\" />
-  </ItemGroup>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3988e928-8c20-495e-91d6-58c10739b4c8</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Arqus</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CameraProfile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CameraProfiler.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DoubleToRoundedDecimalConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\FlashTimeToPercentageConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\StringToBoolConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DemoMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ThresholdConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DemoStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LensApertureSnapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\TimecodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IOrientation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\MobileCenterService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\SettingsSlider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayoutManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CarouselScreenLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\InverseBoolConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\Packet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml.cs">
+      <DependentUpon>CameraPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\LoadingSpinner.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml.cs">
+      <DependentUpon>ConnectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPageViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\QTMSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTNetwork.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTPacket.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\RTProtocol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMNetworkConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml.cs">
+      <DependentUpon>QTMServerList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\NodeExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\ConnectionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\ConnectionPage\QTMServerList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)GettingStarted.Xamarin" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Running.qd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningGeneralSettings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)RunningImageSettings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Pages\AboutPage\" />
+  </ItemGroup>
 </Project>

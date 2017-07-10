@@ -200,36 +200,86 @@ namespace QTMRealTimeSDK
         }
 
         /// <summary>Packet received from QTM</summary>
-        protected RTPacket Packet { get { return mPacket; } }
+        protected RTPacket Packet
+        {
+            get { return mPacket; }
+        }
 
         private SettingsGeneral mGeneralSettings;
         /// <summary>General settings from QTM</summary>
-        public SettingsGeneral GeneralSettings { get { return mGeneralSettings; } }
+        public SettingsGeneral GeneralSettings
+        {
+            get { return mGeneralSettings; }
+            set
+            {
+                if (mGeneralSettings != value)
+                {
+                    mGeneralSettings = value;
+                }
+            }
+        }
 
         private Settings3D m3DSettings;
         /// <summary>3D settings from QTM</summary>
-        public Settings3D Settings3D { get { return m3DSettings; } }
+        public Settings3D Settings3D
+        {
+            get { return m3DSettings; }
+            set
+            {
+                if (m3DSettings != value)
+                {
+                    m3DSettings = value;
+                }
+            }
+        }
 
         private Settings6D m6DOFSettings;
         /// <summary>6DOF settings from QTM</summary>
-        public Settings6D Settings6DOF { get { return m6DOFSettings; } }
+        public Settings6D Settings6DOF
+        {
+            get { return m6DOFSettings; }
+            set
+            {
+                if (m6DOFSettings != value)
+                {
+                    m6DOFSettings = value;
+                }
+            }
+        }
 
         private SettingsAnalog mAnalogSettings;
         /// <summary>Analog settings from QTM</summary>
-        public SettingsAnalog AnalogSettings { get { return mAnalogSettings; } }
+        public SettingsAnalog AnalogSettings
+        {
+            get { return mAnalogSettings; }
+            set
+            {
+                if (mAnalogSettings != value)
+                {
+                    mAnalogSettings = value;
+                }
+            }
+        }
 
         private SettingsForce mForceSettings;
         /// <summary>Force settings from QTM</summary>
-        public SettingsForce ForceSettings { get { return mForceSettings; } }
+        public SettingsForce ForceSettings
+        {
+            get { return mForceSettings; }
+            set
+            {
+                if (mForceSettings != value)
+                {
+                    mForceSettings = value;
+                }
+            }
+        }
 
         private SettingsImage mImageSettings;
         /// <summary>Image settings from QTM</summary>
         public SettingsImage ImageSettings
         {
-            get
-            {
-                return mImageSettings;
-            }
+            get { return mImageSettings; }
             set
             {
                 if (mImageSettings != value)
@@ -421,20 +471,25 @@ namespace QTMRealTimeSDK
             return Connect(host.IpAddress, serverPortUDP, majorVersion, minorVersion, host.Port);
         }
 
+        public void ClearSettings()
+        {
+            m3DSettings = null;
+            m6DOFSettings = null;
+            mAnalogSettings = null;
+            mForceSettings = null;
+            mGazeVectorSettings = null;
+            mGeneralSettings = null;
+            mImageSettings = null;
+        }
+
         /// <summary>Disconnect from server</summary>
         public void Disconnect()
         {
             mBroadcastSocketCreated = false;
             mNetwork.Disconnect();
-
-            m3DSettings = null;
-            m6DOFSettings = null;
-            mAnalogSettings = null;
             mDiscoveryResponses.Clear();
-            mForceSettings = null;
-            mGazeVectorSettings = null;
-            mGeneralSettings = null;
-            mImageSettings = null;
+
+            ClearSettings();
         }
 
         /// <summary>Check if there is a tcp connection to the server available</summary>
@@ -502,6 +557,8 @@ namespace QTMRealTimeSDK
                     if (dataHeader == null || frameSize > data.Length)
                     {
                         //Array.Resize(ref data, frameSize);
+                                                
+                        GC.Collect();
                         data = new byte[frameSize];                        
                     }                   
 
@@ -682,7 +739,6 @@ namespace QTMRealTimeSDK
         /// <summary>Stream frames from QTM server</summary>
         /// <param name="streamRate">what rate server should stream at</param>
         /// <param name="streamValue">related to streamrate, not used if all frames are streamed</param>
-        /// <param name="streamAllComponents">If all component types should be streamed</param>
         /// <param name="components">List of all component types deisred to stream</param>
         /// <param name="port">if set, streaming will be done by UDP on this port. Has to be set if ip address is specified</param>
         /// <param name="ipAddress">if UDP streaming should occur to other ip address, if not set streaming occurs on same ip as command came from</param>
@@ -1031,6 +1087,33 @@ namespace QTMRealTimeSDK
             return false;
         }
 
+        public static string CreateSettingsXml<TSettings>(TSettings settings, out string error)
+        {
+            try
+            {
+                error = string.Empty;
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+                {
+                    OmitXmlDeclaration = true,
+                };
+                StringBuilder settingsOutput = new StringBuilder();
+                using (var writer = XmlWriter.Create(settingsOutput, xmlWriterSettings))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(TSettings));
+                    serializer.Serialize(writer, settings);
+                    var xmlSettings = "<QTM_Settings>";
+                    xmlSettings += settingsOutput.ToString();
+                    xmlSettings += "</QTM_Settings>";
+                    return xmlSettings;
+                }
+            }
+            catch (System.Exception e)
+            {
+                error = e.Message;
+            }
+            return string.Empty;
+        }
+
         #endregion
 
         #region Read settings internal methods
@@ -1215,11 +1298,6 @@ namespace QTMRealTimeSDK
             {
                 switch (type)
                 {
-                    case ComponentType.ComponentAll:
-                        if (componentTypes.Count > 1)
-                            throw new System.ArgumentException("Can't have multiple components, when one is ComponentType.ComponentAll");
-                        command += " All";
-                        break;
                     case ComponentType.Component3d:
                         command += " 3D";
                         break;

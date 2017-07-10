@@ -6,23 +6,23 @@
     
     <ContentPage.Content>
         <ScrollView>
-            <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" BackgroundColor="Black">
+            <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" Style="{StaticResource Background}">
 
                 <!--Temporary image-->
                 <Image Source="Drawable/Qualisys_Logga_NEG_black.png" HorizontalOptions="FillAndExpand" />
 
                 <Label TextColor="WhiteSmoke" Text="ArqusFinder" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
-                <Frame BackgroundColor="#5186B6" CornerRadius="10" Margin="20, 0, 20, 10">
+                <Frame  CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
                     <Label TextColor="White" Text="This application is intended to be used as an aid for setting up Qualisys motion capture systems. It is also an example of what developers can achieve with the use of Qualisys' Real-time SDK." />
                 </Frame>
 
                 <Label TextColor="WhiteSmoke" Text="Real-time SDK" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
-                <Frame BackgroundColor="#5186B6" CornerRadius="10" Margin="20, 0, 20, 10">
+                <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
                     <Label TextColor="White" Text="ArqusFinder uses the C# implementation of Qualisys' Real-time SDK. For more information regarding this and other implementations, head to http://www.qualisys.com/software/real-time-sdk/ "/>
                 </Frame>
 
                 <Label TextColor="WhiteSmoke" Text="Troubleshooting" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
-                <Frame BackgroundColor="#5186B6" CornerRadius="10" Margin="20, 0, 20, 10">
+                <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
                     <StackLayout>
                         <Label TextColor="White" Text="If you are experiencing connection problems, please consider the following: "/>
 
@@ -36,7 +36,7 @@
                 </Frame>
 
                 <Label TextColor="WhiteSmoke" Text="Gestures" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
-                <Frame BackgroundColor="#5186B6" CornerRadius="10" Margin="20, 0, 20, 10">
+                <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
                     <StackLayout>
                         <Label TextColor="White" Text="(Grid View)" FontAttributes="Italic" HorizontalOptions="Center"/>
 

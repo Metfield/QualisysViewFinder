@@ -8,6 +8,7 @@ using QTMRealTimeSDK;
 using QTMRealTimeSDK.Settings;
 
 using Prism.Mvvm;
+using System;
 
 namespace Arqus.DataModels
 {
@@ -253,6 +254,7 @@ namespace Arqus.DataModels
         {
             Screen = new CameraScreen(this, node);
         }
+        
     }
 }
 

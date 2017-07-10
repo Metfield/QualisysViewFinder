@@ -8,13 +8,13 @@
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
              prism:ViewModelLocator.AutowireViewModel="True"
              Title="Home Page"
-             NavigationPage.HasNavigationBar="False" >
+             NavigationPage.HasNavigationBar="False"
+             BackgroundImage="Drawable/arqus_background.jpg">
+
+    <StackLayout VerticalOptions="FillAndExpand" >
 
 
-    <StackLayout VerticalOptions="FillAndExpand" Style="{StaticResource Background}" >
-
-        <Image Source="Drawable/arqus_logo_medium.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
-        <Label Text="ARQUS" FontSize="Large" HorizontalOptions="Center" TextColor="Black" Margin="0, 0, 0, 10"/>
+        <Image Source="Drawable/arqus_logo.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
 
         <Grid   
             VerticalOptions="Start" 
@@ -29,8 +29,8 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
-            
+
+
             <ui:JiggleButton Text="Discover"
                     Grid.Row="0"
                     Grid.Column="0"
@@ -41,20 +41,21 @@
 
             <ui:JiggleButton Text="Manually"
                              Grid.Row="0"
-                            Grid.Column="1"
-                            HorizontalOptions="Start" 
-                            VerticalOptions="FillAndExpand"
+                             Grid.Column="1"
+                             HorizontalOptions="Start" 
+                             VerticalOptions="FillAndExpand"
                              Style="{StaticResource primaryButton}"
-                            Command="{Binding ConnectionModeManuallyCommand}"/>
+                             Command="{Binding ConnectionModeManuallyCommand}"/>
         </Grid>
 
         <Frame IsVisible="{Binding IsDiscovery}"
-                VerticalOptions="StartAndExpand"
-                HorizontalOptions="Center" 
-                WidthRequest="300"
-                Padding="0"
-                Margin="0,0,0,15" BackgroundColor="#424242">
-            
+               VerticalOptions="StartAndExpand"
+               HorizontalOptions="Center" 
+               WidthRequest="300"
+               Padding="0"
+               Margin="0,0,0,15" 
+               BackgroundColor="#3c4c70" >
+
             <local:QTMServerList x:Name="qtmListView" 
                                  HorizontalOptions="FillAndExpand"
                                  VerticalOptions="FillAndExpand"/>
@@ -78,8 +79,8 @@
 
             <Button HorizontalOptions="StartAndExpand"
                              Text="Demo Mode"
-                             BackgroundColor="#303030"
-                             TextColor="#1976D2"
+                             TextColor="{StaticResource primaryColor}"
+                             BackgroundColor="Transparent"
                              Command="{Binding ConnectionModeDemoCommand}">
                 <Button.Effects>
                     <local:FlatButtonEffect />
@@ -89,7 +90,8 @@
             <Button HorizontalOptions="EndAndExpand"                             
                              Image="drawable-hdpi/ic_info_outline_white_24dp.png" 
                              Command="{Binding OnAboutButtonPressedCommand}" 
-                             BackgroundColor="#303030" WidthRequest="60"
+                             BackgroundColor="Transparent" 
+                             WidthRequest="60"
                              BorderRadius="10">
                 <Button.Effects>
                     <local:FlatButtonEffect />
@@ -98,7 +100,8 @@
 
         </StackLayout>
     </StackLayout>
-   
+
+
 
 
 </ContentPage>

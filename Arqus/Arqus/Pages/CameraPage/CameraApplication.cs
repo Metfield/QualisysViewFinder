@@ -105,6 +105,8 @@ namespace Arqus
 
         protected override void OnDeleted()
         {
+            CameraStore.CurrentCamera.Deselect();
+
             cameraStreamService.Dispose();
             cameraStreamService = null;
 

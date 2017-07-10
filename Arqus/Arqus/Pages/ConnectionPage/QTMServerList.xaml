@@ -35,7 +35,6 @@
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Padding="5">
-
                             <Label Text="{Binding HostName}" />
                             <Label Text="{Binding Details}"
                                 FontSize="Micro" />

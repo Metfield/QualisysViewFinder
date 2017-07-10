@@ -134,7 +134,8 @@ namespace Arqus
         {
             await application.Exit();
             UrhoSurface.OnDestroy();
-            application = null;            
+            application = null;
+
 
             // NOTE: Check this when wokring demo mode is merged with this version
             //viewModel.Dispose();

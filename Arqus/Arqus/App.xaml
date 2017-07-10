@@ -10,6 +10,7 @@
 
             <Style x:Key="primaryButton" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="#2196F3" />
+                <Setter Property="TextColor" Value="#f1f3f8" />
             </Style>
             <!--Definition of the Color palette-->
 

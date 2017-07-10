@@ -63,9 +63,9 @@
             <converters:EqualityToBooleanConverter x:Key="EqualityToBooleanConverter" />
             <converters:StringToBoolConverter x:Key="StringToBoolConverter" />
             <converters:DataSourceConverter x:Key="DataSourceConverter" />
-            <converters:ThresholdConverter x:Key="ThresholdConverter" />
-            <converters:FlashTimeToPercentageConverter x:Key="FlashTimeToPercentageConverter" />
-
+            <converters:MarkerThresholdToPercentageConverter x:Key="MarkerThresholdToPercentageConverter" />
+            <converters:PrefixConverter x:Key="PrefixConverter" />
+            
         </ResourceDictionary>
     </prism:PrismApplication.Resources>
 

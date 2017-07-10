@@ -7,20 +7,20 @@ using Xamarin.Forms;
 
 namespace Arqus.Converters
 {
-    class FlashTimeToPercentageConverter : IValueConverter
+    class MarkerThresholdToPercentageConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
-                int flashtime = (int)value;
-                float flashtimeInPercentage = flashtime / 10;
+                int markerThreshold = (int)value;
+                float markerThresholdInPercentage = markerThreshold / 10;
 
-                return String.Format("{0}%", flashtimeInPercentage);
+                return String.Format("{0}%", markerThresholdInPercentage);
             }
             catch (InvalidCastException e)
             {
-                Debug.WriteLine("FlashTimeToPercentageConverter:", e.Message);
+                Debug.WriteLine("MarkerThresholdToPercentageConverter:", e.Message);
             }
 
             return "n/a";

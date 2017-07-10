@@ -241,6 +241,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FlatButton.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Notification.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

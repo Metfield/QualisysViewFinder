@@ -6,19 +6,16 @@ using Xamarin.Forms;
 
 namespace Arqus.Converters
 {
-    class ThresholdConverter : IValueConverter
+    class PrefixConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null)
-                return "N/A";
-
-            return ((float) value / 100).ToString();
+            return String.Format("{0} {1}", value, parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value;
+            throw new NotImplementedException();
         }
     }
 }

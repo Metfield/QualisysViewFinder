@@ -97,9 +97,9 @@
 
                     <!-- Marker-specific drawer -->
                     <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Marker Exposure" HorizontalOptions="Start"/>
-                            <Label Text="{Binding  CurrentCamera.Settings.MarkerExposure.Current}" 
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Text="Exposure &amp; Flashtime" HorizontalOptions="StartAndExpand"/>
+                            <Label Text="{Binding  CurrentCamera.Settings.MarkerExposure.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" 
                                    HorizontalOptions="End"/>
                         </StackLayout>
 
@@ -110,9 +110,9 @@
                                 Value="{Binding CurrentCamera.Settings.MarkerExposure.Current}" 
                                 />
 
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Marker Threshold"/>
-                            <Label Text="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" 
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Text="Marker Threshold" HorizontalOptions="StartAndExpand"/>
+                            <Label Text="{Binding CurrentCamera.Settings.MarkerThreshold.Current, Converter={StaticResource MarkerThresholdToPercentageConverter}}" 
                                    HorizontalOptions="End"/>
                         </StackLayout>
 
@@ -136,10 +136,10 @@
                         </segcon:SegmentedTabControl>
 
                         <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
-                        
-                            <StackLayout HorizontalOptions="Fill">
-                                <Label Text="Video Exposure"/>
-                                <Label Text="{Binding CurrentCamera.Settings.VideoExposure.Current}" HorizontalOptions="End"/>
+
+                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                                <Label Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
+                                <Label Text="{Binding CurrentCamera.Settings.VideoExposure.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
                             </StackLayout>
 
                             <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
@@ -148,9 +148,9 @@
                                     Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
                                     Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
 
-                            <StackLayout HorizontalOptions="Fill">
-                                <Label Text="Video Flash"/>
-                                <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current, Converter={StaticResource FlashTimeToPercentageConverter}}" HorizontalOptions="End"/>
+                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                                <Label Text="Video Flash" HorizontalOptions="StartAndExpand" />
+                                <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
                             </StackLayout>
 
                             <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
@@ -163,9 +163,9 @@
                         <StackLayout IsVisible="{Binding IsLensControlActive}">
                         
                         <!-- Automated lens control for Oqus 700+ cameras -->
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Lens Focus"/>
-                            <Label Text="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" 
+                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Text="Lens Focus" HorizontalOptions="StartAndExpand"/>
+                                <Label Text="{Binding CurrentCamera.Settings.LensControl.Focus.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='mm'}" 
                                    HorizontalOptions="End"/>
                         </StackLayout>
 
@@ -174,10 +174,10 @@
                                 Maximum="{Binding CurrentCamera.MaxFocus}"
                                 Minimum="{Binding CurrentCamera.Settings.LensControl.Focus.Min}"
                                 Value="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" />
-                        
-                        <StackLayout HorizontalOptions="Fill">
-                            <Label Text="Lens Aperture"/>
-                            <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value}" HorizontalOptions="End"/>
+
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
+                                <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value}" HorizontalOptions="End"/>
                         </StackLayout>
 
                         <Slider x:Name="lensApertureSlider"

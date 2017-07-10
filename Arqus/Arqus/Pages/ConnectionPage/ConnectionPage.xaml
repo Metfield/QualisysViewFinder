@@ -76,16 +76,24 @@
 
         <StackLayout VerticalOptions="EndAndExpand" Orientation="Horizontal">
 
-            <ui:JiggleButton HorizontalOptions="StartAndExpand"                            
+            <Button HorizontalOptions="StartAndExpand"                            
                              Text="Demo Mode"
                              BackgroundColor="#303030"                             
-                             Command="{Binding ConnectionModeDemoCommand}"/>
+                             Command="{Binding ConnectionModeDemoCommand}">
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
 
-            <ui:JiggleButton HorizontalOptions="EndAndExpand"                             
+            <Button HorizontalOptions="EndAndExpand"                             
                              Image="drawable-hdpi/ic_info_outline_white_24dp.png" 
                              Command="{Binding OnAboutButtonPressedCommand}" 
                              BackgroundColor="#303030" WidthRequest="60"
-                             BorderRadius="10"/>
+                             BorderRadius="10">
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
 
         </StackLayout>
     </StackLayout>

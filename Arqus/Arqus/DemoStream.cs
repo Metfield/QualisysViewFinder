@@ -26,7 +26,7 @@ namespace Arqus.Services
 
         CameraScreen cameraScreen;
 
-        protected override void RetrieveDataAsync() // Ignore packet
+        protected override void RetrieveDataAsync()
         {
             cameras = demoMode.frames[currentFrame];
             int id;

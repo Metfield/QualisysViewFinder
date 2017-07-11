@@ -305,11 +305,7 @@ namespace Arqus
 
                     if (!result.Ok)
                         return;
-
-                    // Show loading screen whilst connecting
-                    // This loading screen is disabled in the CameraPageViewModel constructor
-                    Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
-
+                    
                     // Connect to host
                     connection.Connect(IPAddress, result.Text);
 
@@ -323,6 +319,10 @@ namespace Arqus
                         return;
                     }
                 }
+
+                // Show loading screen whilst connecting
+                // This loading screen is disabled in the CameraPageViewModel constructor
+                Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
 
                 // Send connection instance to settings service
                 SettingsService.Initialize();

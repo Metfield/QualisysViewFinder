@@ -18,7 +18,14 @@ namespace Arqus
     /// </summary>
     class CameraStore : BindableBase
     {
-        public static Camera CurrentCamera;
+        private static Camera currentCamera;
+
+        public static Camera CurrentCamera
+        {
+            get { return currentCamera; }
+            set { currentCamera = value; }
+        }
+
         public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
@@ -91,6 +98,16 @@ namespace Arqus
             CurrentCamera.Deselect();
             CurrentCamera = Cameras[id];
             CurrentCamera.Select();
+        }
+
+        public static void RefreshSettings()
+        {
+            List<SettingsGeneralCameraSystem> settingsList = SettingsService.GetCameraSettings();
+
+            foreach(var settings in settingsList)
+            {
+                Cameras[settings.CameraId].UpdateSettings(settings);
+            }
         }
 
 

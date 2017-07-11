@@ -9,6 +9,7 @@ using QTMRealTimeSDK.Settings;
 
 using Prism.Mvvm;
 using System;
+using Xamarin.Forms;
 
 namespace Arqus.DataModels
 {
@@ -27,17 +28,12 @@ namespace Arqus.DataModels
 
         // public properties
         public ImageResolution ImageResolution { get; set; }
-        // TODO: See if there is a better way to combine the camera with the camera screen
-        public CameraScreen Parent { get; set; }
         public bool LensControlEnabled { get; private set; }
 
         public string Model { get; private set; }
         public CameraProfile Profile { get; set; }
             
         public int Orientation { get; private set; }
-
-        private CameraMode mode;
-        public CameraMode Mode { get { return mode; } set { SetProperty(ref mode, value); } }
 
         private SettingsGeneralCameraSystem settings;
         public SettingsGeneralCameraSystem Settings
@@ -52,8 +48,6 @@ namespace Arqus.DataModels
         public Camera(int id, SettingsGeneralCameraSystem settings, ImageResolution imageResolution)
         {
             ID = id;
-            // TODO: this is part of the settings
-            Mode = settings.Mode;
             Settings = settings;
             ImageResolution = imageResolution;
             Model = GetModelName(settings.Model);
@@ -66,32 +60,43 @@ namespace Arqus.DataModels
             // TODO: this should not have to be done in the constructor
             if (IsImageMode())
                 EnableImageMode();
-        }        
+        }
+
+        public void SetMode()
+        {
+            SetMode(Settings.Mode);
+        }
 
         /// <summary>
         /// Set the camera stream mode
         /// </summary>
         /// <param name="mode"></param>
-        public void SetMode(CameraMode mode)
+        public async void SetMode(CameraMode mode)
         {
-            // Update mode if not already running in that mode
-            if(Mode != mode)
+            if (SettingsService.SetCameraMode(ID, mode))
             {
-                if (SettingsService.SetCameraMode(ID, mode))
-                {
-                    Mode = mode;
-
-                    if (IsImageMode())
-                    {
-                        EnableImageMode();
-                    }
-
-                    MessagingService.Send(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + ID, Mode);
-
-                }
+                await Task.Delay(250);
+                UpdateSettings();
+                ApplyMode(mode);
             }
         }
-        
+
+        public void ApplyMode(CameraMode mode)
+        {
+            
+
+            if (Screen != null)
+            {
+                bool isImageMode = mode != CameraMode.ModeMarker;
+                if (isImageMode)
+                {
+                    EnableImageMode();
+                }
+
+                Screen.SetImageMode(isImageMode);
+            }
+        }
+
         /// <summary>
         /// Attempts to update settings of the camera by issuing a request to the QTM host
         /// </summary>
@@ -105,10 +110,14 @@ namespace Arqus.DataModels
         /// Update the settings of the camera if the QTM host updated the settings successfully
         /// </summary>
         /// <param name="settings"></param>
-        private void UpdateSettings(SettingsGeneralCameraSystem? settings)
+        public void UpdateSettings(SettingsGeneralCameraSystem? settings)
         {
             if (settings != null)
             {
+                // If th
+                if (settings.Value.Mode != Settings.Mode)
+                    ApplyMode(settings.Value.Mode);
+
                 Settings = settings.Value;
             }
         }
@@ -167,7 +176,7 @@ namespace Arqus.DataModels
         /// <returns>true if the camera is running in image mode</returns>
         public bool IsImageMode()
         {
-            return Mode != CameraMode.ModeMarker;
+            return Settings.Mode != CameraMode.ModeMarker;
         }
 
         // MaxFocus is a bound property by CameraPage.xaml

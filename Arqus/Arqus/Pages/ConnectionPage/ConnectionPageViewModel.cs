@@ -303,6 +303,11 @@ namespace Arqus
                     if (!result.Ok)
                         return;
 
+                    // Show loading screen whilst connecting
+                    // This loading screen is disabled in the CameraPageViewModel constructor
+                    Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
+
+                    // Connect to host
                     connection.Connect(IPAddress, result.Text);
 
                     if (!connection.TakeControl() && result.Text != "")
@@ -310,12 +315,11 @@ namespace Arqus
                         ToastAction toastAction = new ToastAction().SetText("Retry").SetAction(() => OnConnectionStarted());
                         ToastConfig toastConfig = new ToastConfig("Incorrect Password")
                             .SetAction(toastAction);
-
+                        
                         userDialogs.Toast(toastConfig);
                         return;
                     }
                 }
-
 
                 // Send connection instance to settings service
                 SettingsService.Initialize();
@@ -326,7 +330,6 @@ namespace Arqus
                 NavigationParameters navigationParams = new NavigationParameters();
                 navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
                 Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
-
             }
             catch (Exception e)
             {
@@ -335,7 +338,6 @@ namespace Arqus
 
                 return;
             }
-        
         }
 
         // Start app using demo mode

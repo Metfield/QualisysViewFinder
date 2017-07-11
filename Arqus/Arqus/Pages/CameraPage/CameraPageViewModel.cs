@@ -1,4 +1,5 @@
-﻿using Arqus.DataModels;
+﻿using Acr.UserDialogs;
+using Arqus.DataModels;
 using Arqus.Helpers;
 using Arqus.Service;
 using Arqus.Services;
@@ -40,15 +41,31 @@ namespace Arqus
 
         // Holds current title for camera page
         private string pageTitle;
+
+        // Used to dismiss loading screen
+        private IUserDialogs userDialogs;
         
-        public CameraPageViewModel(INavigationService navigationService)
+        public CameraPageViewModel(INavigationService navigationService, IUserDialogs userDialogs)
         {
             this.navigationService = navigationService;
+            this.userDialogs = userDialogs;
+
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
+
+            if (QTMNetworkConnection.IsSlave)
+            {
+                IsModeToolbarActive = false;
+                IsDrawerActive = false;
+            }
+            else
+            {
+                IsModeToolbarActive = true;
+                IsDrawerActive = true;
+            }
 
             HideBottomSheetCommand = new DelegateCommand(() => {
                 IsBottomSheetVisible = !isBottomSheetVisible;
@@ -56,22 +73,26 @@ namespace Arqus
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
-                string cameraScreenLayout;
                 // Hide/show drawer according to mode
                 // We don't want to show any drawers in grid mode
-                if (isGridLayoutActive)
+                if (IsGridLayoutActive)
                 {
-                    cameraScreenLayout = "carousel";
-                    IsGridLayoutActive = false;
-                    ShowDrawer();
+                    if(!QTMNetworkConnection.IsSlave)
+                    {
+                        IsGridLayoutActive = false;
+                        ShowDrawer();
+                    }
 
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel, payload: new { cameraScreenLayout });
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel);
                 }
                 else
                 {
-                    cameraScreenLayout = "grid";
-                    IsGridLayoutActive = true;
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid, payload: new { cameraScreenLayout });
+                    if(!QTMNetworkConnection.IsSlave)
+                    {
+                        IsGridLayoutActive = true;
+                    }
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
                 }
 
                 // Update the page title 
@@ -79,7 +100,7 @@ namespace Arqus
             });
 
             // We're starting with carousel mode
-            isGridLayoutActive = false;
+            IsGridLayoutActive = false;
 
             MessagingCenter.Subscribe<CarouselScreenLayout, int>(this,
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
@@ -90,10 +111,9 @@ namespace Arqus
                 (QTMEventListener sender) =>
                 {
                     skipCounter++;
-                    // REMOVED FOR DEBUG PURPOSE
-
-                    CurrentCamera.UpdateSettings();
-                    SetCameraMode(CurrentCamera.Settings.Mode);
+                    
+                    CameraStore.CurrentCamera.UpdateSettings();
+                    SetCameraMode(CameraStore.CurrentCamera.Settings.Mode);
                 });
 
             MessagingCenter.Subscribe<CameraPage>(this,
@@ -112,6 +132,9 @@ namespace Arqus
             IsLensControlActive = false;
 
             UpdatePageTitle();
+
+            // Dismiss loading screen once the page has finished loading
+            Task.Run(() => userDialogs.HideLoading());
         }
 
         public void SetCameraSetting(string setting, double value)
@@ -198,7 +221,8 @@ namespace Arqus
             CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
-            SwitchDrawers(mode);
+            if(!QTMNetworkConnection.IsSlave)
+                SwitchDrawers(mode);
         }
         
         private void SendCameraSettingValue(string setting, double value)
@@ -226,6 +250,24 @@ namespace Arqus
             }
         }
 
+        private bool isModeToolbarActive;
+
+        public bool IsModeToolbarActive
+        {
+            get { return isModeToolbarActive; }
+            set { isModeToolbarActive = value; }
+        }
+
+        private bool isDrawerActive;
+
+        public bool IsDrawerActive
+        {
+            get { return isDrawerActive; }
+            set { isDrawerActive = value; }
+        }
+
+
+
         private bool isGridLayoutActive;
 
         public bool IsGridLayoutActive
@@ -236,7 +278,10 @@ namespace Arqus
             }
             set
             {
-                SetProperty(ref isGridLayoutActive, value);
+                if (SetProperty(ref isGridLayoutActive, value))
+                {
+                    IsModeToolbarActive = false;
+                }
             }
         }
 

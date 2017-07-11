@@ -15,6 +15,8 @@ namespace Arqus
     {
         public static string Version { get; private set; }
 
+        public static bool IsMaster { get; set; }
+
         private static string ipAddress;
         private static string password;
 
@@ -102,11 +104,15 @@ namespace Arqus
                     return true;
                 }
 
+                IsMaster = false;
+
                 Debug.WriteLine("Error: " + response);
                 return false;
             }
 
             Master = Protocol;
+            IsMaster = true;
+
             hasControl = true;
 
             return true;

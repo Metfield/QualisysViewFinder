@@ -7,9 +7,8 @@
     <ContentPage.Content>
         <ScrollView>
             <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" Style="{StaticResource Background}">
-
-                <!--Temporary image-->
-                <Image Source="Drawable/Qualisys_Logga_NEG_black.png" HorizontalOptions="FillAndExpand" />
+                
+                <Image Source="Drawable/Qualisys_White_Transparency_2000x.png" Margin="20" HorizontalOptions="FillAndExpand" />
 
                 <Label TextColor="WhiteSmoke" Text="ArqusFinder" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
                 <Frame  CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">

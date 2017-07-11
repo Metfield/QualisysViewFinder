@@ -68,8 +68,10 @@ namespace Arqus
             ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
 
             OnAboutButtonPressedCommand = new DelegateCommand(() => OnAboutButtonPressed());
-        }
 
+            OnQualisysLinkTappedCommand = new DelegateCommand(() => Device.OpenUri(new Uri("http://www.qualisys.com/start/")));
+        }
+        
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
@@ -124,6 +126,7 @@ namespace Arqus
         public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
         public DelegateCommand ConnectionModeDemoCommand { private set; get; }
         public DelegateCommand OnAboutButtonPressedCommand { private set; get; }
+        public DelegateCommand OnQualisysLinkTappedCommand { private set; get; }
 
         private ConnectionMode currentConnectionMode;
 
@@ -255,7 +258,7 @@ namespace Arqus
         // Command button binding        
         public DelegateCommand ConnectCommand { private set;  get; }
         
-        private string ipAddress = "192.168.10.179";
+        private string ipAddress = "192.168.10.168";
 
         public string IPAddress
         {
@@ -343,6 +346,10 @@ namespace Arqus
         // Start app using demo mode
         void StartDemoMode()
         {
+            // Show loading screen whilst connecting
+            // This loading screen is disabled in the CameraPageViewModel constructor
+            Task.Run(() => userDialogs.ShowLoading("Loading demo mode..."));
+
             // Initialize mock general settings
             SettingsService.Initialize(true);
             CameraStore.GenerateCameras();
@@ -356,7 +363,7 @@ namespace Arqus
         // Navigate to AboutPage when "i" icon has been pressed
         void OnAboutButtonPressed()
         {
-            navigationService.NavigateAsync("AboutPage");
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("AboutPage"));
         }
     }      
 }

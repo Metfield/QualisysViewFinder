@@ -505,8 +505,7 @@ namespace QTMRealTimeSDK
         }
 
         // [Eman] - Memory patch
-        private byte[] dataHeader = new byte[RTProtocol.Constants.PACKET_HEADER_SIZE];
-        private byte[] data;
+        private byte[] data = new byte[RTProtocol.Constants.PACKET_HEADER_SIZE];        
         private Object receiveLock = new Object();
 
         public int ReceiveRTPacket(out PacketType packetType, bool skipEvents = true, int timeout = 500000)
@@ -522,7 +521,7 @@ namespace QTMRealTimeSDK
                 {
                     receivedTotal = 0;
 
-                    int received = mNetwork.Receive(ref dataHeader, 0, RTProtocol.Constants.PACKET_HEADER_SIZE, true, timeout);
+                    int received = mNetwork.Receive(ref data, 0, RTProtocol.Constants.PACKET_HEADER_SIZE, true, timeout);
                     if (received == 0)
                     {
                         return 0; // Receive timeout
@@ -546,24 +545,15 @@ namespace QTMRealTimeSDK
                     }
                     receivedTotal += received;
 
-                    frameSize = RTPacket.GetPacketSize(dataHeader);
-                    packetType = RTPacket.GetPacketType(dataHeader);
+                    frameSize = RTPacket.GetPacketSize(data);
+                    packetType = RTPacket.GetPacketType(data);
 
-                    // [Eman] - Better to re-use memory and keep the largest size
-                    // than to re-allocate it every time a packet gets received 
-                    if (data == null)
-                        data = new byte[frameSize];
-
-                    if (dataHeader == null || frameSize > data.Length)
+                    if (data == null || frameSize > data.Length)
                     {
-                        //Array.Resize(ref data, frameSize);
-                                                
-                        GC.Collect();
-                        data = new byte[frameSize];                        
-                    }                   
-
-                    // Copy original header to data array
-                    Array.Copy(dataHeader, 0, data, 0, dataHeader.Length);
+                        // Do some preventive additional allocation to reduce number of times allocation is needed
+                        var newSize = (int)(frameSize * 1.47);
+                        Array.Resize(ref data, newSize);
+                    }
 
                     // Receive more data until we have read the whole packet
                     while (receivedTotal < frameSize)

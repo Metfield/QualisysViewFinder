@@ -10,11 +10,10 @@
              Title="Home Page"
              NavigationPage.HasNavigationBar="False"
              BackgroundImage="Drawable/arqus_background.jpg">
-
+    
     <StackLayout VerticalOptions="FillAndExpand" >
 
-
-        <Image Source="Drawable/arqus_logo.png"  HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
+        <Image Source="Drawable/arqus_logo.png" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
 
         <Grid   
             VerticalOptions="Start" 
@@ -79,7 +78,7 @@
 
             <Button HorizontalOptions="StartAndExpand"
                              Text="Demo Mode"
-                             TextColor="{StaticResource primaryColor}"
+                             TextColor="White"
                              BackgroundColor="Transparent"
                              Command="{Binding ConnectionModeDemoCommand}">
                 <Button.Effects>
@@ -87,8 +86,17 @@
                 </Button.Effects>
             </Button>
 
-            <Button HorizontalOptions="EndAndExpand"                             
-                             Image="drawable-hdpi/ic_info_outline_white_24dp.png" 
+            <Image Source="Drawable/Qualisys_Home.png" HorizontalOptions="CenterAndExpand" HeightRequest="40" Scale="0.6" Margin="-90, 0, 0, 8"/>
+                <Button WidthRequest="145" Margin="-220, 0, 0, 0"  BackgroundColor="Transparent"
+                        Command="{Binding OnQualisysLinkTappedCommand}">
+                
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
+            
+            <Button HorizontalOptions="EndAndExpand"
+                             Image="ic_info_outline_white_24dp" 
                              Command="{Binding OnAboutButtonPressedCommand}" 
                              BackgroundColor="Transparent" 
                              WidthRequest="60"

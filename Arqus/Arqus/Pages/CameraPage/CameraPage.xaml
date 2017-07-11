@@ -66,25 +66,26 @@
             </Grid>
         </Frame>
 
-        <StackLayout VerticalOptions="FillAndExpand" InputTransparent="False" BackgroundColor="Transparent" Padding="0" >
+        <StackLayout VerticalOptions="FillAndExpand" BackgroundColor="Transparent" Padding="0" >
             <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
         </StackLayout>
 
-        <StackLayout IsVisible="{Binding IsDrawerActive}">
 
-            <StackLayout HorizontalOptions="End" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" 
+        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}" 
                      Margin="0, -35, 0, -10" WidthRequest="45" Opacity="0.8">
 
-                <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+            <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
                     BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_settings_white_24dp"
                     IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}"/>
 
-                <!--TODO: Show hiding button either here or inside drawer?-->
-                <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+            <!--TODO: Show hiding button either here or inside drawer?-->
+            <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
                     BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp" HeightRequest="35"
                     IsVisible="{Binding IsBottomSheetVisible}"/>
 
-            </StackLayout>
+        </StackLayout>
+
+        <StackLayout IsVisible="{Binding IsDrawerActive}">
 
             <!-- Drawers layout -->
             <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">

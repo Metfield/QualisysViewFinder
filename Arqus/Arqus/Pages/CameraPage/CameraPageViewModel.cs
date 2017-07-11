@@ -56,15 +56,15 @@ namespace Arqus
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
-            if (QTMNetworkConnection.IsSlave)
-            {
-                IsModeToolbarActive = false;
-                IsDrawerActive = false;
-            }
-            else
+            if (QTMNetworkConnection.IsMaster)
             {
                 IsModeToolbarActive = true;
                 IsDrawerActive = true;
+            }
+            else
+            {
+                IsModeToolbarActive = false;
+                IsDrawerActive = false;
             }
 
             HideBottomSheetCommand = new DelegateCommand(() => {
@@ -77,7 +77,7 @@ namespace Arqus
                 // We don't want to show any drawers in grid mode
                 if (IsGridLayoutActive)
                 {
-                    if(!QTMNetworkConnection.IsSlave)
+                    if(QTMNetworkConnection.IsMaster)
                     {
                         IsGridLayoutActive = false;
                         ShowDrawer();
@@ -87,7 +87,7 @@ namespace Arqus
                 }
                 else
                 {
-                    if(!QTMNetworkConnection.IsSlave)
+                    if(QTMNetworkConnection.IsMaster)
                     {
                         IsGridLayoutActive = true;
                     }
@@ -221,7 +221,7 @@ namespace Arqus
             CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
-            if(!QTMNetworkConnection.IsSlave)
+            if(QTMNetworkConnection.IsMaster)
                 SwitchDrawers(mode);
         }
         
@@ -255,7 +255,7 @@ namespace Arqus
         public bool IsModeToolbarActive
         {
             get { return isModeToolbarActive; }
-            set { isModeToolbarActive = value; }
+            set { SetProperty(ref isModeToolbarActive, value); }
         }
 
         private bool isDrawerActive;
@@ -263,10 +263,8 @@ namespace Arqus
         public bool IsDrawerActive
         {
             get { return isDrawerActive; }
-            set { isDrawerActive = value; }
+            set { SetProperty(ref isDrawerActive, value); }
         }
-
-
 
         private bool isGridLayoutActive;
 
@@ -280,7 +278,8 @@ namespace Arqus
             {
                 if (SetProperty(ref isGridLayoutActive, value))
                 {
-                    IsModeToolbarActive = false;
+                    IsModeToolbarActive = !isGridLayoutActive;
+                    IsDrawerActive = !isGridLayoutActive;
                 }
             }
         }

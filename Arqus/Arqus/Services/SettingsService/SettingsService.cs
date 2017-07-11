@@ -37,7 +37,7 @@ namespace Arqus
         {
             try
             {
-                return connection.SetCameraMode(id, CameraModeString[mode]);
+                return MasterDelegate(() => connection.SetCameraMode(id, CameraModeString[mode]));
             }
             catch (Exception e)
             {
@@ -46,20 +46,28 @@ namespace Arqus
             }
         }
 
+        public static bool MasterDelegate(Func<bool> fun)
+        {
+            if (QTMNetworkConnection.IsMaster)
+                return fun();
+            return true;
+        }
+
         public static bool DisableImageMode(int id)
         {
-            return connection.SetImageStream(id, false);
+            return MasterDelegate(() => connection.SetImageStream(id, false));
         }
 
 
         public static bool EnableImageMode(int id, bool enabled, int width, int height)
         {
-            return connection.SetImageStream(id, enabled, width, height);
+
+            return MasterDelegate(() => connection.SetImageStream(id, enabled, width, height));
         }
 
         public static bool SetImageResolution(int id, int width, int height)
         {
-            return connection.SetImageResolution(id, width, height);
+            return MasterDelegate(() => connection.SetImageResolution(id, width, height));
         }
 
         /// <summary>
@@ -119,28 +127,6 @@ namespace Arqus
 
                 // Store mock settings
                 return si.Cameras;
-            }
-        }
-
-        /// <summary>
-        /// Fetch camera settings every dt miliseconds 
-        /// 
-        /// NOTE!!!! This is currently NOT used as getting
-        /// General Settings is a problem right now.
-        /// 
-        /// TODO: Try when things are more stable
-        /// </summary>
-        private static async void RefreshSettings()
-        {
-            while (connection.Protocol.IsConnected())
-            {
-                // Can this even fail?
-                while (!connection.Protocol.GetGeneralSettings())
-                {
-                    Task.Delay(100);
-                }
-
-                generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
             }
         }
 
@@ -219,7 +205,7 @@ namespace Arqus
 
             try
             {
-                return connection.SetCameraSettings(id, settingsParameter, value);
+                return MasterDelegate(() => connection.SetCameraSettings(id, settingsParameter, value));
             }
             catch (Exception e)
             {
@@ -248,8 +234,9 @@ namespace Arqus
                 return false;
 
             try
-            {                
-                bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
+            {    
+                
+                bool response = await Task.Run(() => MasterDelegate(() => connection.SetLED(id, mode.ToString(), color.ToString())));
                 return false;
             }
             catch (Exception e)

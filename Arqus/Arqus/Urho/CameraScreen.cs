@@ -13,6 +13,8 @@ using Urho.Gui;
 using System;
 using ImageSharp;
 using static Arqus.CameraApplication;
+using System.Reflection;
+using System.IO;
 
 namespace Arqus.Visualization
 {
@@ -38,6 +40,10 @@ namespace Arqus.Visualization
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane defaultScreen;
+
+
+        private bool isDisabledStreamModePlaceholderActive = false;
+        private static Image<Rgba32> disabledStreamModePlaceholder;
 
         public double targetDistanceFromCamera;
         private int orientation;
@@ -91,7 +97,7 @@ namespace Arqus.Visualization
 
         public bool IsImageMode()
         {
-            return Camera.Mode != CameraMode.ModeMarker;
+            return Camera.Settings.Mode != CameraMode.ModeMarker;
         }
 
         // Intensity mode properties
@@ -118,19 +124,29 @@ namespace Arqus.Visualization
         public CameraScreen(DataModels.Camera camera, Node cameraNode)
         {
             Camera = camera;
-            Camera.Parent = this;
             this.cameraNode = cameraNode;
             urhoCamera = cameraNode.GetComponent<Urho.Camera>();
 
             orientation = camera.Orientation;
 
             ReceiveSceneUpdates = true;
-            //OnUpdateHandler += OnMarkerUpdate;
 
             // Set position in relation to the number of cameras that are already initialized
             // so the screens can be positioned accordingly
             position = screenCount + 1;
             screenCount++;
+
+            if(!QTMNetworkConnection.IsMaster)
+            {
+                // Load placeholder image to be displayed when image stream mode is unavailable
+                Assembly assembly = typeof(CameraScreen).Assembly;
+
+                using (Stream stream = assembly.GetManifestResourceStream("Arqus." + "disabled_stream_mode.jpg"))
+                {
+                    disabledStreamModePlaceholder = ImageSharp.Image.Load(stream);
+                }
+            }
+            
         }
         
         public static void ResetScreenCounter()
@@ -281,28 +297,39 @@ namespace Arqus.Visualization
             {
                 defaultScreen.Enabled = false;
             }
-
-            if (ImageData != null)
+            
+            if (!QTMNetworkConnection.IsMaster && 
+                !isDisabledStreamModePlaceholderActive &&
+                IsImageMode())
             {
-                try
-                {
-                    if (ImageData.Width != Camera.ImageResolution.Width || ImageData.Height != Camera.ImageResolution.Height)
-                    {
-                        ReinitializeImagePlane(ImageData.Width, ImageData.Height);
-                    }
+                LoadImage(disabledStreamModePlaceholder);
+            }
+            else if (ImageData != null)
+            {
+                LoadImage(ImageData);
+            }
+        }
 
-                    unsafe
-                    {
-                        // Don't allocate memory!!!
-                        fixed (Rgba32* data = &ImageData.Pixels.DangerousGetPinnableReference())
-                            texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, data);
-                    }
-                }
-                catch (Exception e)
+        private void LoadImage(Image<Rgba32> image)
+        {
+            try
+            {
+                if (image.Width != Camera.ImageResolution.Width || image.Height != Camera.ImageResolution.Height)
                 {
-                    Debug.WriteLine(e);
-                    Debugger.Break();
+                    ReinitializeImagePlane(image.Width, image.Height);
                 }
+
+                unsafe
+                {
+                    // Don't allocate memory!!!
+                    fixed (Rgba32* data = &image.Pixels.DangerousGetPinnableReference())
+                        texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, data);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                Debugger.Break();
             }
         }
 

@@ -189,10 +189,10 @@ namespace Arqus.Visualization
                         eventArgs.DY,
                         0.005f,
                         true,
-                        CameraStore.CurrentCamera.Parent.Height / 2,
-                        -CameraStore.CurrentCamera.Parent.Height / 2,
-                        CameraStore.CurrentCamera.Parent.Width / 2,
-                        -CameraStore.CurrentCamera.Parent.Width / 2);
+                        CameraStore.CurrentCamera.Screen.Height / 2,
+                        -CameraStore.CurrentCamera.Screen.Height / 2,
+                        CameraStore.CurrentCamera.Screen.Width / 2,
+                        -CameraStore.CurrentCamera.Screen.Width / 2);
                 }
 
             }

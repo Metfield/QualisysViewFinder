@@ -130,4 +130,7 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Pages\AboutPage\" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)disabled_stream_mode.jpg" />
+  </ItemGroup>
 </Project>

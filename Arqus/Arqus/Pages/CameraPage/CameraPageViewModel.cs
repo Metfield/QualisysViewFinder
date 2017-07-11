@@ -44,7 +44,9 @@ namespace Arqus
 
         // Used to dismiss loading screen
         private IUserDialogs userDialogs;
-        
+
+        private CameraMode cameraMode;
+
         public CameraPageViewModel(INavigationService navigationService, IUserDialogs userDialogs)
         {
             this.navigationService = navigationService;
@@ -111,9 +113,13 @@ namespace Arqus
                 (QTMEventListener sender) =>
                 {
                     skipCounter++;
-                    
-                    CameraStore.CurrentCamera.UpdateSettings();
-                    SetCameraMode(CameraStore.CurrentCamera.Settings.Mode);
+
+                    CameraStore.RefreshSettings();
+                    CurrentCamera = CameraStore.CurrentCamera;
+
+                    if (cameraMode != CurrentCamera.Settings.Mode)
+                        SetCameraMode(CurrentCamera.Settings.Mode);
+                   
                 });
 
             MessagingCenter.Subscribe<CameraPage>(this,
@@ -126,7 +132,7 @@ namespace Arqus
             ApertureSnapMax = lensApertureSnapper.LookupTSize - 1;
 
             // Switch them drawers now
-            SwitchDrawers(CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Settings.Mode);
 
             // No Lens control UI when we start (if even available)
             IsLensControlActive = false;
@@ -209,7 +215,7 @@ namespace Arqus
             }
 
             // Switch drawer mode
-            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
+            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Settings.Mode));
 
             // Change camera page title
             UpdatePageTitle();
@@ -217,7 +223,7 @@ namespace Arqus
 
         private void SetCameraMode(CameraMode mode)
         {
-            // Set the mode            
+            cameraMode = mode;
             CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
@@ -339,7 +345,7 @@ namespace Arqus
         /// </summary>
         private void ShowDrawer()
         {
-            SwitchDrawers(CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Settings.Mode);
         }
 
         // Convenient variable to handle a camera's max aperture        

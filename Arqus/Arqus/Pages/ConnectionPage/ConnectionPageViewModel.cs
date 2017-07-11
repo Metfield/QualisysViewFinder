@@ -300,7 +300,7 @@ namespace Arqus
                     PromptResult result = await userDialogs
                         .PromptAsync(
                             new PromptConfig()
-                            .SetTitle("Please enter a password")
+                            .SetTitle("Please enter password (blank for slave mode)")
                             .SetOkText("Connect"));
 
                     if (!result.Ok)

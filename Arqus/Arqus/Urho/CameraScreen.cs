@@ -141,12 +141,15 @@ namespace Arqus.Visualization
                 // Load placeholder image to be displayed when image stream mode is unavailable
                 Assembly assembly = typeof(CameraScreen).Assembly;
 
-                using (Stream stream = assembly.GetManifestResourceStream("Arqus." + "disabled_stream_mode.jpg"))
+                // Run on separate task (don't slowdown exectution)
+                System.Threading.Tasks.Task.Run(() => 
                 {
-                    disabledStreamModePlaceholder = ImageSharp.Image.Load(stream);
-                }
-            }
-            
+                    using (Stream stream = assembly.GetManifestResourceStream("Arqus." + "disabled_stream_mode.jpg"))
+                    {
+                        disabledStreamModePlaceholder = ImageSharp.Image.Load(stream);
+                    }
+                });                
+            }            
         }
         
         public static void ResetScreenCounter()
@@ -277,7 +280,6 @@ namespace Arqus.Visualization
 
         private void SetMarkerMode()
         {
-            
             OnUpdateHandler = OnMarkerUpdate;
         }
         
@@ -312,6 +314,9 @@ namespace Arqus.Visualization
 
         private void LoadImage(Image<Rgba32> image)
         {
+            if (image == null)
+                return;
+
             try
             {
                 if (image.Width != Camera.ImageResolution.Width || image.Height != Camera.ImageResolution.Height)

@@ -31,7 +31,7 @@ namespace Arqus
         public void StartListening()
         {
             if (!networkConnection.Protocol.IsConnected())
-                networkConnection.Connect();
+                networkConnection.Connect(networkConnection.GetRandomPort());
 
             Task.Run(() => ListenToEvents());
         }

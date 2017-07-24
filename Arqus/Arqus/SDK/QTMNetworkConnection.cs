@@ -30,14 +30,7 @@ namespace Arqus
         public QTMNetworkConnection()
         {
             Protocol = new RTProtocol();
-            Connect();
-        }
-
-
-        public QTMNetworkConnection(int port)
-        {
-            Protocol = new RTProtocol();
-            Connect(port);
+            Connect(GetRandomPort());
         }
 
         /// <summary>
@@ -52,17 +45,15 @@ namespace Arqus
                 QTMNetworkConnection.password = password;
             }
             
-            return Connect();
-
+            return Connect(GetRandomPort());
         }
         
         /// <summary>
         /// Attempts to connect to a QTM host
         /// </summary>
         /// <returns>boolean indicating success or failure</returns>
-        public bool Connect(int port = -1)
+        public bool Connect(int port)
         {
-
             if(IsValidIPv4(ipAddress))
             {
                 hasControl = false;
@@ -73,11 +64,9 @@ namespace Arqus
                     Version = ver;
                     return true;
                 }
-
             }
 
             return false;
-
         }
 
         /// <summary>
@@ -189,7 +178,7 @@ namespace Arqus
 
         }
 
-        public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
+        public List<DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
             try
             {
@@ -357,6 +346,13 @@ namespace Arqus
         private bool IsImage(string mode)
         {
             return mode != "Marker";
+        }
+
+        // Used for UDP connection, gets random port from a pre-designated range
+        public int GetRandomPort()
+        {
+            Random rand = new Random();
+            return rand.Next(1024, 65534);
         }
         
         public void Dispose()

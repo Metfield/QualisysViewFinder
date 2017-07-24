@@ -56,7 +56,7 @@ namespace Arqus.Services
                             for(int i = 1; i <= CameraStore.Cameras.Count; i++)
                             {
                                 // Disable every camera but the current one
-                                if(CameraStore.Cameras[i].Settings.Mode != CameraMode.ModeMarker && CameraStore.Cameras[i].ID != CameraStore.CurrentCamera.ID)
+                                if(CameraStore.Cameras[i].Settings.Mode != QTMRealTimeSDK.Settings.CameraMode.ModeMarker && CameraStore.Cameras[i].ID != CameraStore.CurrentCamera.ID)
                                 {
                                     SettingsService.DisableImageMode(i);
                                 }

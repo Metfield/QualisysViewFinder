@@ -235,7 +235,7 @@ namespace Arqus
             return Task.Run(() =>{
                 // BUG: The application will crash upon a second refresh
                 // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-                List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
+                List<QTMRealTimeSDK.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
 
 
                 return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,

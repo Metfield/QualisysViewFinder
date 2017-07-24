@@ -81,7 +81,7 @@ namespace Arqus
             if (!demoMode) // Real-time
             {
                 //connection = new QTMNetworkConnection();
-                connection.Connect();
+                connection.Connect(connection.GetRandomPort());
 
                 // Get the first one manually and then let the auto-update run
                 connection.Protocol.GetGeneralSettings();

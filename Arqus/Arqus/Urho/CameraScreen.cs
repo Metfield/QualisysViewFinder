@@ -16,6 +16,8 @@ using static Arqus.CameraApplication;
 using System.Reflection;
 using System.IO;
 
+using QTMRealTimeSDK.Settings;
+
 namespace Arqus.Visualization
 {
 

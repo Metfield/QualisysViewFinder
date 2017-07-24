@@ -9,11 +9,11 @@
              prism:ViewModelLocator.AutowireViewModel="True"
              Title="Home Page"
              NavigationPage.HasNavigationBar="False"
-             BackgroundImage="Drawable/arqus_background.jpg">
+             BackgroundImage="arqus_background.jpg">
     
     <StackLayout VerticalOptions="FillAndExpand" >
 
-        <Image Source="Drawable/arqus_logo.png" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
+        <Image Source="arqus_logo.png" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
 
         <Grid   
             VerticalOptions="Start" 
@@ -86,7 +86,7 @@
                 </Button.Effects>
             </Button>
 
-            <Image Source="Drawable/Qualisys_Home.png" HorizontalOptions="CenterAndExpand" HeightRequest="40" Scale="0.6" Margin="-90, 0, 0, 8"/>
+            <Image Source="Qualisys_Home.png" HorizontalOptions="CenterAndExpand" HeightRequest="40" Scale="0.6" Margin="-90, 0, 0, 8"/>
                 <Button WidthRequest="145" Margin="-220, 0, 0, 0"  BackgroundColor="Transparent"
                         Command="{Binding OnQualisysLinkTappedCommand}">
                 

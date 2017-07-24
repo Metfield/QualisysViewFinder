@@ -70,8 +70,7 @@
             <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
         </StackLayout>
 
-
-        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}" 
+        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}"
                      Margin="0, -35, 0, -10" WidthRequest="45" Opacity="0.8">
 
             <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 

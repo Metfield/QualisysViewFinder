@@ -86,19 +86,22 @@ namespace Arqus
                     }
 
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel);
+
+                    // Update the page title 
+                    UpdatePageTitle(false);
                 }
                 else
                 {
-                    if(QTMNetworkConnection.IsMaster || IsDemoModeActive)
+                    if(QTMNetworkConnection.IsMaster)
                     {
                         IsGridLayoutActive = true;
                     }
 
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
-                }
 
-                // Update the page title 
-                UpdatePageTitle();
+                    // Update the page title 
+                    UpdatePageTitle(true);
+                }
             });
 
             // We're starting with carousel mode
@@ -137,7 +140,7 @@ namespace Arqus
             // No Lens control UI when we start (if even available)
             IsLensControlActive = false;
 
-            UpdatePageTitle();
+            UpdatePageTitle(IsGridLayoutActive);
 
             // Dismiss loading screen once the page has finished loading
             Task.Run(() => userDialogs.HideLoading());
@@ -218,7 +221,7 @@ namespace Arqus
             Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Settings.Mode));
 
             // Change camera page title
-            UpdatePageTitle();
+            UpdatePageTitle(IsGridLayoutActive);
         }
 
         private void SetCameraMode(CameraMode mode)
@@ -397,13 +400,13 @@ namespace Arqus
             private set { SetProperty(ref pageTitle, value); }
         }
 
-        private void UpdatePageTitle()
+        private void UpdatePageTitle(bool isGridLayout)
         {
             // Set page title
-            if (IsGridLayoutActive)
+            if (isGridLayout)
                 PageTitle = Constants.TITLE_GRIDVIEW;
             else
-                PageTitle = CurrentCamera.PageTitle;
+                PageTitle = CurrentCamera.PageTitle + (IsDemoModeActive ? "" : (QTMNetworkConnection.IsMaster ? "" : " (slave)"));
         }
 
         public void Dispose()

@@ -415,7 +415,7 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_intensity_grey_800_24dp.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\Drawable\arqus_background.jpg" />
+    <AndroidResource Include="Resources\drawable-nodpi\arqus_background.jpg" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\Drawable\arqus_logo.png" />
@@ -424,7 +424,7 @@
     <AndroidResource Include="Resources\drawable-nodpi\Qualisys_White_Transparency_2000x.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable-nodpi\Qualisys_Home.png" />
+    <AndroidResource Include="Resources\Drawable\Qualisys_Home.png" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-mdpi\ic_info_outline_white_24dp.png" />

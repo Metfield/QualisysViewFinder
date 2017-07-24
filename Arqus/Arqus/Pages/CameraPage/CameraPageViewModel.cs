@@ -89,7 +89,7 @@ namespace Arqus
                 }
                 else
                 {
-                    if(QTMNetworkConnection.IsMaster)
+                    if(QTMNetworkConnection.IsMaster || IsDemoModeActive)
                     {
                         IsGridLayoutActive = true;
                     }

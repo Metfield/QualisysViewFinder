@@ -10,8 +10,8 @@
              Title="{Binding PageTitle}">
     
     <ContentPage.ToolbarItems>
-       
-        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}">
+
+        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding ShowGridIconOnToolbar}">
             <ToolbarItem.Icon>
                 <OnPlatform x:TypeArguments="FileImageSource"
                                 Android="ic_grid_white_24dp"/>

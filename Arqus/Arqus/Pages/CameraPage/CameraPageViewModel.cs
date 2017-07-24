@@ -399,14 +399,28 @@ namespace Arqus
             get { return pageTitle; }
             private set { SetProperty(ref pageTitle, value); }
         }
+                
+        private bool showGridIconOnToolbar;
+
+        public bool ShowGridIconOnToolbar
+        {
+            get { return showGridIconOnToolbar; }
+            private set { SetProperty(ref showGridIconOnToolbar, value); }
+        }
 
         private void UpdatePageTitle(bool isGridLayout)
         {
             // Set page title
             if (isGridLayout)
+            {
                 PageTitle = Constants.TITLE_GRIDVIEW;
+                ShowGridIconOnToolbar = false;
+            }
             else
+            {
                 PageTitle = CurrentCamera.PageTitle + (IsDemoModeActive ? "" : (QTMNetworkConnection.IsMaster ? "" : " (slave)"));
+                ShowGridIconOnToolbar = true;
+            }
         }
 
         public void Dispose()

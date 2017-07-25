@@ -10,14 +10,7 @@
              Title="{Binding PageTitle}">
     
     <ContentPage.ToolbarItems>
-
-        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding ShowGridIconOnToolbar}">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource"
-                                Android="ic_grid_white_24dp"/>
-            </ToolbarItem.Icon>
-        </ui:BindableToolbarItem>
-
+        <ui:BindableToolbarItem Command="{Binding SetCameraScreenLayoutCommand}" IsVisible="{Binding ShowGridIconOnToolbar}" Icon="ic_grid_white_24dp" />
     </ContentPage.ToolbarItems>
 
     <StackLayout Margin="0" Style="{StaticResource Background}">
@@ -89,12 +82,12 @@
                      Margin="0, -35, 0, -10" WidthRequest="45" Opacity="0.8">
 
             <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
-                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_settings_white_24dp"
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="ic_settings_white_24dp"
                     IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}"/>
 
             <!--TODO: Show hiding button either here or inside drawer?-->
             <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
-                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp" HeightRequest="35"
+                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="ic_arrow_drop_down_white_24dp" HeightRequest="35"
                     IsVisible="{Binding IsBottomSheetVisible}"/>
 
         </StackLayout>

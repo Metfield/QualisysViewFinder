@@ -30,13 +30,11 @@ namespace Arqus
 
             Container.RegisterInstance<IUserDialogs>(UserDialogs.Instance);
         }
-
        
         protected override void OnStart()
         {
             base.OnStart();
             MobileCenterService.Init();
         }
-        
     }
 }

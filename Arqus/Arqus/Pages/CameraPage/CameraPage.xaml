@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Arqus"
              xmlns:ui="clr-namespace:Arqus.UI"
              xmlns:urho="clr-namespace:Urho.Forms;assembly=Urho.Forms"
              xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
@@ -18,14 +19,9 @@
         <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False">
 
             <ContentView.Margin>
-                <OnPlatform x:TypeArguments="Thickness">
-                    <OnPlatform.iOS>
-                        0, 12, 0, 5
-                    </OnPlatform.iOS>
-                    <OnPlatform.Android>
-                        0, 2, 0, -5
-                    </OnPlatform.Android>
-                </OnPlatform>
+                <OnPlatform x:TypeArguments="Thickness"
+                    iOS="0, 12, 0, 5"
+                    Android="0, 2, 0, -5" />
             </ContentView.Margin>
 
             <Grid VerticalOptions="End" Padding="0">
@@ -79,16 +75,30 @@
         </StackLayout>
 
         <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}"
-                     Margin="0, -35, 0, -10" WidthRequest="45" Opacity="0.8">
+                     Margin="0, -35, 0, -10" WidthRequest="45"  Style="{StaticResource Card}">
+            
+            <ContentView.Padding>
+                <OnPlatform x:TypeArguments="Thickness"
+                    iOS="0, 0, 10, 0"
+                    Android="0, 0, 0, 0" />
+            </ContentView.Padding>
 
             <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
-                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="ic_settings_white_24dp"
-                    IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}"/>
+                    Command="{Binding HideBottomSheetCommand}" Image="ic_settings_white_24dp" BackgroundColor="Transparent"
+                    IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}">
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
 
             <!--TODO: Show hiding button either here or inside drawer?-->
-            <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
-                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="ic_arrow_drop_down_white_24dp" HeightRequest="35"
-                    IsVisible="{Binding IsBottomSheetVisible}"/>
+            <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" BackgroundColor="Transparent"
+                    Command="{Binding HideBottomSheetCommand}" Image="ic_arrow_drop_down_white_24dp" HeightRequest="35"
+                    IsVisible="{Binding IsBottomSheetVisible}">
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
 
         </StackLayout>
 
@@ -108,21 +118,21 @@
                         <!-- Marker-specific drawer -->
                         <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
                             <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                <Label Text="Exposure &amp; Flashtime" HorizontalOptions="StartAndExpand"/>
-                                <Label Text="{Binding  CurrentCamera.Settings.MarkerExposure.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" 
+                                <Label Style="{StaticResource DrawerText}" Text="Exposure &amp; Flashtime" HorizontalOptions="StartAndExpand"/>
+                                <Label Style="{StaticResource DrawerText}" Text="{Binding  CurrentCamera.Settings.MarkerExposure.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" 
                                    HorizontalOptions="End"/>
                             </StackLayout>
 
                             <Slider x:Name="markerExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                 HorizontalOptions="Fill" 
-                                Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}" 
+                                Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}"
                                 Minimum="{Binding CurrentCamera.Settings.MarkerExposure.Min}"
                                 Value="{Binding CurrentCamera.Settings.MarkerExposure.Current}" 
                                 />
 
                             <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                <Label Text="Marker Threshold" HorizontalOptions="StartAndExpand"/>
-                                <Label Text="{Binding CurrentCamera.Settings.MarkerThreshold.Current, Converter={StaticResource MarkerThresholdToPercentageConverter}}" 
+                                <Label Style="{StaticResource DrawerText}" Text="Marker Threshold" HorizontalOptions="StartAndExpand" />
+                                <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.MarkerThreshold.Current, Converter={StaticResource MarkerThresholdToPercentageConverter}}" 
                                    HorizontalOptions="End"/>
                             </StackLayout>
 
@@ -148,8 +158,8 @@
                             <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
 
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
-                                    <Label Text="{Binding CurrentCamera.Settings.VideoExposure.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.VideoExposure.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
                                 </StackLayout>
 
                                 <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
@@ -159,8 +169,8 @@
                                     Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
 
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Text="Video Flash" HorizontalOptions="StartAndExpand" />
-                                    <Label Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="Video Flash" HorizontalOptions="StartAndExpand" />
+                                    <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.VideoFlashTime.Current, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
                                 </StackLayout>
 
                                 <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
@@ -174,8 +184,8 @@
 
                                 <!-- Automated lens control for Oqus 700+ cameras -->
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Text="Lens Focus" HorizontalOptions="StartAndExpand"/>
-                                    <Label Text="{Binding CurrentCamera.Settings.LensControl.Focus.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='mm'}" 
+                                    <Label Style="{StaticResource DrawerText}" Text="Lens Focus" HorizontalOptions="StartAndExpand"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.LensControl.Focus.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='mm'}" 
                                    HorizontalOptions="End"/>
                                 </StackLayout>
 
@@ -186,8 +196,8 @@
                                 Value="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" />
 
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
-                                    <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value}" HorizontalOptions="End"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value}" HorizontalOptions="End"/>
                                 </StackLayout>
 
                                 <Slider x:Name="lensApertureSlider"

@@ -22,7 +22,19 @@
 
     <StackLayout Margin="0" Style="{StaticResource Background}">
 
-        <Frame Style="{StaticResource AppBar}"  Margin="0,0,0,-5" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False">
+        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False">
+
+            <ContentView.Margin>
+                <OnPlatform x:TypeArguments="Thickness">
+                    <OnPlatform.iOS>
+                        0, 12, 0, 5
+                    </OnPlatform.iOS>
+                    <OnPlatform.Android>
+                        0, 2, 0, -5
+                    </OnPlatform.Android>
+                </OnPlatform>
+            </ContentView.Margin>
+
             <Grid VerticalOptions="End" Padding="0">
 
                 <Grid.RowDefinitions>
@@ -38,6 +50,7 @@
                 <Button Grid.Row="0"
                         Grid.Column="0"
                         Text="Marker"
+                        TextColor="White"
                         Image="ic_markers_white_24dp"
                         Command="{Binding SetCameraModeToMarkerCommand}"
                         BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
@@ -47,6 +60,7 @@
                 <Button Grid.Row="0"
                         Grid.Column="1"
                         Text="Video"
+                        TextColor="White"
                         Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Video}"
                         Command="{Binding SetCameraModeToVideoCommand}"
                         BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
@@ -57,6 +71,7 @@
                 <Button Grid.Row="0"
                         Grid.Column="2"
                         Text="Intensity"
+                        TextColor="White"
                         Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Intensity}"
                         Command="{Binding SetCameraModeToIntensityCommand}"
                         BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"

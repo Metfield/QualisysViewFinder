@@ -86,7 +86,7 @@
       <HintPath>..\..\packages\Glide.Xamarin.3.7.0\lib\Glide.dll</HintPath>
     </Reference>
     <Reference Include="ImageSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ImageSharp.1.0.0-alpha9-00169\lib\netstandard1.3\ImageSharp.dll</HintPath>
+      <HintPath>..\..\packages\ImageSharp.1.0.0-alpha9-00173\lib\netstandard1.3\ImageSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Azure.Mobile, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Azure.Mobile.0.9.2\lib\MonoAndroid403\Microsoft.Azure.Mobile.dll</HintPath>

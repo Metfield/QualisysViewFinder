@@ -52,6 +52,10 @@ namespace Arqus
             this.navigationService = navigationService;
             this.userDialogs = userDialogs;
 
+            // Start with a visible drawer
+            // Otherwise iOS will mess everything up..
+            IsBottomSheetVisible = true;
+
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));

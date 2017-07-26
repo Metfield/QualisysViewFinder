@@ -45,25 +45,25 @@
                         BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarker}"
                         Style="{StaticResource NoMarginButton}"
                         />
-                
+
                 <Button Grid.Row="0"
                         Grid.Column="1"
-                        Text="Video"
+                        Text="Intensity"
                         TextColor="White"
-                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Video}"
-                        Command="{Binding SetCameraModeToVideoCommand}"
-                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
+                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Intensity}"
+                        Command="{Binding SetCameraModeToIntensityCommand}"
+                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"
                         Style="{StaticResource NoMarginButton}"
                         IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />
 
                 <Button Grid.Row="0"
                         Grid.Column="2"
-                        Text="Intensity"
+                        Text="Video"
                         TextColor="White"
-                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Intensity}"
-                        Command="{Binding SetCameraModeToIntensityCommand}"
-                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeMarkerIntensity}"
+                        Image="{Binding IsDemoModeActive, Converter={StaticResource StringToBoolConverter}, ConverterParameter=Video}"
+                        Command="{Binding SetCameraModeToVideoCommand}"
+                        BackgroundColor="{Binding CurrentCamera.Settings.Mode, Converter={StaticResource EqualityToBooleanConverter}, ConverterParameter=ModeVideo}"
                         Style="{StaticResource NoMarginButton}"
                         IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                         />

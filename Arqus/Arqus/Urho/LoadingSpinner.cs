@@ -1,5 +1,4 @@
 ﻿using Arqus.Visualization;
-using ImageSharp;
 using System;
 using Urho;
 
@@ -11,7 +10,6 @@ namespace Arqus
     /// </summary>
     class LoadingSpinner
     {
-        private ImageFrame<Rgba32>[] backdropAnimation;
         private Node[] circles;
         private Node root;
         private float offset = 0;

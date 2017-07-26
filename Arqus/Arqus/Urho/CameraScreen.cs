@@ -11,7 +11,7 @@ using Arqus.Service;
 using System.Diagnostics;
 using Urho.Gui;
 using System;
-using ImageSharp;
+
 using static Arqus.CameraApplication;
 using System.Reflection;
 using System.IO;
@@ -45,7 +45,7 @@ namespace Arqus.Visualization
 
 
         private bool isDisabledStreamModePlaceholderActive = false;
-        private static Image<Rgba32> disabledStreamModePlaceholder;
+        private static byte[] disabledStreamModePlaceholder;
 
         public double targetDistanceFromCamera;
         private int orientation;
@@ -94,8 +94,6 @@ namespace Arqus.Visualization
                 return markerData;
             }
         }
-        
-
 
         public bool IsImageMode()
         {
@@ -105,9 +103,9 @@ namespace Arqus.Visualization
         // Intensity mode properties
         private Texture2D texture;
 
-        private ImageSharp.Image<Rgba32> imageData;
+        private byte[] imageData;
 
-        public ImageSharp.Image<Rgba32> ImageData
+        public byte[] ImageData
         {
             set
             {
@@ -146,12 +144,12 @@ namespace Arqus.Visualization
                 // Run on separate task (don't slowdown exectution)
                 System.Threading.Tasks.Task.Run(() => 
                 {
-                    using (Stream stream = assembly.GetManifestResourceStream("Arqus." + "disabled_stream_mode.jpg"))
+                    using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus." + "disabled_stream_mode.jpg"))
                     {
-                        disabledStreamModePlaceholder = ImageSharp.Image.Load(stream);
+                        disabledStreamModePlaceholder = SkiaSharp.SKBitmap.Decode(stream).Resize(new SkiaSharp.SKImageInfo(Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE), SkiaSharp.SKBitmapResizeMethod.Lanczos3).Bytes;
                     }
                 });                
-            }            
+            }
         }
         
         public static void ResetScreenCounter()
@@ -314,24 +312,14 @@ namespace Arqus.Visualization
             }
         }
 
-        private void LoadImage(Image<Rgba32> image)
+        private void LoadImage(byte[] image)
         {
             if (image == null)
                 return;
 
             try
             {
-                if (image.Width != Camera.ImageResolution.Width || image.Height != Camera.ImageResolution.Height)
-                {
-                    ReinitializeImagePlane(image.Width, image.Height);
-                }
-
-                unsafe
-                {
-                    // Don't allocate memory!!!
-                    fixed (Rgba32* data = &image.Pixels.DangerousGetPinnableReference())
-                        texture?.SetData(0, 0, 0, Camera.ImageResolution.Width, Camera.ImageResolution.Height, data);
-                }
+                texture?.SetData(0, 0, 0, Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, image);
             }
             catch (Exception e)
             {
@@ -339,19 +327,12 @@ namespace Arqus.Visualization
                 Debugger.Break();
             }
         }
-
-        private void ReinitializeImagePlane(int width, int height)
-        {
-            Camera.ImageResolution = new ImageResolution(width, height);
-            Camera.EnableImageMode();
-            SetImageTexture(width, height);
-        }
-
+        
         private void SetImageTexture(int width, int height)
         {
             texture = new Texture2D();
             texture.SetNumLevels(1);
-            texture.SetSize(Camera.ImageResolution.Width, Camera.ImageResolution.Height, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
+            texture.SetSize(Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
             Material.SetTexture(TextureUnit.Diffuse, texture);
             Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
             imageScreen.SetMaterial(Material);

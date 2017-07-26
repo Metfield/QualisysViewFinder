@@ -15,7 +15,7 @@ namespace Arqus.Services
     /// Description: It is meant to retrieve RT packets in a 
     /// consistent way    
     /// </summary>
-    abstract class Stream<TData> : IDisposable
+    abstract class Stream : IDisposable
     {
         private ComponentType type;
         protected bool streaming;

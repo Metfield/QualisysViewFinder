@@ -8,7 +8,7 @@ using Arqus.Visualization;
 
 namespace Arqus.Services
 {
-    class DemoStream : Stream<Camera>
+    class DemoStream : Stream
     {
         DemoMode demoMode;
         List<Camera> cameras;

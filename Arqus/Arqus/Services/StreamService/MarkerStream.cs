@@ -12,7 +12,7 @@ using Xamarin.Forms;
 
 namespace Arqus.Services
 {
-    class MarkerStream: Stream<Camera>
+    class MarkerStream: Stream
     {
         public MarkerStream(int frequency = 30) : base(ComponentType.Component2d, frequency, false){}
 

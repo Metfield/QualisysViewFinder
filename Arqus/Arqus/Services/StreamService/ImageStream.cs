@@ -1,26 +1,19 @@
 ﻿using Arqus.Helpers;
-using ImageSharp;
+
 using QTMRealTimeSDK.Data;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xamarin.Forms;
-using System.Drawing;
-using ImageSharp.Formats;
-using Arqus.Service;
 using System.Diagnostics;
-using Arqus.Visualization;
+
 using System.Collections.Generic;
+
+using SkiaSharp;
 
 namespace Arqus.Services
 {
-    class ImageStream : Stream<ImageSharp.PixelFormats.RgbaVector>
-    {        
+    class ImageStream : Stream
+    {
         public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency, false){ }
         
-        // Re-use Jpeg decoder for every frame
-        private JpegDecoder decoder = new JpegDecoder();
-
         // Used for task-workload leveling
         static bool isDecoding = false;
 
@@ -43,14 +36,18 @@ namespace Arqus.Services
             {
                 // Decode and load image
                 isDecoding = true;
-                    Image<Rgba32> imageData = ImageSharp.Image.Load(data[0].ImageData, decoder);
+
+                    // Load and decode image information, then resize it to a squared, power of 2 size
+                    SKBitmap bitmap = SKBitmap.Decode(data[0].ImageData).Resize(new SKImageInfo(
+                        Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE),
+                        SKBitmapResizeMethod.Lanczos3);
+
                 isDecoding = false;
 
-                // Set current camera's image data and ready it 
+                // Set current camera's image data and ready it
                 // to create a texture
                 if (CameraStore.CurrentCamera.Screen != null)
-                    CameraStore.CurrentCamera.Screen.ImageData = imageData;
-
+                    CameraStore.CurrentCamera.Screen.ImageData = bitmap.Bytes;
             }
             catch (Exception e)
             {

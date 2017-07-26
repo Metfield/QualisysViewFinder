@@ -38,5 +38,8 @@ namespace Arqus.Helpers
 
         // Page titles
         public const string TITLE_GRIDVIEW = "Select a camera";
+
+        // Texture size
+        public const int URHO_TEXTURE_SIZE = 512;
     }
 }

@@ -74,27 +74,18 @@
             <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
         </StackLayout>
 
-        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}"
+        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}" BackgroundColor="Transparent"
                      Margin="0, -35, 0, -10" WidthRequest="45"  Style="{StaticResource Card}">
             
             <ContentView.Padding>
                 <OnPlatform x:TypeArguments="Thickness"
-                    iOS="0, 0, 10, 0"
+                    iOS="0, 0, 10, 10"
                     Android="0, 0, 0, 0" />
             </ContentView.Padding>
 
             <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
-                    Command="{Binding HideBottomSheetCommand}" Image="ic_settings_white_24dp" BackgroundColor="Transparent"
+                    Command="{Binding ToggleBottomSheetCommand}" Image="ic_settings_white_24dp" BackgroundColor="Transparent"
                     IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}">
-                <Button.Effects>
-                    <local:FlatButtonEffect />
-                </Button.Effects>
-            </Button>
-
-            <!--TODO: Show hiding button either here or inside drawer?-->
-            <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" BackgroundColor="Transparent"
-                    Command="{Binding HideBottomSheetCommand}" Image="ic_arrow_drop_down_white_24dp" HeightRequest="35"
-                    IsVisible="{Binding IsBottomSheetVisible}">
                 <Button.Effects>
                     <local:FlatButtonEffect />
                 </Button.Effects>
@@ -105,7 +96,7 @@
         <StackLayout IsVisible="{Binding IsDrawerActive}">
 
             <!-- Drawers layout -->
-            <StackLayout IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
+            <StackLayout x:Name="bottomSheet" IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
 
                 <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
 
@@ -113,7 +104,7 @@
 
                         <!--TODO: Show hiding button either here or outside drawer?->
                     <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" IsEnabled="True" IsVisible="True" Margin="40, -20, 0, -10" WidthRequest="50" 
-                    BackgroundColor="#444444"  Command="{Binding HideBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp"/>-->
+                    BackgroundColor="#444444"  Command="{Binding ToggleBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp"/>-->
 
                         <!-- Marker-specific drawer -->
                         <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">

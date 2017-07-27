@@ -311,10 +311,16 @@ namespace Arqus
             // Get delta time
             float dt = Time.ElapsedTime - tapTimeStamp;
             
-            // If it is lesser than our tap margin, it is a tap
-            if (dt < tapTimeMargin && currentScreenLayout.GetType() == typeof(GridScreenLayout))
+            // If it is lesser than our tap margin, it is a tap!
+            if (dt < tapTimeMargin)
             {
-                CastTouchRay(eventArgs.X, eventArgs.Y);
+                // Notify CameraPageViewModel of a tap. This is used to hide
+                // the settings drawer
+                MessagingService.Send(this, MessageSubject.URHO_SURFACE_TAPPED);
+
+                // Are we in grid mode? Test for camera selection
+                if (currentScreenLayout.GetType() == typeof(GridScreenLayout))
+                    CastTouchRay(eventArgs.X, eventArgs.Y);
             }
         }    
     }

@@ -36,6 +36,9 @@ namespace Arqus
 
             // Subscribe to segmented control event
             segmentedControls.ItemTapped += OnSegmentedControlSelection;
+
+            // Set bottom sheet reference for animation purposes
+            viewModel.SetBottomSheetHandle(bottomSheet);
         }
         
         // Moved into a function to keep the constructor from getting bloated with code

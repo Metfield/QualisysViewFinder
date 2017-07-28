@@ -87,10 +87,8 @@ namespace Arqus
             // Update the application when a new screen layout is set in the view model
             MessagingService.Subscribe<CameraPageViewModel, ScreenLayoutType>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender, type) =>
             {
-                currentScreenLayout = screenLayout[type];
-
-                // Switch camera info display based on layout 
-                InvokeOnMain(() => ToggleCameraUIInfo(type));
+                // Switch to new screen layout
+                InvokeOnMainAsync(() => SwitchScreenLayout(type));
             });
         }
         
@@ -160,9 +158,7 @@ namespace Arqus
                 { ScreenLayoutType.Carousel, new CarouselScreenLayout(cameras.Count, camera)}
             };
 
-            currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
-            ToggleCameraUIInfo(ScreenLayoutType.Carousel);
-
+            SwitchScreenLayout(ScreenLayoutType.Carousel);
             currentScreenLayout.Select(CameraStore.CurrentCamera.ID);
         }
         
@@ -181,9 +177,8 @@ namespace Arqus
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
                 camera.Screen.Scale = 10;
                 screenNode.AddComponent(camera.Screen);
-            }            
+            }
         }
-
         
         int tapTouchID;
         float tapTimeStamp;
@@ -199,7 +194,6 @@ namespace Arqus
 
             currentScreenLayout.OnTouchBegan(eventArgs);
         }
-        
 
         // Called every frame
         protected override void OnUpdate(float timeStep)
@@ -249,6 +243,33 @@ namespace Arqus
             }
         }
 
+        // Switches screen layout from carousel to grid and viceversa
+        private void SwitchScreenLayout(ScreenLayoutType layoutType)
+        {
+            currentScreenLayout = screenLayout[layoutType];
+            ToggleCameraUIInfo(layoutType);
+
+            // Enable screen frames if going into grid mode
+            if (layoutType == ScreenLayoutType.Grid)
+            {
+                ToggleCameraScreenFrame(true);
+            }
+            else
+            {
+                ToggleCameraScreenFrame(false);
+            }
+        }
+
+        private void ToggleCameraScreenFrame(bool flag)
+        {
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
+            for (int i = 0; i < cameras.Count; i++)
+            {
+                cameras[i].Screen.ToggleFrame(flag);
+            }
+        }
+
         /// <summary>
         /// Casts camera ray from the viewport's coordinates
         /// </summary>
@@ -282,8 +303,7 @@ namespace Arqus
                     if (camera.Node.Position.Y != 0 || camera.Node.Position.X != 0)
                         Urho.Application.InvokeOnMain(() => camera.Node.SetPosition2D(0, 0));
 
-                    currentScreenLayout = screenLayout[ScreenLayoutType.Carousel];
-                    ToggleCameraUIInfo(ScreenLayoutType.Carousel);
+                    SwitchScreenLayout(ScreenLayoutType.Carousel);
                     currentScreenLayout.Select(cameraID);
 
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });

@@ -43,6 +43,7 @@ namespace Arqus.Visualization
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane defaultScreen;
 
+        private Node screenFrame;
 
         private bool isDisabledStreamModePlaceholderActive = false;
         private static byte[] disabledStreamModePlaceholder;
@@ -230,6 +231,9 @@ namespace Arqus.Visualization
 
             // Subscribe to messages
             SubscribeToDataEvents();
+
+            // Create frame
+            CreateFrame(screenNode, 0.04f);
         }
         
         public void SubscribeToDataEvents()
@@ -437,6 +441,114 @@ namespace Arqus.Visualization
                 // Attempting to access a node which is currently disabled? Either way,
                 // catch the little troll and all is well.
                 Debug.WriteLine("CameraScreen::ToggleUIInfo - " + e.Message);                
+            }
+        }
+
+        // Turn screen frame on or off
+        public void ToggleFrame(bool flag)
+        {
+            // Set both parent and children nodes
+            screenFrame.SetDeepEnabled(flag);
+        }        
+
+
+        // Creates nice frame around the screen
+        private void CreateFrame(Node node, float frameWidth)
+        {
+            float originX = node.Position.X - Width / 2;
+            float originY = Height / 2;
+
+            // Create frame node to hold all pieces
+            screenFrame = node.CreateChild("screenFrame");
+            screenFrame.Rotate(new Quaternion(0, 0, -orientation), TransformSpace.Local);
+            
+            // Get correct colors for shadows and lit frame areas
+            Urho.Color leftColor, topColor, rightColor, bottomColor;
+            GetFrameColors(out leftColor, out topColor, out rightColor, out bottomColor);
+
+            // Right frame
+            Node framePieceNode = screenFrame.CreateChild("FrameRight");
+
+            framePieceNode.Scale = new Vector3(frameWidth, 0, Height + frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(originX + Width,
+                                                 node.Position.Y,
+                                                 node.Position.Z);
+
+            Urho.Shapes.Plane framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(rightColor, true));
+
+            // Top frame
+            framePieceNode = screenFrame.CreateChild("FrameTop");
+
+            framePieceNode.Scale = new Vector3(Width + frameWidth, 0, frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(node.Position.X,
+                                                 originY,
+                                                 node.Position.Z);
+
+            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(topColor, true));
+
+            // Bottom frame
+            framePieceNode = screenFrame.CreateChild("FrameBottom");
+
+            framePieceNode.Scale = new Vector3(Width + frameWidth, 0, frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(node.Position.X,
+                                                 -originY,
+                                                 node.Position.Z);
+
+            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(bottomColor, true));
+
+            // Left frame
+            framePieceNode = screenFrame.CreateChild("FrameLeft");
+
+            framePieceNode.Scale = new Vector3(frameWidth, 0, Height + frameWidth);
+            framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
+            framePieceNode.Position = new Vector3(originX,
+                                                 node.Position.Y,
+                                                 node.Position.Z);
+
+            framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
+            framePiece.SetMaterial(Material.FromColor(leftColor, true));
+        }
+
+        // Imitates QTM's 3D frame colors on grid view
+        private void GetFrameColors(out Urho.Color leftColor, out Urho.Color topColor, out Urho.Color rightColor, out Urho.Color bottomColor)
+        {
+            // Colors follow QTM conventions
+            Urho.Color litFrame = Urho.Color.FromByteFormat(131, 131, 131, 255);
+            Urho.Color shadowFrame = Urho.Color.FromByteFormat(29, 29, 29, 255);
+
+            // Handle camera rotation in QTM
+            switch (orientation)
+            {
+                default:
+                    leftColor = shadowFrame;
+                    topColor = shadowFrame;
+                    rightColor = litFrame;
+                    bottomColor = litFrame;
+                    break;
+                case 90:
+                    leftColor = shadowFrame;
+                    topColor = litFrame;
+                    rightColor = litFrame;
+                    bottomColor = shadowFrame;
+                    break;
+                case 180:
+                    leftColor = litFrame;
+                    topColor = litFrame;
+                    rightColor = shadowFrame;
+                    bottomColor = shadowFrame;
+                    break;
+                case 270:
+                    leftColor = litFrame;
+                    topColor = shadowFrame;
+                    rightColor = shadowFrame;
+                    bottomColor = litFrame;
+                    break;
             }
         }
 

@@ -39,7 +39,6 @@ namespace Arqus.Visualization
         public float Min { get; set; }
         public override Camera Camera { get; }
         
-
         public CarouselScreenLayout(int itemCount, Camera camera)
         {
             // focus on the first position
@@ -84,7 +83,9 @@ namespace Arqus.Visualization
 
             Selection = id;
 
-            MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
+            // Only communicate camera selection when user is not scrolling
+            if (Offset == 0)
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
         }
         
         
@@ -218,7 +219,6 @@ namespace Arqus.Visualization
             }
             else
             {
-
                 int neighbour = (Selection + 1 > ItemCount) ? 1 : Selection + 1;
                 Select(neighbour);
             }
@@ -231,6 +231,10 @@ namespace Arqus.Visualization
 
         public override void OnTouchReleased(Input input, TouchEndEventArgs eventArgs)
         {
+            // Only communicate camera selection when user is not scrolling
+            if(Offset != 0)
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
+
             Offset = 0;
         }
     }

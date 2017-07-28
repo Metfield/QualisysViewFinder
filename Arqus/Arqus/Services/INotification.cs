@@ -6,6 +6,6 @@ namespace Arqus.Services
 {
     public interface INotification
     {
-        void Show(string message);
+        void Show(string messageTitle, string message);
     }
 }

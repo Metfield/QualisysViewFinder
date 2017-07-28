@@ -74,14 +74,14 @@ namespace Arqus
         /// Initializes settings service.
         /// </summary>
         /// <param name="demoMode">Initialize in demo mode (not real time)</param>
-        public static void Initialize(bool demoMode = false)
+        public static bool Initialize(bool demoMode = false)
         {
             isDemoModeActive = demoMode;
 
             if (!demoMode) // Real-time
             {
-                //connection = new QTMNetworkConnection();
-                connection.Connect(connection.GetRandomPort());
+                if (!connection.Connect(connection.GetRandomPort()))
+                    return false;
 
                 // Get the first one manually and then let the auto-update run
                 connection.Protocol.GetGeneralSettings();
@@ -96,6 +96,8 @@ namespace Arqus
                 if(imageCameras == null)
                     imageCameras = LoadImageSettings();               
             }
+
+            return true;
         }
 
         private static List<SettingsGeneralCameraSystem> LoadGeneralSettings()

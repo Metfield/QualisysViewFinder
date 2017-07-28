@@ -282,14 +282,12 @@ namespace Arqus
             try
             {
                 // Connect to IP
-
                 bool success = connection.Connect(IPAddress);
 
                 if (!success)
                 {
                     // There was an error with the connection
-                    //SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
-                    notificationService.Show("Attention: There was a connection error, please check IP address");
+                    notificationService.Show("Attention", "There was a connection error, please check IP address");
                     return;
                 }
                 else if(connection.HasPassword())
@@ -324,8 +322,27 @@ namespace Arqus
                 // This loading screen is disabled in the CameraPageViewModel constructor
                 Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
 
-                // Send connection instance to settings service
-                SettingsService.Initialize();
+                bool connectionSuccess = false;
+
+                try
+                {
+                    // Send connection instance to settings service
+                    connectionSuccess = SettingsService.Initialize();
+                }
+                catch(Exception e)
+                {
+                    Debug.Print("ConnectionPageViewModel::OnConnectionStarted Exception -> " + e.Message);
+                    Debugger.Break();
+                }
+                
+                if(!connectionSuccess)
+                {
+                    // There was a problem when attempting to establish the connection
+                    // Dismiss loading screen and get the hell out
+                    Task.Run(() => userDialogs.HideLoading());
+                    return;
+                }
+
                 CameraStore.GenerateCameras();
 
                 // Connection was successfull                
@@ -337,7 +354,7 @@ namespace Arqus
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notificationService.Show("Please make sure that QTM is up and running");
+                notificationService.Show("Attention", "Please make sure that QTM is up and running");
 
                 return;
             }

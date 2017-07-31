@@ -138,9 +138,9 @@
                         <!-- Video-specific drawer -->
                         <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
 
-                            <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" 
-                                                    BackgroundColor="Chocolate" TintColor="#FFC107" SelectedSegment="0" 
-                                                    IsVisible="{Binding CurrentCamera.LensControlEnabled}">
+                            <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" UnselectedSegmentTextColor="White" SelectedSegmentTextColor="White" 
+                                                    BackgroundColor="Chocolate" TintColor="{StaticResource highlightColor}" SelectedSegment="0" Padding="2"
+                                                    IsVisible="{Binding CurrentCamera.LensControlEnabled}" VerticalOptions="StartAndExpand" MinimumHeightRequest="100">
                                 <segcon:SegmentedTabControl.Children>
                                     <Label Text="Video Settings" />
                                     <Label Text="Lens Control" />

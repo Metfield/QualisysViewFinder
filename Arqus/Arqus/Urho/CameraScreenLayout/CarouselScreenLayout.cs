@@ -88,7 +88,6 @@ namespace Arqus.Visualization
                 MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
         }
         
-        
         public override void SetCameraScreenPosition(CameraScreen screen, DeviceOrientations orientation)
         {
             double x;

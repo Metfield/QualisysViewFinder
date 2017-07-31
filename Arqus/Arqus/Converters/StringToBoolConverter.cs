@@ -27,6 +27,13 @@ namespace Arqus.Converters
                         return Constants.MODEBAR_ICON_INTENSITY_DEMO;
                     else
                         return Constants.MODEBAR_ICON_INTENSITY_NORMAL;
+
+                case "Marker":
+
+                    if((bool) value)
+                        return Constants.MODEBAR_ICON_MARKER_NORMAL;
+                    else
+                        return Constants.MODEBAR_ICON_MARKER_GREY;
             }
 
             return value;

@@ -62,7 +62,7 @@ namespace Arqus
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
-            if (QTMNetworkConnection.IsMaster)
+            if (QTMNetworkConnection.IsMaster || IsDemoModeActive)
             {
                 IsModeToolbarActive = true;
                 IsDrawerActive = true;
@@ -275,7 +275,7 @@ namespace Arqus
             }
         }
 
-        private bool isModeToolbarActive;
+        private bool isModeToolbarActive = true;
 
         public bool IsModeToolbarActive
         {

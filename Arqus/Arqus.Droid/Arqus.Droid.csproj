@@ -454,6 +454,15 @@
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_arrow_drop_down_white_24dp.png" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\arqus_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\arqus_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\arqus_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <AndroidResource Include="Resources\drawable-mdpi\ic_markers_grey_800_24dp.png" />
   </ItemGroup>
   <ItemGroup>

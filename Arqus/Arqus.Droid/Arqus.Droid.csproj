@@ -453,6 +453,15 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\ic_arrow_drop_down_white_24dp.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-hdpi\arqus_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-mdpi\arqus_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable-xhdpi\arqus_icon.png" />
+  </ItemGroup>
   <Import Project="..\Arqus\Arqus.projitems" Label="Shared" Condition="Exists('..\Arqus\Arqus.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

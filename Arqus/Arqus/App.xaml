@@ -16,7 +16,9 @@
             <!--Definition of the Color palette-->
             <Color x:Key="primaryColor">#2196F3</Color>
 
-            <Style TargetType="NavigationPage">
+            <Color x:Key="highlightColor">#008CA0</Color>
+
+                <Style TargetType="NavigationPage">
                 <Setter Property="HasNavigationBar" Value="True" />
                 <Setter Property="BarTextColor" Value="White" />
                 <Setter Property="BarBackgroundColor" Value="#2196F3" />

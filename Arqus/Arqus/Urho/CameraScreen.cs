@@ -36,8 +36,11 @@ namespace Arqus.Visualization
         private Node backdropNode;
         private Node cameraNode;
 
-        private Node gridInfoLabel, detailInfoLabel;
-        private Text3D label;
+        private Node nodeGridTextLabel, nodeDetailTextLabel;
+        private Text3D textLabel;
+
+        private Node nodeTextMessage;
+        private Text3D textMessage;
 
         private Urho.Camera urhoCamera;
         private Urho.Shapes.Plane imageScreen;
@@ -197,34 +200,49 @@ namespace Arqus.Visualization
 
             // Set detail info label
             // TODO: Fix magic numbers
-            detailInfoLabel = screenNode.CreateChild();
-            label = detailInfoLabel.CreateComponent<Text3D>();
+            nodeDetailTextLabel = screenNode.CreateChild();
+            textLabel = nodeDetailTextLabel.CreateComponent<Text3D>();
             
             if(Camera.Orientation == 0)
-                detailInfoLabel.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 0.7f, -0.1f);
+                nodeDetailTextLabel.Position = new Vector3(-Width/2 + 0.2f, -Height/2 + 0.7f, -0.1f);
             else
-                detailInfoLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 0.7f, -0.1f);
+                nodeDetailTextLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 0.7f, -0.1f);
 
-            label.Text = Camera.ID.ToString();
-            label.SetFont(CoreAssets.Fonts.AnonymousPro, 55);
-            label.TextEffect = TextEffect.Stroke;
+            textLabel.Text = Camera.ID.ToString();
+            textLabel.SetFont(CoreAssets.Fonts.AnonymousPro, 55);
+            textLabel.TextEffect = TextEffect.Stroke;
 
             // Set grid view info label
-            gridInfoLabel = screenNode.CreateChild();
-            label = gridInfoLabel.CreateComponent<Text3D>();
+            nodeGridTextLabel = screenNode.CreateChild();
+            textLabel = nodeGridTextLabel.CreateComponent<Text3D>();
                         
             if (Camera.Orientation == 0)
-                gridInfoLabel.Position = new Vector3(-Width / 2 + 0.2f, -Height / 2 + 1f, -0.1f);
+                nodeGridTextLabel.Position = new Vector3(-Width / 2 + 0.2f, -Height / 2 + 1f, -0.1f);
             else
-                gridInfoLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 1f, -0.1f);
+                nodeGridTextLabel.Position = new Vector3(-Height / 2 + 0.2f, -Width / 2 + 1f, -0.1f);
 
-            label.Text = Camera.ID.ToString();
-            label.SetFont(CoreAssets.Fonts.AnonymousPro, 100);
-            label.TextEffect = TextEffect.Stroke;
+            textLabel.Text = Camera.ID.ToString();
+            textLabel.SetFont(CoreAssets.Fonts.AnonymousPro, 100);
+            textLabel.TextEffect = TextEffect.Stroke;
+
+            // Create a node and a text object to display messages centered in the camera screen
+            nodeTextMessage = screenNode.CreateChild();
+            textMessage = nodeTextMessage.CreateComponent<Text3D>();
+            textMessage.SetFont(CoreAssets.Fonts.AnonymousPro, 35);
+            textMessage.TextEffect = TextEffect.Stroke;
+            textMessage.Text = "Intensity/Video mode is disabled in slave mode";
+            
+            textMessage.VerticalAlignment = VerticalAlignment.Center;
+            textMessage.HorizontalAlignment = HorizontalAlignment.Center;
+            textMessage.TextAlignment = HorizontalAlignment.Center;
+            nodeTextMessage.Enabled = false;
+            nodeTextMessage.Position = new Vector3(0.0f, 0.0f, -0.1f);
+
+            //nodeTextMessage.SetPosition2D(new Vector2(-textMessage.Width/2, 0.0f));
 
             // Disable both label nodes at start
-            gridInfoLabel.Enabled = false;
-            detailInfoLabel.Enabled = false;
+            nodeGridTextLabel.Enabled = false;
+            nodeDetailTextLabel.Enabled = false;
 
             // Initialize current camera mode
             SetImageMode(Camera.IsImageMode());
@@ -308,10 +326,12 @@ namespace Arqus.Visualization
                 !isDisabledStreamModePlaceholderActive &&
                 IsImageMode())
             {
-                LoadImage(disabledStreamModePlaceholder);
+                nodeTextMessage.Enabled = true;
+                defaultScreen.Enabled = true;
             }
             else if (ImageData != null)
             {
+                nodeTextMessage.Enabled = false;
                 LoadImage(ImageData);
             }
         }
@@ -370,6 +390,8 @@ namespace Arqus.Visualization
 
         public void OnMarkerUpdate()
         {
+            nodeTextMessage.Enabled = false;
+
             if (loadingSpinner.Running)
             {
                 loadingSpinner.Stop();
@@ -422,13 +444,13 @@ namespace Arqus.Visualization
                 switch (layoutType)
                 {
                     case ScreenLayoutType.Carousel:
-                        gridInfoLabel.Enabled = false;
-                        detailInfoLabel.Enabled = true;
+                        nodeGridTextLabel.Enabled = false;
+                        nodeDetailTextLabel.Enabled = true;
                         break;
 
                     case ScreenLayoutType.Grid:
-                        gridInfoLabel.Enabled = true;
-                        detailInfoLabel.Enabled = false;
+                        nodeGridTextLabel.Enabled = true;
+                        nodeDetailTextLabel.Enabled = false;
                         break;
                 }
             }

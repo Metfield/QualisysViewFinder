@@ -15,7 +15,7 @@ namespace Arqus.Services
     /// Description: It is meant to retrieve RT packets in a 
     /// consistent way    
     /// </summary>
-    abstract class Stream<TData> : IDisposable
+    abstract class Stream : IDisposable
     {
         private ComponentType type;
         protected bool streaming;
@@ -25,6 +25,9 @@ namespace Arqus.Services
 
         // Variables to handle packets
         protected QTMNetworkConnection connection;
+
+        // This task handles do ContinuousStreaming loop
+        Task streamTask;
 
         protected Stream(ComponentType type, int frequency, bool demoMode)
         {
@@ -44,13 +47,30 @@ namespace Arqus.Services
 
                 if (!demoMode)
                 {
+                    // Start stream
                     if (connection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type))
-                        Task.Run(() => ContinuousStream());
+                    {
+                        // Disable other image-streaming cameras
+                        if(type == ComponentType.ComponentImage)
+                        {
+                            for(int i = 1; i <= CameraStore.Cameras.Count; i++)
+                            {
+                                // Disable every camera but the current one
+                                if(CameraStore.Cameras[i].Settings.Mode != QTMRealTimeSDK.Settings.CameraMode.ModeMarker && CameraStore.Cameras[i].ID != CameraStore.CurrentCamera.ID)
+                                {
+                                    SettingsService.DisableImageMode(i);
+                                }
+                            }
+                        }
+
+                        // Run continuous stream method
+                        streamTask = Task.Run(() => ContinuousStream());
+                    }
                 }
                 else
                 {
                     // TODO: Assuming DemoStream is going great!
-                    Task.Run(() => ContinuousStream());
+                    streamTask = Task.Run(() => ContinuousStream());
                 }
             }
             else
@@ -62,8 +82,8 @@ namespace Arqus.Services
         public void StopStream()
         {
             streaming = false;
-
-            if(!demoMode)
+            
+            if (!demoMode)
                 connection.Protocol.StreamFramesStop();
         }
         
@@ -73,10 +93,8 @@ namespace Arqus.Services
         /// with the QTM server. If it manages to process packets faster that expected
         /// it will wait.
         /// </summary>
-        protected void ContinuousStream()
+        protected async void ContinuousStream()
         {
-            long then = DateTime.Now.Ticks, now;
-
             while(streaming)
             {
                 try
@@ -88,26 +106,24 @@ namespace Arqus.Services
                         // Make sure this is a data packet
                         if (packetType == PacketType.PacketData)
                         {
-                            RetrieveDataAsync(connection.Protocol.GetRTPacket());
+                            // IMPORTANT: Video stream needs to run as an asynchronous task in 
+                            // order to work properly
+                            
+                            Task.Run(() => RetrieveDataAsync());
                         }
                     }
                     else
                     {
-                        now = DateTime.Now.Ticks;
-
-                        // Task.Delay causes some overhead and slows down
-                        // execution a bit. This solution will work at different
-                        // speeds depending on cpu. Find cross-platform way of 
-                        // getting clock speed
-                        if (now - then > frequency * 500)
-                        {                            
-                            // We don't need a packet for demo mode
-                            RetrieveDataAsync(null);
-                            then = now;
-                        }                        
+                        // We don't need a packet for demo mode
+                        // IMPORTANT: Demo mode will crash application after ~10 seconds
+                        // if RetreiveDataAsync is not called on the main thread
+                        Urho.Application.InvokeOnMainAsync(() => RetrieveDataAsync());
 
                         // Sleep thread to match desired frequency
-                        //await Task.Delay(160 / frequency);                        
+                        // NOTE: Task.Delay was causing some overhead and slowed down
+                        // the execution quite noticeably. It seems to be working properly
+                        // now, but if for some demo stream becomes slow again. CHECK HERE!
+                        await Task.Delay(160 / frequency);
                     }
                 }
                 catch (Exception e)
@@ -118,7 +134,7 @@ namespace Arqus.Services
             }
         }
         
-        protected abstract void RetrieveDataAsync(RTPacket packet);
+        protected abstract void RetrieveDataAsync();
         
         public void Dispose()
         {

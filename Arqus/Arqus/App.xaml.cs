@@ -6,6 +6,7 @@ using Microsoft.Practices.Unity;
 using System.Diagnostics;
 using Arqus.Services.MobileCenterService;
 using Arqus.Service;
+using Acr.UserDialogs;
 
 namespace Arqus
 {
@@ -25,15 +26,15 @@ namespace Arqus
             Container.RegisterTypeForNavigation<NavigationPage>();
             Container.RegisterTypeForNavigation<ConnectionPage>();
             Container.RegisterTypeForNavigation<CameraPage>();
-            Container.RegisterTypeForNavigation<GridPage>();
-        }
+            Container.RegisterTypeForNavigation<AboutPage>();
 
+            Container.RegisterInstance<IUserDialogs>(UserDialogs.Instance);
+        }
        
         protected override void OnStart()
         {
             base.OnStart();
             MobileCenterService.Init();
         }
-        
     }
 }

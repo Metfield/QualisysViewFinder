@@ -21,7 +21,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>10.1</string>
+	<string>8.0</string>
 	<key>CFBundleDisplayName</key>
 	<string>Arqus</string>
 	<key>CFBundleIdentifier</key>
@@ -31,6 +31,7 @@
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
+		<string>Icon-60@3x.png</string>
 		<string>Icon-76.png</string>
 		<string>Icon-76@2x.png</string>
 		<string>Default.png</string>
@@ -40,12 +41,14 @@
 		<string>Default-Portrait@2x.png</string>
 		<string>Icon-Small-40.png</string>
 		<string>Icon-Small-40@2x.png</string>
+		<string>Icon-Small-40@3x.png</string>
 		<string>Icon-Small.png</string>
 		<string>Icon-Small@2x.png</string>
+		<string>Icon-Small@3x.png</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen.storyboard</string>
 	<key>CFBundleShortVersionString</key>
-	<string></string>
+	<string>1</string>
 </dict>
 </plist>

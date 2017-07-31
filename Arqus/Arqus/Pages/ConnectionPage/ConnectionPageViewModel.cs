@@ -20,6 +20,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.Reflection;
 using QTMRealTimeSDK.Settings;
+using Acr.UserDialogs;
 
 namespace Arqus
 {
@@ -33,34 +34,44 @@ namespace Arqus
         }
         
         private QTMNetworkConnection connection;
-
+        
+        private IUserDialogs userDialogs;
         private IUnityContainer container;
         private INavigationService navigationService;
         private INotification notificationService;
 
-        private NavigationParameters navigationParams;       
-
         public ConnectionPageViewModel(
             INavigationService navigationService, 
             IUnityContainer container, 
-            INotification notifaction)
+            INotification notification,
+            IUserDialogs userDialogs)
         {
+            this.userDialogs = userDialogs;
             this.container = container;
             this.navigationService = navigationService;
-            this.notificationService = notifaction;
+            this.notificationService = notification;
 
             connection = new QTMNetworkConnection();
             CurrentConnectionMode = ConnectionMode.NONE;
 
             RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
-            
-            ConnectionModeDiscoveryCommand = new DelegateCommand(() => { IsDiscovery = true; }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
+
+
+            ConnectionModeDiscoveryCommand = new DelegateCommand(() => {
+                LoadQTMServers();
+                IsDiscovery = true;
+            }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
+
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
             ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 
             ConnectCommand = new DelegateCommand(() => Task.Run(() => OnConnectionStarted()));
-        }
 
+            OnAboutButtonPressedCommand = new DelegateCommand(() => OnAboutButtonPressed());
+
+            OnQualisysLinkTappedCommand = new DelegateCommand(() => Device.OpenUri(new Uri("http://www.qualisys.com/start/")));
+        }
+        
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
@@ -81,9 +92,8 @@ namespace Arqus
 
                     // Make sure everything is clean
                     SettingsService.Clean();
-                    CameraStore.Clean();
 
-                    GC.Collect();
+                    //GC.Collect();
                 }
             }
             catch (Exception e)
@@ -105,6 +115,7 @@ namespace Arqus
                 {
                     IPAddress = selectedServer.IPAddress;
                     OnConnectionStarted();
+                    selectedServer = null;
                 }
             }
             get { return selectedServer; }
@@ -114,6 +125,8 @@ namespace Arqus
         public DelegateCommand ConnectionModeDiscoveryCommand { private set; get; }
         public DelegateCommand ConnectionModeManuallyCommand { private set; get; }
         public DelegateCommand ConnectionModeDemoCommand { private set; get; }
+        public DelegateCommand OnAboutButtonPressedCommand { private set; get; }
+        public DelegateCommand OnQualisysLinkTappedCommand { private set; get; }
 
         private ConnectionMode currentConnectionMode;
 
@@ -222,7 +235,7 @@ namespace Arqus
             return Task.Run(() =>{
                 // BUG: The application will crash upon a second refresh
                 // JNI ERROR (app bug): attempt to use stale local reference 0x100019 (should be 0x200019)
-                List<QTMRealTimeSDK.RTProtocol.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
+                List<QTMRealTimeSDK.DiscoveryResponse> DiscoveryResponse = connection.DiscoverQTMServers();
 
 
                 return DiscoveryResponse.Select(server => new QTMServer(server.IpAddress,
@@ -245,7 +258,7 @@ namespace Arqus
         // Command button binding        
         public DelegateCommand ConnectCommand { private set;  get; }
         
-        private string ipAddress = "192.168.10.179";
+        private string ipAddress = "192.168.10.168";
 
         public string IPAddress
         {
@@ -264,43 +277,96 @@ namespace Arqus
         /// <summary>
         /// Callback method for starting connection
         /// </summary>
-        void OnConnectionStarted()
+        async void OnConnectionStarted()
         {
             try
             {
                 // Connect to IP
-                bool success = connection.Connect(IPAddress, Password);
+                bool success = connection.Connect(IPAddress);
 
                 if (!success)
                 {
                     // There was an error with the connection
-                    //SharedProjects.Notification.Show("Attention", "There was a connection error, please check IP and pass");
-                    notificationService.Show("Attention: There was a connection error, please check IP and pass");
+                    notificationService.Show("Attention", "There was a connection error, please check IP address");
                     return;
                 }
+                else if(connection.HasPassword())
+                {
+                    // NOTE: A new propmt configuration has to be created everytime we run it
+                    // if we do not do this the acr library will add an action to it and since
+                    // it is async it does not expect that and will thus throw an error
+                    PromptResult result = await userDialogs
+                        .PromptAsync(
+                            new PromptConfig()
+                            .SetTitle("Please enter password (blank for slave mode)")
+                            .SetOkText("Connect"));
+
+                    if (!result.Ok)
+                        return;
+                    
+                    // Connect to host
+                    connection.Connect(IPAddress, result.Text);
+
+                    if (!connection.TakeControl() && result.Text != "")
+                    {
+                        ToastAction toastAction = new ToastAction().SetText("Retry").SetAction(() => OnConnectionStarted());
+                        ToastConfig toastConfig = new ToastConfig("Incorrect Password")
+                            .SetAction(toastAction);
+                        
+                        userDialogs.Toast(toastConfig);
+                        return;
+                    }
+                }
+
+                // Show loading screen whilst connecting
+                // This loading screen is disabled in the CameraPageViewModel constructor
+                Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
+
+                bool connectionSuccess = false;
+
+                try
+                {
+                    // Send connection instance to settings service
+                    connectionSuccess = SettingsService.Initialize();
+                }
+                catch(Exception e)
+                {
+                    Debug.Print("ConnectionPageViewModel::OnConnectionStarted Exception -> " + e.Message);
+                    Debugger.Break();
+                }
+                
+                if(!connectionSuccess)
+                {
+                    // There was a problem when attempting to establish the connection
+                    // Dismiss loading screen and get the hell out
+                    Task.Run(() => userDialogs.HideLoading());
+                    return;
+                }
+
+                CameraStore.GenerateCameras();
+
+                // Connection was successfull                
+                // Navigate to camera page
+                NavigationParameters navigationParams = new NavigationParameters();
+                navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
+                Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notificationService.Show("Please make sure that QTM is up and running");
+                notificationService.Show("Attention", "Please make sure that QTM is up and running");
 
                 return;
             }
-           
-            // Send connection instance to settings service
-            SettingsService.Initialize();                
-            CameraStore.GenerateCameras();
-
-            // Connection was successfull                
-            // Navigate to camera page
-            NavigationParameters navigationParams = new NavigationParameters();
-            navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, false);
-            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));           
         }
 
         // Start app using demo mode
         void StartDemoMode()
         {
+            // Show loading screen whilst connecting
+            // This loading screen is disabled in the CameraPageViewModel constructor
+            Task.Run(() => userDialogs.ShowLoading("Loading demo mode..."));
+
             // Initialize mock general settings
             SettingsService.Initialize(true);
             CameraStore.GenerateCameras();
@@ -309,6 +375,12 @@ namespace Arqus
             NavigationParameters navigationParams = new NavigationParameters();
             navigationParams.Add(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING, true);
             Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("CameraPage", navigationParams));
+        }
+
+        // Navigate to AboutPage when "i" icon has been pressed
+        void OnAboutButtonPressed()
+        {
+            Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("AboutPage"));
         }
     }      
 }

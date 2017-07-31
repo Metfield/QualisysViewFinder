@@ -25,9 +25,23 @@ namespace Arqus.Helpers
         public const string LENS_FOCUS_PACKET_STRING = "Focus";
         public const string LENS_APERTURE_PACKET_STRING = "Aperture";
 
+        // Mode toolbar icon constants
+        public const string MODEBAR_ICON_MARKER_NORMAL = "ic_markers_white_24dp";
+        public const string MODEBAR_ICON_MARKER_GREY = "ic_markers_grey_800_24dp";
+        public const string MODEBAR_ICON_VIDEO_NORMAL = "ic_videocam_white_24dp";
+        public const string MODEBAR_ICON_VIDEO_DEMO = "ic_videocam_grey_800_24dp";
+        public const string MODEBAR_ICON_INTENSITY_NORMAL = "ic_intensity_white_24dp";
+        public const string MODEBAR_ICON_INTENSITY_DEMO = "ic_intensity_grey_800_24dp";
+
         /// <summary>
         /// Navigation strings
         /// </summary>
         public const string NAVIGATION_DEMO_MODE_STRING = "demoMode";
+
+        // Page titles
+        public const string TITLE_GRIDVIEW = "Select a camera";
+
+        // Texture size
+        public const int URHO_TEXTURE_SIZE = 512;
     }
 }

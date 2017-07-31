@@ -276,3 +276,6 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/**
 # !tools/packages.config
+
+# QTM RT SDK
+Arqus/Arqus/RTClientSDK\.Net/

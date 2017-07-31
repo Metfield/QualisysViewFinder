@@ -17,9 +17,10 @@ namespace Arqus
 {
     public partial class CameraPage : ContentPage
     {
-        CameraApplication markerApplication;
+        CameraApplication application;
         CameraPageViewModel viewModel;
 
+        // NOTE: Using a really low throttle time will cause QTM to crash
         int throttleTime = 50;
 
         public CameraPage()
@@ -32,6 +33,12 @@ namespace Arqus
 
             // Initialize slider observers
             InitSliderObservers();
+
+            // Subscribe to segmented control event
+            segmentedControls.ItemTapped += OnSegmentedControlSelection;
+
+            // Set bottom sheet reference for animation purposes
+            viewModel.SetBottomSheetHandle(bottomSheet);
         }
         
         // Moved into a function to keep the constructor from getting bloated with code
@@ -42,7 +49,7 @@ namespace Arqus
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.MARKER_EXPOSURE_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Constants.MARKER_EXPOSURE_PACKET_STRING, Math.Round(value, 1)));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(markerThresholdSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
@@ -68,41 +75,90 @@ namespace Arqus
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) =>   viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(lensApertureSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SnapAperture(value));                
+                .Subscribe((value) => viewModel.SnapAperture(value));
         }
 
-        protected override async void OnAppearing()
+        // Handles segment selection for segmented control
+        // Switches video drawer mode accordingly 
+        private void OnSegmentedControlSelection(object sender, int segment)
+        {
+            // 0: Left segment (standard settings)
+            // 1: Right segment (lens control)
+            if (Convert.ToBoolean(segment))
+            {
+                viewModel.IsLensControlActive = true;
+            }
+            else
+            {
+                viewModel.IsLensControlActive = false;
+            }
+        }
+
+        /// <summary>
+        /// Updates the Urho application in case there is an orientation change
+        /// </summary>
+        /// <param name="width">width of the screen</param>
+        /// <param name="height">height of the screen</param>
+        protected override void OnSizeAllocated(double width, double height)
+        {
+            base.OnSizeAllocated(width, height);
+
+            // If the width is greater than the height the device is in landscape mode,
+            // otherwise it is in portrait
+            if(width > height)
+            {
+                orientation = DeviceOrientations.Landscape;
+            }
+            else
+            {
+                orientation = DeviceOrientations.Portrait;
+            }
+
+            // Only update the application if it has been created
+            if (application != null)
+                application.Orientation = orientation;
+        }
+
+        DeviceOrientations orientation;
+
+        protected override void OnAppearing()
         {
             base.OnAppearing();
-            markerApplication = await StartUrhoApp();
-
-            // Notify ViewModel that loading for 3D app is done
-            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+            StartUrhoApp();
         }
 
         protected override async void OnDisappearing()
         {
-            await markerApplication.Exit();
+            await application.Exit();
             UrhoSurface.OnDestroy();
-            markerApplication = null;            
+            application = null;
 
-            viewModel.Dispose();
-            viewModel = null;
+
+            // NOTE: Check this when wokring demo mode is merged with this version
+            //viewModel.Dispose();
+            //viewModel = null;
 
             base.OnDisappearing();
-        }       
-
-        async Task<CameraApplication> StartUrhoApp()
-        {
-            markerApplication = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
-            return markerApplication;
         }        
+        
+
+        async void StartUrhoApp()
+        {
+            application = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            //Set the orientation of the application to match the rest of the UI
+            application.Orientation = orientation;
+            
+
+            // Notify ViewModel that loading for 3D app is done
+            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+        }
+        
     }
 }
 

@@ -4,6 +4,7 @@ using QTMRealTimeSDK.Data;
 using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 
 namespace Arqus
 {
@@ -21,7 +22,7 @@ namespace Arqus
         public void LoadDemoFile()
         {
             // Get assembly object
-            Assembly assembly = typeof(DemoMode).Assembly;    
+            Assembly assembly = typeof(DemoMode).Assembly;
 
             // Get camera frames information
             using (Stream stream = assembly.GetManifestResourceStream("Arqus." + filename))
@@ -29,10 +30,9 @@ namespace Arqus
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 frames = (List<List<Camera>>)binaryFormatter.Deserialize(stream);
             }
-
+            
             frameCount = frames.Count;
-
-            assembly = null;            
+            assembly = null;
         }
 
         public int GetFrameCount()
@@ -45,6 +45,9 @@ namespace Arqus
             // Dispose of demo structure
             frames.Clear();
             frames = null;
+
+            frameCount = 0;
+            filename = null;
         }
     }
 }

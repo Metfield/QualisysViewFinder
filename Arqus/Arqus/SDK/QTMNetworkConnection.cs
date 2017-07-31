@@ -15,6 +15,8 @@ namespace Arqus
     {
         public static string Version { get; private set; }
 
+        public static bool IsMaster { get; set; }
+
         private static string ipAddress;
         private static string password;
 
@@ -28,14 +30,7 @@ namespace Arqus
         public QTMNetworkConnection()
         {
             Protocol = new RTProtocol();
-            Connect();
-        }
-
-
-        public QTMNetworkConnection(int port)
-        {
-            Protocol = new RTProtocol();
-            Connect(port);
+            Connect(GetRandomPort());
         }
 
         /// <summary>
@@ -50,17 +45,15 @@ namespace Arqus
                 QTMNetworkConnection.password = password;
             }
             
-            return Connect();
-
+            return Connect(GetRandomPort());
         }
         
         /// <summary>
         /// Attempts to connect to a QTM host
         /// </summary>
         /// <returns>boolean indicating success or failure</returns>
-        public bool Connect(int port = -1)
+        public bool Connect(int port)
         {
-
             if(IsValidIPv4(ipAddress))
             {
                 hasControl = false;
@@ -71,11 +64,9 @@ namespace Arqus
                     Version = ver;
                     return true;
                 }
-
             }
 
             return false;
-
         }
 
         /// <summary>
@@ -84,7 +75,7 @@ namespace Arqus
         /// NOTE: Only one client can have control at the time
         /// </summary>
         /// <returns>true if the client took control</returns>
-        private bool TakeControl()
+        public bool TakeControl()
         {
             if (hasControl)
                 return true;
@@ -102,14 +93,23 @@ namespace Arqus
                     return true;
                 }
 
+                IsMaster = false;
+
                 Debug.WriteLine("Error: " + response);
                 return false;
             }
 
             Master = Protocol;
+            IsMaster = true;
+
             hasControl = true;
 
             return true;
+        }
+
+        public bool HasPassword()
+        {
+            return !TakeControl();
         }
         
         /// <summary>
@@ -178,7 +178,7 @@ namespace Arqus
 
         }
 
-        public List<RTProtocol.DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
+        public List<DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
         {
             try
             {
@@ -223,8 +223,8 @@ namespace Arqus
         public bool SetCameraMode(int id, string mode)
         {
             string packetString = Packet.Camera(id, mode);
-            string response;
 
+            string response;
             bool success;
 
             lock (controlLock)
@@ -235,19 +235,27 @@ namespace Arqus
 
             return true;
         }
-        
+
+        public bool SetImageStream(int id, bool enabled)
+        {
+            return SetImageStream(Packet.CameraImage(id, enabled));
+        }
 
         public bool SetImageStream(int id, bool enabled, int width, int height)
         {            
-            string packetString = Packet.CameraImage(id, enabled, width, height);
-            string response;   
+            return SetImageStream(Packet.CameraImage(id, enabled, width, height));
+        }
+
+        private bool SetImageStream(string packet)
+        {
+            string response;
 
             bool success;
 
             lock (controlLock)
             {
                 TakeControl();
-                success = Protocol.SendXML(packetString, out response);
+                success = Protocol.SendXML(packet, out response);
             }
 
             return success;
@@ -257,8 +265,9 @@ namespace Arqus
         {
             try
             {
-                string packetString = Packet.CameraImage(id, width, height);
+
                 string response;
+                string packetString = Packet.CameraImage(id, width, height);
 
                 lock (controlLock)
                 {
@@ -331,12 +340,19 @@ namespace Arqus
         private void HandleHostResponse(string response)
         {
             // Right now just toast
-            SharedProjects.Notification.Show("Host Response", response);
+            Debug.Print("QTM Response: " + response);
         }
 
         private bool IsImage(string mode)
         {
             return mode != "Marker";
+        }
+
+        // Used for UDP connection, gets random port from a pre-designated range
+        public int GetRandomPort()
+        {
+            Random rand = new Random();
+            return rand.Next(1024, 65534);
         }
         
         public void Dispose()

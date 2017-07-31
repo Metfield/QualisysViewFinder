@@ -37,7 +37,7 @@ namespace Arqus
         {
             try
             {
-                return connection.SetCameraMode(id, CameraModeString[mode]);
+                return MasterDelegate(() => connection.SetCameraMode(id, CameraModeString[mode]));
             }
             catch (Exception e)
             {
@@ -46,28 +46,42 @@ namespace Arqus
             }
         }
 
+        public static bool MasterDelegate(Func<bool> fun)
+        {
+            if (QTMNetworkConnection.IsMaster)
+                return fun();
+            return true;
+        }
+
+        public static bool DisableImageMode(int id)
+        {
+            return MasterDelegate(() => connection.SetImageStream(id, false));
+        }
+
+
         public static bool EnableImageMode(int id, bool enabled, int width, int height)
         {
-            return connection.SetImageStream(id, enabled, width, height);
+
+            return MasterDelegate(() => connection.SetImageStream(id, enabled, width, height));
         }
 
         public static bool SetImageResolution(int id, int width, int height)
         {
-            return connection.SetImageResolution(id, width, height);
+            return MasterDelegate(() => connection.SetImageResolution(id, width, height));
         }
 
         /// <summary>
         /// Initializes settings service.
         /// </summary>
         /// <param name="demoMode">Initialize in demo mode (not real time)</param>
-        public static void Initialize(bool demoMode = false)
+        public static bool Initialize(bool demoMode = false)
         {
             isDemoModeActive = demoMode;
 
             if (!demoMode) // Real-time
             {
-                //connection = new QTMNetworkConnection();
-                connection.Connect();
+                if (!connection.Connect(connection.GetRandomPort()))
+                    return false;
 
                 // Get the first one manually and then let the auto-update run
                 connection.Protocol.GetGeneralSettings();
@@ -82,6 +96,8 @@ namespace Arqus
                 if(imageCameras == null)
                     imageCameras = LoadImageSettings();               
             }
+
+            return true;
         }
 
         private static List<SettingsGeneralCameraSystem> LoadGeneralSettings()
@@ -113,28 +129,6 @@ namespace Arqus
 
                 // Store mock settings
                 return si.Cameras;
-            }
-        }
-
-        /// <summary>
-        /// Fetch camera settings every dt miliseconds 
-        /// 
-        /// NOTE!!!! This is currently NOT used as getting
-        /// General Settings is a problem right now.
-        /// 
-        /// TODO: Try when things are more stable
-        /// </summary>
-        private static async void RefreshSettings()
-        {
-            while (connection.Protocol.IsConnected())
-            {
-                // Can this even fail?
-                while (!connection.Protocol.GetGeneralSettings())
-                {
-                    Task.Delay(100);
-                }
-
-                generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
             }
         }
 
@@ -208,9 +202,12 @@ namespace Arqus
         /// <returns>Returns true if successful</returns>
         public static bool SetCameraSettings(int id, string settingsParameter, string value)
         {
+            if (isDemoModeActive)
+                return false;
+
             try
             {
-                return connection.SetCameraSettings(id, settingsParameter, value);
+                return MasterDelegate(() => connection.SetCameraSettings(id, settingsParameter, value));
             }
             catch (Exception e)
             {
@@ -235,17 +232,20 @@ namespace Arqus
 
         public static async Task<bool> SetLED(int id, LEDMode mode, LEDColor color = LEDColor.All)
         {
+            if (isDemoModeActive)
+                return false;
+
             try
-            {                
-                bool response = await Task.Run(() => connection.SetLED(id, mode.ToString(), color.ToString()));
+            {    
+                
+                bool response = await Task.Run(() => MasterDelegate(() => connection.SetLED(id, mode.ToString(), color.ToString())));
                 return false;
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
                 return false;
-            }
-            
+            }            
         }            
 
         public static void Clean()

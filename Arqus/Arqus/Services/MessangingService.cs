@@ -16,6 +16,8 @@ namespace Arqus.Service
         public static readonly string CAMERA_SETTINGS_CHANGED = "CAMERA_SETTINGS_CHANGED";
         public static readonly string SET_CAMERA_SCREEN_LAYOUT = "SET_CAMERA_SCREEN_LAYOUT";
         public static readonly string URHO_SURFACE_FINISHED_LOADING = "URHO_SURFACE_FINISHED_LOADING";
+        public static readonly string ORIENTATION_CHANGED = "ORIENTATION_CHANGED";
+        public static readonly string URHO_SURFACE_TAPPED = "URHO_SURFACE_TAPPED";
     }
 
 

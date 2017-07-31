@@ -13,30 +13,30 @@ namespace Arqus.Components
     {
         // Root node to hold every marker
         private Node root;
-        private List<MarkerSphere> markerSpheres;
+        private List<Circle> markerSpheres;
         public int Count { private set { } get { return markerSpheres.Count; } }
 
         public MarkerSpherePool(int count, Node rootNode)
         {
             root = rootNode;
-            markerSpheres = new List<MarkerSphere>(count);
+            markerSpheres = new List<Circle>(count);
 
             for(int index = 0; index < count; index++)
             {
-                Add(root.CreateComponent<MarkerSphere>());
+                Add(root.CreateComponent<Circle>());
             }
         }
 
-        public void Add(MarkerSphere sphereNode)
+        public void Add(Circle sphereNode)
         {
             markerSpheres.Add(sphereNode);
         }
 
-        public MarkerSphere Get(int index)
+        public Circle Get(int index)
         {
             // If an object doesn't exists for the current index we create it
             if (markerSpheres.Count <= index)
-                 Add(root.CreateComponent<MarkerSphere>());
+                 Add(root.CreateComponent<Circle>());
 
             markerSpheres[index].Enabled = true;
             return markerSpheres[index];
@@ -54,7 +54,8 @@ namespace Arqus.Components
         public void HideUnused(int startingArrayPosition)
         {
             for (int i = startingArrayPosition; i < markerSpheres.Count; i++)
-                markerSpheres[i].Enabled = false;
+                if(markerSpheres[i].EnabledEffective)
+                    markerSpheres[i].Enabled = false;
         }
     }   
 }

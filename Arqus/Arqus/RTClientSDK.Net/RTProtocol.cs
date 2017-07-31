@@ -16,7 +16,6 @@ using System.Xml.Serialization;
 
 namespace QTMRealTimeSDK
 {
-    #region enums
     /// <summary>Streaming rate</summary>
     public enum StreamRate
     {
@@ -25,147 +24,20 @@ namespace QTMRealTimeSDK
         RateFrequencyDivisor
     }
 
-    /// <summary>Camera models</summary>
-    public enum CameraModel
+    /// <summary>Data with response from Discovery broadcast</summary>
+    public struct DiscoveryResponse
     {
-        [XmlEnum("MacReflex")]
-        ModelMacReflex = 0,
-        [XmlEnum("ProReflex 120")]
-        ModelProReflex120,
-        [XmlEnum("ProReflex 240")]
-        ModelProReflex240,
-        [XmlEnum("ProReflex 500")]
-        ModelProReflex500,
-        [XmlEnum("ProReflex 1000")]
-        ModelProReflex1000,
-        [XmlEnum("Oqus 100 ")]
-        ModelQqus100,
-        [XmlEnum("Oqus 300")]
-        ModelQqus300,
-        [XmlEnum("Oqus 300 Plus")]
-        ModelQqus300Plus,
-        [XmlEnum("Oqus 400")]
-        ModelQqus400,
-        [XmlEnum("Oqus 500")]
-        ModelQqus500,
-        [XmlEnum("Oqus 200 C")]
-        ModelQqus200C,
-        [XmlEnum("Oqus 500 Plus")]
-        ModelQqus500Plus,
-        [XmlEnum("Oqus 700")]
-        ModelQqus700,
-        [XmlEnum("Oqus 700 Plus")]
-        ModelQqus700Plus,
-        [XmlEnum("Miqus M1")]
-        ModelMiqusM1,
-        [XmlEnum("Miqus M3")]
-        ModelMiqusM3,
-        [XmlEnum("Miqus M5")]
-        ModelMiqusM5,
-        [XmlEnum("Miqus Sync Unit")]
-        ModelMiqusSU,
-        [XmlEnum("Miqus Video")]
-        ModelMiqusVideo,
+        /// <summary>Hostname of server</summary>
+        public string HostName;
+        /// <summary>IP to server</summary>
+        public string IpAddress;
+        /// <summary>Base port</summary>
+        public short Port;
+        /// <summary>Info text about host</summary>
+        public string InfoText;
+        /// <summary>Number of cameras connected to server</summary>
+        public int CameraCount;
     }
-
-    /// <summary>Camera modes</summary>
-    public enum CameraMode
-    {
-        [XmlEnum("Marker")]
-        ModeMarker = 0,
-        [XmlEnum("Marker Intensity")]
-        ModeMarkerIntensity,
-        [XmlEnum("Video")]
-        ModeVideo
-    }
-
-    /// <summary>Sync out modes</summary>
-    public enum SyncOutFrequencyMode
-    {
-        [XmlEnum("Shutter out")]
-        ModeShutterOut = 0,
-        [XmlEnum("Multiplier")]
-        ModeMultiplier,
-        [XmlEnum("Divisor")]
-        ModeDivisor,
-        [XmlEnum("Camera independent")]
-        ModeActualFreq,
-        [XmlEnum("Measurement time")]
-        ModeActualMeasurementTime,
-        [XmlEnum("Continuous 100Hz")]
-        ModeFixed100Hz
-    }
-
-    /// <summary>Signal sources</summary>
-    public enum SignalSource
-    {
-        [XmlEnum("Control port")]
-        SourceControlPort = 0,
-        [XmlEnum("IR receiver")]
-        SourceIRReceiver,
-        [XmlEnum("SMPTE")]
-        SourceSMPTE,
-        [XmlEnum("Video sync")]
-        SourceVideoSync
-    }
-
-    /// <summary>Signal modes</summary>
-    public enum SignalMode
-    {
-        [XmlEnum("Periodic")]
-        Periodic = 0,
-        [XmlEnum("Non-periodic")]
-        NonPeriodic
-    }
-
-    /// <summary>Axises</summary>
-    public enum Axis
-    {
-        [XmlEnum("+X")]
-        XAxisUpwards = 0,
-        [XmlEnum("-X")]
-        XAxisDownwards,
-        [XmlEnum("+Y")]
-        YAxisUpwards,
-        [XmlEnum("-Y")]
-        YAxisDownwards,
-        [XmlEnum("+Z")]
-        ZAxisUpwards,
-        [XmlEnum("-Z")]
-        ZAxisDownwards
-    }
-
-    /// <summary>Signal Edge</summary>
-    public enum SignalEdge
-    {
-        [XmlEnum("Negative")]
-        Negative = 0,
-        [XmlEnum("Positive")]
-        Positive
-    }
-
-    /// <summary>Signal Polarity</summary>
-    public enum SignalPolarity
-    {
-        [XmlEnum("Negative")]
-        Negative = 0,
-        [XmlEnum("Positive")]
-        Positive
-    }
-
-    /// <summary>Image formats Available</summary>
-    public enum ImageFormat
-    {
-        [XmlEnum("RAWGrayscale")]
-        FormatRawGrayScale = 0,
-        [XmlEnum("RAWBGR")]
-        FormatRawBGR,
-        [XmlEnum("JPG")]
-        FormatJPG,
-        [XmlEnum("PNG")]
-        FormatPNG
-    }
-    #endregion
 
     public class RTProtocol : IDisposable
     {
@@ -198,36 +70,86 @@ namespace QTMRealTimeSDK
         }
 
         /// <summary>Packet received from QTM</summary>
-        protected RTPacket Packet { get { return mPacket; } }
+        protected RTPacket Packet
+        {
+            get { return mPacket; }
+        }
 
         private SettingsGeneral mGeneralSettings;
         /// <summary>General settings from QTM</summary>
-        public SettingsGeneral GeneralSettings { get { return mGeneralSettings; } }
+        public SettingsGeneral GeneralSettings
+        {
+            get { return mGeneralSettings; }
+            set
+            {
+                if (mGeneralSettings != value)
+                {
+                    mGeneralSettings = value;
+                }
+            }
+        }
 
         private Settings3D m3DSettings;
         /// <summary>3D settings from QTM</summary>
-        public Settings3D Settings3D { get { return m3DSettings; } }
+        public Settings3D Settings3D
+        {
+            get { return m3DSettings; }
+            set
+            {
+                if (m3DSettings != value)
+                {
+                    m3DSettings = value;
+                }
+            }
+        }
 
         private Settings6D m6DOFSettings;
         /// <summary>6DOF settings from QTM</summary>
-        public Settings6D Settings6DOF { get { return m6DOFSettings; } }
+        public Settings6D Settings6DOF
+        {
+            get { return m6DOFSettings; }
+            set
+            {
+                if (m6DOFSettings != value)
+                {
+                    m6DOFSettings = value;
+                }
+            }
+        }
 
         private SettingsAnalog mAnalogSettings;
         /// <summary>Analog settings from QTM</summary>
-        public SettingsAnalog AnalogSettings { get { return mAnalogSettings; } }
+        public SettingsAnalog AnalogSettings
+        {
+            get { return mAnalogSettings; }
+            set
+            {
+                if (mAnalogSettings != value)
+                {
+                    mAnalogSettings = value;
+                }
+            }
+        }
 
         private SettingsForce mForceSettings;
         /// <summary>Force settings from QTM</summary>
-        public SettingsForce ForceSettings { get { return mForceSettings; } }
+        public SettingsForce ForceSettings
+        {
+            get { return mForceSettings; }
+            set
+            {
+                if (mForceSettings != value)
+                {
+                    mForceSettings = value;
+                }
+            }
+        }
 
         private SettingsImage mImageSettings;
         /// <summary>Image settings from QTM</summary>
         public SettingsImage ImageSettings
         {
-            get
-            {
-                return mImageSettings;
-            }
+            get { return mImageSettings; }
             set
             {
                 if (mImageSettings != value)
@@ -248,21 +170,6 @@ namespace QTMRealTimeSDK
         private int mMajorVersion;
         private int mMinorVersion;
         private string mErrorString;
-
-        /// <summary>Data with response from Discovery broadcast</summary>
-        public struct DiscoveryResponse
-        {
-            /// <summary>Hostname of server</summary>
-            public string HostName;
-            /// <summary>IP to server</summary>
-            public string IpAddress;
-            /// <summary>Base port</summary>
-            public short Port;
-            /// <summary>Info text about host</summary>
-            public string InfoText;
-            /// <summary>Number of cameras connected to server</summary>
-            public int CameraCount;
-        }
 
         private HashSet<DiscoveryResponse> mDiscoveryResponses;
         /// <summary>list of discovered QTM server possible to connect to</summary>
@@ -419,20 +326,25 @@ namespace QTMRealTimeSDK
             return Connect(host.IpAddress, serverPortUDP, majorVersion, minorVersion, host.Port);
         }
 
+        public void ClearSettings()
+        {
+            m3DSettings = null;
+            m6DOFSettings = null;
+            mAnalogSettings = null;
+            mForceSettings = null;
+            mGazeVectorSettings = null;
+            mGeneralSettings = null;
+            mImageSettings = null;
+        }
+
         /// <summary>Disconnect from server</summary>
         public void Disconnect()
         {
             mBroadcastSocketCreated = false;
             mNetwork.Disconnect();
-
-            m3DSettings = null;
-            m6DOFSettings = null;
-            mAnalogSettings = null;
             mDiscoveryResponses.Clear();
-            mForceSettings = null;
-            mGazeVectorSettings = null;
-            mGeneralSettings = null;
-            mImageSettings = null;
+
+            ClearSettings();
         }
 
         /// <summary>Check if there is a tcp connection to the server available</summary>
@@ -447,7 +359,7 @@ namespace QTMRealTimeSDK
             return mPacket;
         }
 
-        private byte[] data = new byte[RTProtocol.Constants.PACKET_HEADER_SIZE];
+        private byte[] data = new byte[65535];
         private Object receiveLock = new Object();
 
         public int ReceiveRTPacket(out PacketType packetType, bool skipEvents = true, int timeout = 500000)
@@ -463,7 +375,7 @@ namespace QTMRealTimeSDK
                 {
                     receivedTotal = 0;
 
-                    int received = mNetwork.Receive(ref data, 0, RTProtocol.Constants.PACKET_HEADER_SIZE, true, timeout);
+                    int received = mNetwork.Receive(ref data, 0, data.Length, true, timeout);
                     if (received == 0)
                     {
                         return 0; // Receive timeout
@@ -492,7 +404,9 @@ namespace QTMRealTimeSDK
 
                     if (data == null || frameSize > data.Length)
                     {
-                        Array.Resize(ref data, frameSize);
+                        // Do some preventive additional allocation to reduce number of times allocation is needed
+                        var newSize = (int)(frameSize * 1.47);
+                        Array.Resize(ref data, newSize);
                     }
 
                     // Receive more data until we have read the whole packet
@@ -669,12 +583,11 @@ namespace QTMRealTimeSDK
         /// <summary>Stream frames from QTM server</summary>
         /// <param name="streamRate">what rate server should stream at</param>
         /// <param name="streamValue">related to streamrate, not used if all frames are streamed</param>
-        /// <param name="streamAllComponents">If all component types should be streamed</param>
         /// <param name="components">List of all component types deisred to stream</param>
-        /// <param name="port">if set, streaming will be done by UDP on this port. Has to be set if ip address is specified</param>
+        /// <param name="udpPort">if set, streaming will be done by UDP on this port. Has to be set if ip address is specified</param>
         /// <param name="ipAddress">if UDP streaming should occur to other ip address, if not set streaming occurs on same ip as command came from</param>
-        /// <returns>true if streaming started ok</returns>
-        public bool StreamFrames(StreamRate streamRate, int streamValue, List<ComponentType> components = null, int port = -1, string ipAddress = "")
+        /// <returns>true if streaming started</returns>
+        public bool StreamFrames(StreamRate streamRate, int streamValue, List<ComponentType> components = null, int udpPort = -1, string ipAddress = "")
         {
             string command = "streamframes";
 
@@ -693,9 +606,9 @@ namespace QTMRealTimeSDK
 
             if (ipAddress != "")
             {
-                if (port > 0)
+                if (udpPort > 0)
                 {
-                    command += " udp:" + ipAddress + ":" + port;
+                    command += " udp:" + ipAddress + ":" + udpPort;
                 }
                 else
                 {
@@ -703,9 +616,9 @@ namespace QTMRealTimeSDK
                     return false;
                 }
             }
-            else if (port > 0)
+            else if (udpPort > 0)
             {
-                command += " udp:" + port;
+                command += " udp:" + udpPort;
             }
 
             command += BuildStreamString(components);
@@ -1018,6 +931,33 @@ namespace QTMRealTimeSDK
             return false;
         }
 
+        public static string CreateSettingsXml<TSettings>(TSettings settings, out string error)
+        {
+            try
+            {
+                error = string.Empty;
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
+                {
+                    OmitXmlDeclaration = true,
+                };
+                StringBuilder settingsOutput = new StringBuilder();
+                using (var writer = XmlWriter.Create(settingsOutput, xmlWriterSettings))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(TSettings));
+                    serializer.Serialize(writer, settings);
+                    var xmlSettings = "<QTM_Settings>";
+                    xmlSettings += settingsOutput.ToString();
+                    xmlSettings += "</QTM_Settings>";
+                    return xmlSettings;
+                }
+            }
+            catch (System.Exception e)
+            {
+                error = e.Message;
+            }
+            return string.Empty;
+        }
+
         #endregion
 
         #region Read settings internal methods
@@ -1202,11 +1142,6 @@ namespace QTMRealTimeSDK
             {
                 switch (type)
                 {
-                    case ComponentType.ComponentAll:
-                        if (componentTypes.Count > 1)
-                            throw new System.ArgumentException("Can't have multiple components, when one is ComponentType.ComponentAll");
-                        command += " All";
-                        break;
                     case ComponentType.Component3d:
                         command += " 3D";
                         break;

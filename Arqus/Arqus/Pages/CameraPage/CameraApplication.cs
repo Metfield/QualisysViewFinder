@@ -1,15 +1,20 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-using Urho;
 using Arqus.Service;
 using Arqus.Visualization;
+
 using Xamarin.Forms;
+
+using Urho;
+using Arqus.Services;
 
 namespace Arqus
 {
+    /// <summary>
+    /// The camera application displays a set of cameras inside a 3D view
+    /// </summary>
     public class CameraApplication : Urho.Application
     {
         private Scene scene;
@@ -20,14 +25,21 @@ namespace Arqus
         private Vector3 cameraOffset;
         private CameraStreamService cameraStreamService = null;
 
-        private GridScreenLayout grid;
-        private CarouselScreenLayout carousel;
-        private CameraScreenLayout cameraScreenLayout;        
-        
+        public DeviceOrientations Orientation { get; set; }
+
+        public enum ScreenLayoutType
+        {
+            Grid,
+            Carousel
+        }
+
+        private Dictionary<ScreenLayoutType, CameraScreenLayout> screenLayout;
+        private CameraScreenLayout currentScreenLayout;
+
         private float carouselInitialDistance;
-        
-        float meshScale,
-              markerSphereScale;
+
+        private float meshScale;
+        private float markerSphereScale;
         
         Vector3 markerSphereScaleVector;        
 
@@ -64,7 +76,6 @@ namespace Arqus
                 e.Handled = true;
             };
         }
-
         
         protected override void Start()
         {
@@ -72,23 +83,15 @@ namespace Arqus
             
             CreateScene();
             SetupViewport();
-
+            
             // Update the application when a new screen layout is set in the view model
-            MessagingService.Subscribe<CameraPageViewModel, string>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender, layout) =>
+            MessagingService.Subscribe<CameraPageViewModel, ScreenLayoutType>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender, type) =>
             {
-                if (layout == "grid")
-                {
-                    camera.FarClip = 100.0f;
-                    cameraScreenLayout = grid;
-                }
-                else if (layout == "carousel")
-                {
-                    camera.FarClip = 50.0f;
-                    cameraScreenLayout = carousel;
-                }
+                // Switch to new screen layout
+                InvokeOnMainAsync(() => SwitchScreenLayout(type));
             });
         }
-
+        
         // Starts streaming based on input
         private void StartStream(bool demoMode = false)
         {
@@ -100,50 +103,25 @@ namespace Arqus
 
         protected override void OnDeleted()
         {
+            CameraStore.CurrentCamera.Deselect();
+
             cameraStreamService.Dispose();
             cameraStreamService = null;
 
             // Update the application when a new screen layout is set in the view model
             MessagingCenter.Unsubscribe<CameraPageViewModel, string>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
             MessagingCenter.Unsubscribe<CameraPageViewModel, bool>(this, MessageSubject.STREAM_START);
-
-            // Unsubscribe from touch events
-            // Why is this crashing?!
-            //Input.TouchMove -= OnTouched;
-            //Input.TouchBegin -= OnTouchBegan;
-            //Input.TouchEnd -= OnTouchReleased;
-
+            
             base.OnDeleted();
         }
-
-        private bool updatingMarkerData;
-
-
-        private void SetMarkerData(List<QTMRealTimeSDK.Data.Camera> data)
-        {
-            int count = 0;
-            
-            foreach (QTMRealTimeSDK.Data.Camera camera in data)
-            {
-                if (screenList.Count > count && !screenList[count].IsImageMode())
-                    screenList[count].MarkerData = camera;
-                count++;
-            }
-        }
-
+        
         private async void CreateScene()
         {
-            // Create carousel
-            carouselInitialDistance = -80;
-
-            // TODO: Fix number of camerascreens
-            cameraMovementSpeed = 0.005f;      
-
             // Subscribe to touch event
             Input.TouchMove += OnTouched;
             Input.TouchBegin += OnTouchBegan;
             Input.TouchEnd += OnTouchReleased;
-
+            
             // Create new scene
             scene = new Scene();
             scene.Clear(true, true);
@@ -159,7 +137,7 @@ namespace Arqus
             camera.FarClip = 50.0f;
             
             // Reposition it..
-            cameraNode.Position = new Vector3(0, 0, carouselInitialDistance);
+            cameraNode.Position = new Vector3(0, 0, 0);
             
             // Create light and attach to camera
             Node lightNode = cameraNode.CreateChild(name: "light");
@@ -170,16 +148,20 @@ namespace Arqus
 
             // Initialize marker sphere meshes   
             InitializeCameras(cameraNode);
-            grid = new GridScreenLayout(screenList.Count, 2, camera);
-            carousel = new CarouselScreenLayout(screenList.Count, camera);
+
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
 
             // Set the default layout
-            cameraScreenLayout = carousel;
-            cameraScreenLayout.Select(CameraStore.CurrentCamera.ID);
-        }
+            screenLayout = new Dictionary<ScreenLayoutType, CameraScreenLayout>()
+            {
+                { ScreenLayoutType.Grid,  new GridScreenLayout(cameras.Count, 2, camera)},
+                { ScreenLayoutType.Carousel, new CarouselScreenLayout(cameras.Count, camera)}
+            };
 
+            SwitchScreenLayout(ScreenLayoutType.Carousel);
+            currentScreenLayout.Select(CameraStore.CurrentCamera.ID);
+        }
         
-        List<CameraScreen> screenList;
         /// <summary>
         /// Creates the cameras and attaches markersphers to them
         /// </summary>
@@ -187,17 +169,16 @@ namespace Arqus
         {
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
-            screenList = CameraStore.GenerateCameraScreens(cameraNode);
+            CameraStore.GenerateCameraScreens(cameraNode);
             
-            foreach (CameraScreen screen in screenList)
+            foreach(DataModels.Camera camera in CameraStore.GetCameras())
             {
                 Node screenNode = meshNode.CreateChild();
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
-                screen.Scale = 10;
-                screenNode.AddComponent(screen);
-            }            
+                camera.Screen.Scale = 10;
+                screenNode.AddComponent(camera.Screen);
+            }
         }
-
         
         int tapTouchID;
         float tapTimeStamp;
@@ -210,22 +191,33 @@ namespace Arqus
             // Fill out variables for tap gesture
             tapTouchID = eventArgs.TouchID;
             tapTimeStamp = Time.ElapsedTime;
-        }        
+
+            currentScreenLayout.OnTouchBegan(eventArgs);
+        }
 
         // Called every frame
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
-            
 
             // Update camera offset and reset 
             //UpdateCameraPosition();
 
-            foreach (var screen in screenList)
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
+            for (int i = 0; i < cameras.Count; i++)
             {
-                cameraScreenLayout.SetCameraScreenPosition(screen);
+                if (i < currentScreenLayout.Selection + 1|| i > currentScreenLayout.Selection  - 1)
+                {
+                    cameras[i].Screen.Enabled = true;
+                    currentScreenLayout.SetCameraScreenPosition(cameras[i].Screen, Orientation);
+                }
+                else
+                {
+                    cameras[i].Screen.Enabled = false;
+                }
             }
-        }        
+        }
 
         /// <summary>
         /// Sets up viewport
@@ -237,7 +229,46 @@ namespace Arqus
             viewport.SetClearColor(Urho.Color.FromHex("#303030"));
 
             renderer.SetViewport(0, viewport);
-        }        
+        }
+
+        // Handles camera info depending on view mode
+        private void ToggleCameraUIInfo(ScreenLayoutType screenLayoutType)
+        {
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
+            // Iterate over screens and toggle the info
+            foreach (DataModels.Camera camera in cameras)
+            {
+                camera.Screen.ToggleUIInfo(screenLayoutType);
+            }
+        }
+
+        // Switches screen layout from carousel to grid and viceversa
+        private void SwitchScreenLayout(ScreenLayoutType layoutType)
+        {
+            currentScreenLayout = screenLayout[layoutType];
+            ToggleCameraUIInfo(layoutType);
+
+            // Enable screen frames if going into grid mode
+            if (layoutType == ScreenLayoutType.Grid)
+            {
+                ToggleCameraScreenFrame(true);
+            }
+            else
+            {
+                ToggleCameraScreenFrame(false);
+            }
+        }
+
+        private void ToggleCameraScreenFrame(bool flag)
+        {
+            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+
+            for (int i = 0; i < cameras.Count; i++)
+            {
+                cameras[i].Screen.ToggleFrame(flag);
+            }
+        }
 
         /// <summary>
         /// Casts camera ray from the viewport's coordinates
@@ -247,13 +278,13 @@ namespace Arqus
         void CastTouchRay(int x, int y)
         {
             // Shoot from camera to grid view
-            float rayDistance = camera.FarClip;
+            float rayDistance = camera.FarClip + 1;
             
             // Create ray with normalized screen coordinates
             Ray camRay = camera.GetScreenRay((float)x / Graphics.Width, (float)y / Graphics.Height);
 
             // Cast the ray looking for 3D geometry (our grid screen planes) and store result in variable
-            RayQueryResult? rayResult = octree.RaycastSingle(camRay, RayQueryLevel.Triangle, rayDistance, DrawableFlags.Geometry, uint.MaxValue);
+            RayQueryResult? rayResult = octree.RaycastSingle(camRay);
             
             // Check if there was a hit
             if (rayResult.HasValue)
@@ -265,15 +296,17 @@ namespace Arqus
                 // TODO: Add a public dictionary or query class for name?
                 if (screenNode.Name == "backdrop")
                 {
-
                     // Get selected camera ID 
-                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;                    
-                    
-                    camera.FarClip = 50.0f;
-                    cameraScreenLayout = carousel;
-                    cameraScreenLayout.Select(cameraID);
+                    int cameraID = screenNode.Parent.GetComponent<Visualization.CameraScreen>().Camera.ID;
 
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, cameraScreenLayout.Selection, payload: new { });
+                    // Reset the camera position when going to the carousel mode
+                    if (camera.Node.Position.Y != 0 || camera.Node.Position.X != 0)
+                        Urho.Application.InvokeOnMain(() => camera.Node.SetPosition2D(0, 0));
+
+                    SwitchScreenLayout(ScreenLayoutType.Carousel);
+                    currentScreenLayout.Select(cameraID);
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
                 }
             }
         }
@@ -284,38 +317,13 @@ namespace Arqus
         /// <param name="eventArgs"></param>
         void OnTouched(TouchMoveEventArgs eventArgs)
         {
-
-            if (Input.NumTouches == 1 && cameraScreenLayout != grid)
-            {
-                // Check if we are panning or just scrolling the carousel 
-                // based on current zoom
-                if (camera.Node.Position.Z == carouselInitialDistance)
-                {
-                    // We want to scroll 
-                    cameraScreenLayout.Offset += eventArgs.DX * cameraMovementSpeed;
-                }      
-                else
-                {
-                    // We want to Pan
-                    camera.Pan(eventArgs.DX, eventArgs.DY, cameraMovementSpeed * 5, carouselInitialDistance);
-                }
-            }
-                        
-            if (Input.NumTouches >= 2 && cameraScreenLayout != grid)
-            {
-                // Get Touchstates
-                TouchState fingerOne = Input.GetTouch(0);
-                TouchState fingerTwo = Input.GetTouch(1);
-                
-
-                // HACK: Current max is not calculated, this should be fixed to more closesly corelate to
-                // what a full screen actually is...
-                camera.PinchAndZoom(fingerOne, fingerTwo, carouselInitialDistance, carouselInitialDistance + 20);
-            }
+            currentScreenLayout.OnTouch(Input, eventArgs);
         }
 
         void OnTouchReleased(TouchEndEventArgs eventArgs)
         {
+            currentScreenLayout.OnTouchReleased(Input, eventArgs);
+
             // Return if this is not our original tap finger
             if (eventArgs.TouchID != tapTouchID)
                 return;
@@ -323,17 +331,16 @@ namespace Arqus
             // Get delta time
             float dt = Time.ElapsedTime - tapTimeStamp;
             
-            // If it is lesser than our tap margin, it is a tap
-            if (dt < tapTimeMargin && cameraScreenLayout == grid)
+            // If it is lesser than our tap margin, it is a tap!
+            if (dt < tapTimeMargin)
             {
-                CastTouchRay(eventArgs.X, eventArgs.Y);
-            }
-            else if(cameraScreenLayout == carousel)
-            {
-                List<float> distance = screenList.Select((screen) => camera.GetDistance(screen.Node.WorldPosition)).ToList();
-                CameraScreen focus = screenList[distance.IndexOf(distance.Min())];
-                cameraScreenLayout.Select(focus.position);
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, cameraScreenLayout.Selection, payload: new { });
+                // Notify CameraPageViewModel of a tap. This is used to hide
+                // the settings drawer
+                MessagingService.Send(this, MessageSubject.URHO_SURFACE_TAPPED);
+
+                // Are we in grid mode? Test for camera selection
+                if (currentScreenLayout.GetType() == typeof(GridScreenLayout))
+                    CastTouchRay(eventArgs.X, eventArgs.Y);
             }
         }    
     }

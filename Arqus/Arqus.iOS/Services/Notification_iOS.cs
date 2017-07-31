@@ -6,9 +6,10 @@ using Xamarin.Forms;
 [assembly: Dependency(typeof(Notification_iOS))]
 public class Notification_iOS : INotification
 {
-    public void Show(string message)
+    public void Show(string messageTitle, string message)
     {
-        new UIAlertView("hello", message, null, "OK").Show();
+        // iOS' notifications need to run on main thread, otherwise welcome to exception town
+        Device.BeginInvokeOnMainThread( () => new UIAlertView(messageTitle, message, null, "OK").Show());
     }
 }
 

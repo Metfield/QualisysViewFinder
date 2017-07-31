@@ -1,11 +1,9 @@
-﻿using Arqus.Helpers;
+﻿
 using Arqus.Service;
 using QTMRealTimeSDK.Data;
 using System;
-using System.Collections.Generic;
-using System.Text;
+
 using System.Threading.Tasks;
-using Xamarin.Forms;
 
 namespace Arqus
 {
@@ -33,7 +31,7 @@ namespace Arqus
         public void StartListening()
         {
             if (!networkConnection.Protocol.IsConnected())
-                networkConnection.Connect();
+                networkConnection.Connect(networkConnection.GetRandomPort());
 
             Task.Run(() => ListenToEvents());
         }
@@ -45,10 +43,10 @@ namespace Arqus
             // For now just ignore one.. 
             //TODO: Fix this issue!
             bool ignoreNextPacket = false;
+            QTMEvent eventPacket;
 
             while (networkConnection.Protocol.IsConnected())
             {
-
                 PacketType packetType;
                 // Get Packet and don't skip events
                 networkConnection.Protocol.ReceiveRTPacket(out packetType, false);
@@ -56,8 +54,10 @@ namespace Arqus
                 // Check if this is an event packet
                 if (packetType == PacketType.PacketEvent)
                 {
+                    eventPacket = networkConnection.Protocol.GetRTPacket().GetEvent();
+
                     // Check if camera settings have changed
-                    if (networkConnection.Protocol.GetRTPacket().GetEvent() == QTMEvent.EventCameraSettingsChanged)
+                    if (eventPacket == QTMEvent.EventCameraSettingsChanged)
                     {
                         if (ignoreNextPacket)
                         {

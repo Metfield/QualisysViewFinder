@@ -1,73 +1,59 @@
 ﻿using Arqus.Helpers;
-using ImageSharp;
+
 using QTMRealTimeSDK.Data;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xamarin.Forms;
-using System.Drawing;
-using ImageSharp.Formats;
-using Arqus.Service;
 using System.Diagnostics;
-using Arqus.Visualization;
+
+using System.Collections.Generic;
+
+using SkiaSharp;
 
 namespace Arqus.Services
 {
-    class ImageStream : Stream<ImageSharp.PixelFormats.RgbaVector>
+    class ImageStream : Stream
     {
-        int limiter = 0;
         public ImageStream(int frequency = 10) : base(ComponentType.ComponentImage, frequency, false){ }
-
-        private readonly object streamLock = new object();
-
-        private JpegDecoder decoder = new JpegDecoder();
-        private long lastDecodeTimestamp;
-
-        protected override void RetrieveDataAsync(RTPacket packet)
-        {
-            var data = packet.GetImageData();
-            
-            if(data.Count > 0)
-            {
-                foreach (var cameraImage in data)
-                {
-                    if (cameraImage.ImageData != null && cameraImage.ImageData.Length > 0)
-                    {
-                        if (limiter > 10)
-                            return;
-
-                        try
-                        {
-                            if (CameraStore.CurrentCamera.Parent != null && CameraStore.CurrentCamera.ID == cameraImage.CameraID)
-                            {
-                                Task.Run(() =>
-                                {
-                                    limiter++;
-                                    long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-                                    if (timestamp > lastDecodeTimestamp)
-                                    {
-                                        lastDecodeTimestamp = timestamp;
-
-                                        ImageSharp.Image<Rgba32> imageData = ImageSharp.Image.Load(cameraImage.ImageData, decoder);
-                                        Urho.Application.InvokeOnMainAsync(() => 
-                                            CameraStore.CurrentCamera?.Parent.UpdateMaterialTexture(imageData)
-                                        );
-                                    }
-                                    
-                                    limiter--;
-                                });
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.WriteLine(e);
-                            Debugger.Break();
-                        }
-                    }
-                }
-            }
-        }
         
+        // Used for task-workload leveling
+        static bool isDecoding = false;
+
+        protected override void RetrieveDataAsync()
+        {
+            // TODO: Implement video buffer instead
+            // Don't pull another frame if previous one has not yet been consumed
+            if (isDecoding)
+                return;
+
+            // Get image data if another process has finished decoding
+            RTPacket packet = connection.Protocol.GetRTPacket();
+            List<CameraImage> data = packet.GetImageData();
+
+            // Return if there is no data (rare)
+            if (data.Count == 0)
+                return;
+
+            try
+            {
+                // Decode and load image
+                isDecoding = true;
+
+                    // Load and decode image information, then resize it to a squared, power of 2 size
+                    SKBitmap bitmap = SKBitmap.Decode(data[0].ImageData).Resize(new SKImageInfo(
+                        Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE),
+                        SKBitmapResizeMethod.Lanczos3);
+
+                isDecoding = false;
+
+                // Set current camera's image data and ready it
+                // to create a texture
+                if (CameraStore.CurrentCamera.Screen != null)
+                    CameraStore.CurrentCamera.Screen.ImageData = bitmap.Bytes;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                Debugger.Break();
+            }
+        }        
     }
 }

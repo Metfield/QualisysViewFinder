@@ -76,7 +76,10 @@ namespace QTMRealTimeSDK.Network
             {
                 if (mTCPClient.Client != null)
                 {
-                    mTCPClient.Client.Shutdown(SocketShutdown.Send);
+                    // [Eman]: If this is not checked, I keep getting a "The socket is not connected" exception
+                    if (mTCPClient.Client.Connected)
+                        mTCPClient.Client.Shutdown(SocketShutdown.Send);
+
                     // Empty receive buffer
                     while (mTCPClient.Available > 0)
                     {
@@ -305,11 +308,6 @@ namespace QTMRealTimeSDK.Network
             {
                 mErrorCode = ex.SocketErrorCode;
                 mErrorString = ex.Message;
-                return false;
-            }
-            catch (Exception e)
-            {
-                mErrorString = e.Message;
                 return false;
             }
             return true;

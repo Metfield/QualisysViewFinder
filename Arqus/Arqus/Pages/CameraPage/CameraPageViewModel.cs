@@ -1,7 +1,10 @@
-﻿using Arqus.DataModels;
+﻿using Acr.UserDialogs;
+using Arqus.DataModels;
 using Arqus.Helpers;
 using Arqus.Service;
+using Arqus.Services;
 using Arqus.Services.MobileCenterService;
+using Arqus.Visualization;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -14,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
+using static Arqus.CameraApplication;
 
 namespace Arqus
 {
@@ -24,64 +28,118 @@ namespace Arqus
 
         // Keep track if latest value was updated by QTM
         public uint skipCounter = 0;
-        
+
         // Keep tabs on demo mode
         private bool isDemoModeActive;
 
         // Used for snapping slider to pre-determined values
         private LensApertureSnapper lensApertureSnapper;
 
-        public CameraPageViewModel(INavigationService navigationService)
+        // Used to know which video drawer is to be displayed
+        // Gets modified by the segmented controls in the view
+        private bool isLensControlActive;
+
+        // Holds current title for camera page
+        private string pageTitle;
+
+        // Used to dismiss loading screen
+        private IUserDialogs userDialogs;
+
+        private CameraMode cameraMode;
+
+        public CameraPageViewModel(INavigationService navigationService, IUserDialogs userDialogs)
         {
-            this.navigationService = navigationService;            
+            this.navigationService = navigationService;
+            this.userDialogs = userDialogs;
+
+            // Start with a visible drawer
+            // Otherwise iOS will mess everything up..
+            IsBottomSheetVisible = true;
+
             CurrentCamera = CameraStore.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
-            HideBottomSheetCommand = new DelegateCommand(() => {
+            if (QTMNetworkConnection.IsMaster || IsDemoModeActive)
+            {
+                IsModeToolbarActive = true;
+                IsDrawerActive = true;
+            }
+            else
+            {
+                IsModeToolbarActive = false;
+                IsDrawerActive = false;
+            }
+
+            ToggleBottomSheetCommand = new DelegateCommand(() => {
                 IsBottomSheetVisible = !isBottomSheetVisible;
             });
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
-                string cameraScreenLayout;
                 // Hide/show drawer according to mode
                 // We don't want to show any drawers in grid mode
-                if (isGridLayoutActive)
+                if (IsGridLayoutActive)
                 {
-                    cameraScreenLayout = "carousel";
-                    IsGridLayoutActive = false;
-                    ShowDrawer();
+                    if (QTMNetworkConnection.IsMaster)
+                    {
+                        IsGridLayoutActive = false;
+                        ShowDrawer();
+                    }
+
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel);
+
+                    // Update the page title 
+                    UpdatePageTitle(false);
                 }
                 else
                 {
-                    cameraScreenLayout = "grid";
-                    IsGridLayoutActive = true;
-                }
+                    if (QTMNetworkConnection.IsMaster)
+                    {
+                        IsGridLayoutActive = true;
+                    }
 
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, cameraScreenLayout, payload: new { cameraScreenLayout });
+                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
+
+                    // Update the page title 
+                    UpdatePageTitle(true);
+                }
             });
 
             // We're starting with carousel mode
-            isGridLayoutActive = false;
+            IsGridLayoutActive = false;
 
-            MessagingCenter.Subscribe<CameraApplication, int>(this,
+            MessagingCenter.Subscribe<CarouselScreenLayout, int>(this,
                 MessageSubject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
-            
+
             MessagingCenter.Subscribe(this,
                 MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(),
                 (QTMEventListener sender) =>
                 {
                     skipCounter++;
-                    CurrentCamera.UpdateSettings();
+
+                    CameraStore.RefreshSettings();
+                    CurrentCamera = CameraStore.CurrentCamera;
+
+                    if (cameraMode != CurrentCamera.Settings.Mode)
+                        SetCameraMode(CurrentCamera.Settings.Mode);
                 });
 
+            // Waits for urho to finish loading to start with streaming
             MessagingCenter.Subscribe<CameraPage>(this,
                 MessageSubject.URHO_SURFACE_FINISHED_LOADING, (sender) => StartStreaming());
-                        
+
+            // Used to hide drawer when the urho surface is tapped
+            MessagingCenter.Subscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED, (sender) => 
+            {
+                if(isBottomSheetVisible)
+                    IsBottomSheetVisible = false;
+            });
+
+            // Notifies of camera selection
             MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
 
             // Initialize lens aperture snapper
@@ -89,12 +147,22 @@ namespace Arqus
             ApertureSnapMax = lensApertureSnapper.LookupTSize - 1;
 
             // Switch them drawers now
-            SwitchDrawers(CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Settings.Mode);
+
+            // No Lens control UI when we start (if even available)
+            IsLensControlActive = false;
+
+            UpdatePageTitle(IsGridLayoutActive);
+
+            // Dismiss loading screen once the page has finished loading
+            Task.Run(() => userDialogs.HideLoading());
         }
 
         public void SetCameraSetting(string setting, double value)
         {
-            if(skipCounter == 0)
+            // If nothing has been recieved from QTM then update the settings
+            // If one or several events has been recieved skip updating QTM an decrement the counter
+            if (skipCounter == 0)
                 CurrentCamera.SetSetting(setting, value);
             else
                 skipCounter--;
@@ -103,13 +171,13 @@ namespace Arqus
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
-            
+
             try
             {
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
 
-                if (navigationMode == NavigationMode.Back)
-                    MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
+                //if (navigationMode == NavigationMode.Back)
+                //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
             }
             catch (Exception e)
             {
@@ -121,10 +189,14 @@ namespace Arqus
         {
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
 
+            // Related to iOS issue where this flag is set at the constructor
+            // Hide the drawer now that Xamarin.Forms has finished loading the interface
+            IsBottomSheetVisible = false;
+
             try
             {
                 // Need to know if this is demo mode in order to start stream accordingly
-                isDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
+                IsDemoModeActive = parameters.GetValue<bool>(Helpers.Constants.NAVIGATION_DEMO_MODE_STRING);
             }
             catch (Exception e)
             {
@@ -138,7 +210,10 @@ namespace Arqus
         private void StartStreaming()
         {
             // Notify UrhoSurface Application of the stream mode start intent
-            MessagingService.Send(this, MessageSubject.STREAM_START, isDemoModeActive);
+            MessagingService.Send(this, MessageSubject.STREAM_START, IsDemoModeActive);
+
+            // Once this is done we unsubscribe to the msg
+            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
@@ -156,26 +231,25 @@ namespace Arqus
             if (IsGridLayoutActive)
             {
                 IsGridLayoutActive = false;
-
-                // Invoke on main thread to avoid exception
-                Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
-
-                return;
             }
 
             // Switch drawer mode
-            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Mode));
+            Device.BeginInvokeOnMainThread(() => SwitchDrawers(CurrentCamera.Settings.Mode));
+
+            // Change camera page title
+            UpdatePageTitle(IsGridLayoutActive);
         }
 
         private void SetCameraMode(CameraMode mode)
         {
-            // Set the mode            
+            cameraMode = mode;
             CurrentCamera.SetMode(mode);
 
             // Switch drawer scheme
-            SwitchDrawers(CurrentCamera.Mode);
+            if (QTMNetworkConnection.IsMaster)
+                SwitchDrawers(mode);
         }
-        
+
         private void SendCameraSettingValue(string setting, double value)
         {
             // Run this on separate thread to keep UI responsive
@@ -186,7 +260,7 @@ namespace Arqus
         public DelegateCommand SetCameraModeToVideoCommand { get; set; }
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
         public DelegateCommand SetCameraScreenLayoutCommand { get; set; }
-        public DelegateCommand HideBottomSheetCommand { get; set; }
+        public DelegateCommand ToggleBottomSheetCommand { get; set; }
 
         private Camera currentCamera;
         public Camera CurrentCamera
@@ -201,6 +275,22 @@ namespace Arqus
             }
         }
 
+        private bool isModeToolbarActive = true;
+
+        public bool IsModeToolbarActive
+        {
+            get { return isModeToolbarActive; }
+            set { SetProperty(ref isModeToolbarActive, value); }
+        }
+
+        private bool isDrawerActive;
+
+        public bool IsDrawerActive
+        {
+            get { return isDrawerActive; }
+            set { SetProperty(ref isDrawerActive, value); }
+        }
+
         private bool isGridLayoutActive;
 
         public bool IsGridLayoutActive
@@ -211,7 +301,11 @@ namespace Arqus
             }
             set
             {
-                SetProperty(ref isGridLayoutActive, value);
+                if (SetProperty(ref isGridLayoutActive, value))
+                {
+                    IsModeToolbarActive = !isGridLayoutActive;
+                    IsDrawerActive = !isGridLayoutActive;
+                }
             }
         }
 
@@ -262,16 +356,41 @@ namespace Arqus
         public bool IsBottomSheetVisible
         {
             get { return isBottomSheetVisible; }
-            set { SetProperty(ref isBottomSheetVisible, value); }
+            set
+            {
+                if (bottomSheet != null)
+                {
+                    // Attempt to access the bottom sheet only if it has been created
+                    if (isBottomSheetVisible)
+                    {
+                        // Hide
+                        Task.Run(async () =>
+                        {
+                            // Wait for animation to complete and then hide drawer
+                            await bottomSheet.TranslateTo(bottomSheet.X, bottomSheetInitialPosition + bottomSheet.Height, 500, Easing.CubicOut);
+                            SetProperty(ref isBottomSheetVisible, value);
+                        });
+                    }
+                    else
+                    {
+                        // Show
+                        SetProperty(ref isBottomSheetVisible, value);
+                        bottomSheet.TranslateTo(bottomSheet.X, bottomSheetInitialPosition, 500, Easing.BounceOut);
+                    }
+                }
+                else
+                {
+                    SetProperty(ref isBottomSheetVisible, value);
+                }
+            }
         }
-
 
         /// <summary>
         /// Shows current drawer
         /// </summary>
         private void ShowDrawer()
         {
-            SwitchDrawers(CurrentCamera.Mode);
+            SwitchDrawers(CurrentCamera.Settings.Mode);
         }
 
         // Convenient variable to handle a camera's max aperture        
@@ -292,14 +411,20 @@ namespace Arqus
         private double snappedValue;
         public double SnappedValue
         {
-            get
-            {
-                return snappedValue;
-            }
-            set
-            {
-                SetProperty(ref snappedValue, value);
-            }
+            get { return snappedValue; }
+            set { SetProperty(ref snappedValue, value); }
+        }
+
+        public bool IsLensControlActive
+        {
+            get { return isLensControlActive; }
+            set { SetProperty(ref isLensControlActive, value); }
+        }
+
+        public bool IsDemoModeActive
+        {
+            get { return isDemoModeActive; }
+            set { SetProperty(ref isDemoModeActive, value); }
         }
 
         // Handles Aperture value snapping and sets the setting
@@ -311,15 +436,53 @@ namespace Arqus
             SetCameraSetting(Constants.LENS_APERTURE_PACKET_STRING, SnappedValue);
         }
 
+        public string PageTitle
+        { 
+            get { return pageTitle; }
+            private set { SetProperty(ref pageTitle, value); }
+        }
+                
+        private bool showGridIconOnToolbar;
+
+        public bool ShowGridIconOnToolbar
+        {
+            get { return showGridIconOnToolbar; }
+            private set { SetProperty(ref showGridIconOnToolbar, value); }
+        }
+
+        private void UpdatePageTitle(bool isGridLayout)
+        {
+            // Set page title
+            if (isGridLayout)
+            {
+                PageTitle = Constants.TITLE_GRIDVIEW;
+                ShowGridIconOnToolbar = false;
+            }
+            else
+            {
+                PageTitle = CurrentCamera.PageTitle + (IsDemoModeActive ? "" : (QTMNetworkConnection.IsMaster ? "" : " (slave)"));
+                ShowGridIconOnToolbar = true;
+            }
+        }
+
+        // Used for drawer animation
+        private StackLayout bottomSheet;        
+        private double bottomSheetInitialPosition;
+
+        public void SetBottomSheetHandle(StackLayout handle)
+        {
+            bottomSheet = handle;
+            bottomSheetInitialPosition = bottomSheet.Y;
+        }
+
         public void Dispose()
         {
             navigationService = null;
             currentCamera = null;
-            isDemoModeActive = false;
+            IsDemoModeActive = false;
 
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
-            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
-            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);            
 
             GC.Collect();
         }

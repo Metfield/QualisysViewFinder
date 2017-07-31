@@ -12,27 +12,33 @@
     <Compile Include="$(MSBuildThisFileDirectory)CameraProfile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CameraProfiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\DoubleToRoundedDecimalConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\PrefixConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\MarkerThresholdToPercentageConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\StringToBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DemoMode.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converters\ThresholdConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DemoStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImageResolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\IntToDoubleConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\ValueChangedEventArgsConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LensApertureSnapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Slider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\BitConvert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\INotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\FlatButtonEffect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\TimecodeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IOrientation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\IpAdressEntryRenderer .cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml.cs">
-      <DependentUpon>GridPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPageViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
@@ -43,11 +49,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\SettingsSlider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayoutManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CarouselScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\InverseBoolConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\Packet.cs" />
@@ -59,6 +65,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\LoadingSpinner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
@@ -100,15 +107,6 @@
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Running.qd" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Pages\GridPage\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\GridPage\GridPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
@@ -122,5 +120,17 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)CameraProfiles.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Pages\AboutPage\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Pages\AboutPage\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)disabled_stream_mode.jpg" />
   </ItemGroup>
 </Project>

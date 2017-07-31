@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using QTMRealTimeSDK.Data;
 using Arqus.Service;
+using System.Diagnostics;
+using Arqus.Visualization;
 
 namespace Arqus.Services
 {
-    class DemoStream : Stream<Camera>
+    class DemoStream : Stream
     {
         DemoMode demoMode;
         List<Camera> cameras;
@@ -22,21 +24,24 @@ namespace Arqus.Services
             currentFrame = 0;
         }
 
-        protected override void RetrieveDataAsync(RTPacket packet) // Ignore packet
+        CameraScreen cameraScreen;
+
+        protected override void RetrieveDataAsync()
         {
             cameras = demoMode.frames[currentFrame];
+            int id;
 
-            if (cameras != null)
+            for (int i = 0; i < cameras.Count; i++)
             {
-                uint id = 1;
-                foreach (var camera in cameras)
-                {
-                    if (camera.MarkerData2D.Length > 0)
-                    {
-                        MessagingService.Send(this, MessageSubject.STREAM_DATA_SUCCESS + id, camera, track: false);
-                    }
+                id = i + 1;
 
-                    id++;
+                try
+                {
+                    CameraStore.Cameras[id].Screen.MarkerData = cameras[i];
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine("DemoStream:" + e.Message);
                 }
             }
 
@@ -49,15 +54,13 @@ namespace Arqus.Services
                 currentFrame = 0;
         }
        
-        public new void Dispose()
+        public void Clean()
         {
             cameras.Clear();
             cameras = null;
 
             demoMode.Dispose();
-            demoMode = null;
-
-            base.Dispose();
+            demoMode = null;                        
         }
     }
 }

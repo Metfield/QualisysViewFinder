@@ -6,11 +6,11 @@ using Xamarin.Forms;
 [assembly: Dependency(typeof(Notification_Android))]
 public class Notification_Android : INotification
 {
-    public void Show(string message)
+    public void Show(string messageTitle, string message)
     {
         var activity = (Activity)Forms.Context;
         var view = activity.FindViewById(Android.Resource.Id.Content);
-        Snackbar.Make(view, message, 1000).Show();
+        Snackbar.Make(view, messageTitle + ": " + message, 1000).Show();
     }
 }
 

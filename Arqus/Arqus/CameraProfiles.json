@@ -21,31 +21,31 @@
       "Model": "Oqus 300",
       "AutoExposure": false,
       "LensControl": false,
-      "MarkerModeSupport": false
+      "MarkerModeSupport": true
     },
     {
       "Model": "Oqus 300 Plus",
       "AutoExposure": false,
       "LensControl": false,
-      "MarkerModeSupport": false
+      "MarkerModeSupport": true
     },
     {
       "Model": "Oqus 400",
       "AutoExposure": false,
       "LensControl": false,
-      "MarkerModeSupport": false
+      "MarkerModeSupport": true
     },
     {
       "Model": "Oqus 500",
       "AutoExposure": false,
       "LensControl": false,
-      "MarkerModeSupport": false
+      "MarkerModeSupport": true
     },
     {
       "Model": "Oqus 700",
       "AutoExposure": false,
       "LensControl": false,
-      "MarkerModeSupport": false
+      "MarkerModeSupport": true
     },
     {
       "Model": "Oqus 700 Plus",
@@ -91,7 +91,7 @@
     },
     {
       "Model": "Miqus Video",
-      "AutoExposure": false,
+      "AutoExposure": true,
       "LensControl": false,
       "MarkerModeSupport": false
     }

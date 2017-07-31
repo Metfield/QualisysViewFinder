@@ -36,5 +36,27 @@ namespace Arqus.Helpers
 
             return Math.Sqrt(Math.Pow(deltaX, 2.0f) + Math.Pow(deltaY, 2.0f));
         }
+
+        const double DEGREE_TO_RADIANS = Math.PI / 180;
+
+        /// <summary>
+        /// Calculates the distance away from the camera where the frustrum has a given width
+        /// </summary>
+        /// <param name="width">width of the frustrum at a certain distance</param>
+        /// <param name="aspectRatio">aspect ratio of the frustrum</param>
+        /// <param name="fov">field of view of the frustrum</param>
+        /// <returns></returns>
+        public static double GetDistanceForFrustrumWidth(double width, double aspectRatio, double fov)
+        {
+            return width / aspectRatio * 0.5f / Math.Tan(fov * DEGREE_TO_RADIANS * 0.5f );
+        }
+        
+        public static double GetDistanceForFrustrumHeight(double height, double fov)
+        {
+            return height * 0.5f / Math.Tan(fov * DEGREE_TO_RADIANS * 0.5f);
+        }
+        
+        
+
     }
 }

@@ -7,6 +7,7 @@ using QTMRealTimeSDK.Settings;
 using Arqus.Helpers;
 using Arqus.DataModels;
 using Prism.Mvvm;
+using System.Diagnostics;
 
 namespace Arqus
 {
@@ -17,7 +18,14 @@ namespace Arqus
     /// </summary>
     class CameraStore : BindableBase
     {
-        public static Camera CurrentCamera;
+        private static Camera currentCamera;
+
+        public static Camera CurrentCamera
+        {
+            get { return currentCamera; }
+            set { currentCamera = value; }
+        }
+
         public static Dictionary<int, Camera> Cameras;
         static SettingsService settingsService = new SettingsService();
         static public List<CameraScreen> Screens { get; set; }
@@ -73,16 +81,33 @@ namespace Arqus
             return true;
         }
 
-        public static List<CameraScreen> GenerateCameraScreens(Urho.Node cameraNode)
+        public static void GenerateCameraScreens(Urho.Node node)
         {
-            return Cameras.Values.Select(camera => new CameraScreen(camera, cameraNode)).ToList();
+            Cameras.Values.ToList().ForEach(camera => camera.GenerateScreen(node));
         }
 
+        public static List<Camera> GetCameras()
+        {
+            return Cameras.Values.ToList();
+        }
+
+        // Set the currently selected camera
         public static void SetCurrentCamera(int id)
         {
+            // Before setting the new camera make sure to deselect the old one
             CurrentCamera.Deselect();
             CurrentCamera = Cameras[id];
             CurrentCamera.Select();
+        }
+
+        public static void RefreshSettings()
+        {
+            List<SettingsGeneralCameraSystem> settingsList = SettingsService.GetCameraSettings();
+
+            foreach(var settings in settingsList)
+            {
+                Cameras[settings.CameraId].UpdateSettings(settings);
+            }
         }
 
 
@@ -114,7 +139,7 @@ namespace Arqus
             {
                 Screens.Clear();
                 Screens = null;
-            }
+            }                        
         }
     }
 }

@@ -9,6 +9,7 @@
         <ResourceDictionary>
 
             <Style x:Key="primaryButton" TargetType="Button">
+                <Setter Property="WidthRequest" Value="100" />
                 <Setter Property="BackgroundColor" Value="#2196F3" />
                 <Setter Property="TextColor" Value="#f1f3f8" />
             </Style>
@@ -17,8 +18,7 @@
             <Color x:Key="primaryColor">#2196F3</Color>
 
             <Color x:Key="highlightColor">#008CA0</Color>
-
-                <Style TargetType="NavigationPage">
+            <Style TargetType="NavigationPage">
                 <Setter Property="HasNavigationBar" Value="True" />
                 <Setter Property="BarTextColor" Value="White" />
                 <Setter Property="BarBackgroundColor" Value="#2196F3" />

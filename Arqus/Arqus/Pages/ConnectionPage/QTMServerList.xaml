@@ -5,23 +5,15 @@
         >
     <StackLayout    
                 HorizontalOptions="Fill"
-                VerticalOptions="Fill"
-                HeightRequest="150">
-        <!-- <Frame
-            Padding="0"
-            Margin="0"
-            Style="{StaticResource Key=AppBar}">
-
-            <Label Text="Pull to refresh"
-               HorizontalOptions="Center"
-               IsVisible="{Binding QTMServers, Converter={StaticResource DataSourceConverter}}"/>
-            
-        </Frame>
--->        
+                VerticalOptions="Fill">
         <ListView 
             SeparatorColor="#101010"
-            HorizontalOptions="FillAndExpand"
+            BackgroundColor="Transparent"
+            HorizontalOptions="Center"
             Margin="0"
+            WidthRequest="350"
+            HeightRequest="450"
+            VerticalOptions="Center"
             ItemsSource="{Binding QTMServers}"
             SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
             IsPullToRefreshEnabled="true"
@@ -33,13 +25,15 @@
 
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Padding="5">
-                            <Label Text="{Binding HostName}" />
-                            <Label Text="{Binding Details}"
-                                FontSize="Micro" />
+                        <StackLayout Padding="5" >
+                            <Label Text="{Binding HostName}" TextColor="White" />
+                            <Label  Text="{Binding Details}"
+                                    TextColor="White"
+                                    FontSize="Micro" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
+                
             </ListView.ItemTemplate>
         </ListView>
     </StackLayout>

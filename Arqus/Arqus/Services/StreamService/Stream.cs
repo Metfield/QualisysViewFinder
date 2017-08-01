@@ -39,7 +39,7 @@ namespace Arqus.Services
                 connection = new QTMNetworkConnection();
         }
 
-        public void StartStream()
+        public bool StartStream()
         {
             if (!streaming)
             {
@@ -50,8 +50,15 @@ namespace Arqus.Services
                     // Start stream
                     if (connection.Protocol.StreamFrames(StreamRate.RateFrequency, frequency, type))
                     {
+                        // Return false if there is no active measurement
+                        if (!connection.IsMeasurementActive())
+                        {
+                            streaming = false;
+                            return false;
+                        }
+
                         // Disable other image-streaming cameras
-                        if(type == ComponentType.ComponentImage)
+                        if (type == ComponentType.ComponentImage)
                         {
                             for(int i = 1; i <= CameraStore.Cameras.Count; i++)
                             {
@@ -77,6 +84,8 @@ namespace Arqus.Services
             {
                 Debug.WriteLine("Already streaming: ", type.ToString());
             }
+
+            return true;
         }
 
         public void StopStream()
@@ -133,7 +142,7 @@ namespace Arqus.Services
                 }                
             }
         }
-        
+
         protected abstract void RetrieveDataAsync();
         
         public void Dispose()

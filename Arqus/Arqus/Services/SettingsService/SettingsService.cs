@@ -245,8 +245,14 @@ namespace Arqus
             {
                 Debug.WriteLine(e);
                 return false;
-            }            
-        }            
+            }
+        }
+
+        // Starts new measurement, provided that a connection has been made
+        public static bool StartMeasurement()
+        {
+            return connection.Protocol.NewMeasurement();
+        }
 
         public static void Clean()
         {

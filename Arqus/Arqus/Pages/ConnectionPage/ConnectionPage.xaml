@@ -20,8 +20,8 @@
             HorizontalOptions="CenterAndExpand">
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -48,16 +48,16 @@
         </Grid>
 
         <Frame IsVisible="{Binding IsDiscovery}"
-               VerticalOptions="StartAndExpand"
+               Style="{StaticResource Card}"
+               VerticalOptions="Start"
                HorizontalOptions="Center" 
-               WidthRequest="300"
                Padding="0"
-               Margin="0,0,0,15" 
+               Margin="15" 
                BackgroundColor="#3c4c70" >
 
             <local:QTMServerList x:Name="qtmListView" 
-                                 HorizontalOptions="FillAndExpand"
-                                 VerticalOptions="FillAndExpand"/>
+                                 HorizontalOptions="Fill"
+                                 VerticalOptions="Fill"/>
 
         </Frame>
 

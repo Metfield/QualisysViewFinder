@@ -14,6 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DoubleToRoundedDecimalConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\EqualityToBooleanConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\ObjectCopier.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PrefixConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\MarkerThresholdToPercentageConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\StringToBoolConverter.cs" />

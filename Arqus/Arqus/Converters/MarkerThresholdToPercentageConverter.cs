@@ -13,7 +13,7 @@ namespace Arqus.Converters
         {
             try
             {
-                int markerThreshold = (int)value;
+                float markerThreshold = float.Parse(value.ToString().Replace('.',','));
                 float markerThresholdInPercentage = markerThreshold / 10;
 
                 return String.Format("{0}%", markerThresholdInPercentage);

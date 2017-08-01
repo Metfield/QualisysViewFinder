@@ -41,6 +41,10 @@ namespace Arqus
             Selection = id;
         }
 
+        // We keep track of the highest screen height and make that
+        // our cell height
+        private float cellHeight;
+
         public override void SetCameraScreenPosition(CameraScreen screen, DeviceOrientations orientation)
         {
             // Prevent the camera from being zoomed when in grid view
@@ -58,10 +62,10 @@ namespace Arqus
             float halfHeight = distance * Camera.HalfViewSize;
             float halfWidth = halfHeight * Camera.AspectRatio;
 
+            cellHeight = screen.Height > cellHeight ? screen.Height : cellHeight;
 
-            // Something is off with this algorithm as they are not being centered fully....
             float x = -halfWidth + (((Columns - 1) - screen.position % Columns)) * halfWidth * 2 / Columns + halfWidth / Columns;
-            float y = halfHeight - screen.Height / 2 - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (screen.Height + margin / 2) - margin / 2;
+            float y = halfHeight - screen.Height / 2 - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (cellHeight + margin / 2) - margin / 2;
             
             if ((y - screen.Height / 2) < min)
                 min = y - screen.Height / 2;

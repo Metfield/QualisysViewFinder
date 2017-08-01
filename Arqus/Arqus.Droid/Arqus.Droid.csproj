@@ -493,6 +493,9 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\splash.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Drawable\splash.png" />
+  </ItemGroup>
   <Import Project="..\Arqus\Arqus.projitems" Label="Shared" Condition="Exists('..\Arqus\Arqus.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

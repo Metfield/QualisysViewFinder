@@ -354,7 +354,21 @@ namespace Arqus
             Random rand = new Random();
             return rand.Next(1024, 65534);
         }
-        
+
+        // Checks if there is any active measurement in the system
+        // NOTE: Streaming needs to be enabled in order for this to work properly
+        public bool IsMeasurementActive()
+        {
+            PacketType packetType;
+            Protocol.ReceiveRTPacket(out packetType);
+
+            // If this is false, there are active measurements
+            if (packetType == PacketType.PacketNoMoreData)
+                return false;
+            else
+                return true;
+        }
+
         public void Dispose()
         {
             Protocol.ReleaseControl();

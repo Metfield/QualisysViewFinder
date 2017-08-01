@@ -1,5 +1,8 @@
 ﻿using System;
 using Arqus.Services;
+using Acr.UserDialogs;
+using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Arqus
 {
@@ -25,16 +28,41 @@ namespace Arqus
         {
             streamingDemo = demoMode;
         }
-                
-        public void Start()
+
+        bool shouldStartMeasurement;
+
+        public async void Start()
         {
             if (!streamingDemo)
             {
                 imageStream = new ImageStream();
                 markerStream = new MarkerStream();
 
-                imageStream.StartStream();
-                markerStream.StartStream();
+                // If this is false it means that there is a QTM instance without any 
+                if (!(imageStream.StartStream() && markerStream.StartStream()))
+                {
+                    if (await UserDialogs.Instance.ConfirmAsync("There is no active measurement, would you like to start one?", null, "Start Measurement", "Cancel"))
+                    {   
+                        SettingsService.StartMeasurement();
+
+                        // Wait a maximum of three seconds for data to start coming
+                        int iterationsToWait = 30;
+
+                        // Attempt to restart streams
+                        while (!(markerStream.StartStream() && imageStream.StartStream()) && iterationsToWait > 0)
+                        {
+                            iterationsToWait--;
+                            System.Threading.Thread.Sleep(100);
+
+                            // This is an unlikely scenario
+                            if (iterationsToWait == 0)
+                                Debugger.Break();
+                        }
+
+                        // Re-select current camera to start streaming again
+                        CameraStore.SetCurrentCamera(CameraStore.CurrentCamera.ID);
+                    }
+                }
 
                 // Frequency of 30
                 // Create event listener and start listening immediately

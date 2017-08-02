@@ -39,7 +39,7 @@ namespace Arqus.Services
 
                     // Load and decode image information, then resize it to a squared, power of 2 size
                     SKBitmap bitmap = SKBitmap.Decode(data[0].ImageData).Resize(new SKImageInfo(
-                        Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE),
+                       (int)((1 - CameraStore.CurrentCamera.Screen.zoom) * Constants.URHO_TEXTURE_SIZE), (int)((1 - CameraStore.CurrentCamera.Screen.zoom) * Constants.URHO_TEXTURE_SIZE)),
                         SKBitmapResizeMethod.Lanczos3);
 
                 isDecoding = false;

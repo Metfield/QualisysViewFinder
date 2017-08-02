@@ -261,6 +261,15 @@ namespace Arqus.DataModels
         {
             Screen = new CameraScreen(this, node);
         }
+
+        public void CropImage(float zoom)
+        {
+            Screen.x = (int) (zoom / 2 * Constants.URHO_TEXTURE_SIZE);
+            Screen.y = (int) (zoom / 2 * Constants.URHO_TEXTURE_SIZE);
+            Screen.zoom = zoom;
+
+            SettingsService.CropImage(ID, zoom / 2, 1 - zoom / 2, zoom / (2 * ImageResolution.PixelAspectRatio), 1 - zoom / (2 * ImageResolution.PixelAspectRatio));
+        }
         
     }
 }

@@ -302,6 +302,23 @@ namespace Arqus
                 return false;
             }
         }
+
+        public bool CropImage(int id, float left, float right, float top, float bottom)
+        {
+            try
+            {
+                string response;
+                string packet = Packet.CropImage(id, left, right, top, bottom);
+                bool success = Protocol.SendXML(packet, out response);
+                HandleHostResponse(response);
+                return success;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+                return false;
+            }
+        }
        
         public bool SetCameraSettings(int id, string settingsParameter, string value)
         {

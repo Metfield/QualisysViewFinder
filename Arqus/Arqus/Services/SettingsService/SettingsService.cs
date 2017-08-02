@@ -264,5 +264,10 @@ namespace Arqus
             generalSettings = null;
             imageCameras = null;
         }
+
+        public static bool CropImage(int id, float left, float right, float top, float bottom)
+        {
+            return MasterDelegate(() => connection.CropImage(id, left, right, top, bottom));
+        }
     }
 }

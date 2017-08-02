@@ -9,6 +9,8 @@ using Xamarin.Forms;
 
 using Urho;
 using Arqus.Services;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Arqus
 {
@@ -52,7 +54,10 @@ namespace Arqus
         float cameraMovementSpeed;
 
         bool demoModeActive;
-        
+        bool gridImageStreamEnabled = false;
+
+        bool streamHasStarted = false;
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -91,7 +96,7 @@ namespace Arqus
                 InvokeOnMainAsync(() => SwitchScreenLayout(type));
             });
         }
-        
+
         // Starts streaming based on input
         private void StartStream(bool demoMode = false)
         {
@@ -99,22 +104,10 @@ namespace Arqus
 
             cameraStreamService = new CameraStreamService(demoMode);
             cameraStreamService.Start();
-        }            
 
-        protected override void OnDeleted()
-        {
-            CameraStore.CurrentCamera.Deselect();
-
-            cameraStreamService.Dispose();
-            cameraStreamService = null;
-
-            // Update the application when a new screen layout is set in the view model
-            MessagingCenter.Unsubscribe<CameraPageViewModel, string>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
-            MessagingCenter.Unsubscribe<CameraPageViewModel, bool>(this, MessageSubject.STREAM_START);
-            
-            base.OnDeleted();
+            streamHasStarted = true;
         }
-        
+
         private async void CreateScene()
         {
             // Subscribe to touch event
@@ -250,16 +243,93 @@ namespace Arqus
             ToggleCameraUIInfo(layoutType);
 
             // Enable screen frames if going into grid mode
+            // --------------------------------------------
+            // Enable grid mode image streaming (streams all cameras at once) if going to grid mode,
+            // otherwise turn it off
             if (layoutType == ScreenLayoutType.Grid)
             {
                 ToggleCameraScreenFrame(true);
+                EnableGridModeImageStreaming();
             }
             else
             {
                 ToggleCameraScreenFrame(false);
+
+                if (cameraStreamService == null)
+                    return;
+                
+                DisableGridModeImageStreaming();
             }
         }
 
+        // Asynchronous task; runs for as long as grid layout is selected
+        // Streams every image-enabled camera in the system at a lower resolution
+        private async void UpdateGridCameras()
+        {
+            // Update while this mode is enabled
+            while (gridImageStreamEnabled)
+            {
+                if (currentScreenLayout.GetType() == typeof(GridScreenLayout))
+                {
+                    cameraStreamService.UpdateGridCameras();
+                }
+            }
+        }
+
+        // Sets everything up for grid mode every-camera-streaming
+        private void EnableGridModeImageStreaming()
+        {
+            // Don't try to stream if demo mode is active or if cameras
+            // are not yet streaming
+            if (demoModeActive || !streamHasStarted)
+                return;
+
+            // Deselect a camera when going into grid mode
+            // Technically all are selected/not-selected
+            CameraStore.CurrentCamera.Deselect();
+
+            cameraStreamService.StartGridCamerasUpdate();
+            EnableImageStreamOnAllCameras();
+
+            gridImageStreamEnabled = true;
+
+            // Create asynchronous task that will run for as long as grid mode is active
+            Task.Factory.StartNew(() => UpdateGridCameras(), TaskCreationOptions.LongRunning);
+        }
+
+        // Disable grid mode streaming
+        private void DisableGridModeImageStreaming()
+        {
+            // Don't try to stream if demo mode is active or if cameras
+            // are not yet streaming
+            if (demoModeActive || !streamHasStarted)
+                return;
+
+            gridImageStreamEnabled = false;
+
+            cameraStreamService.StopGridCamerasUpdate();
+            DisableImageStreamOnAllCameras();
+        }
+
+        // Enables image streaming for every camera in the system
+        private void EnableImageStreamOnAllCameras()
+        {
+            for (int i = 0; i < CameraStore.Cameras.Count; i++)
+            {
+                CameraStore.Cameras[i + 1].EnableImageMode(true);
+            }
+        }
+
+        // Disables image streaming for every camera
+        private void DisableImageStreamOnAllCameras()
+        {
+            for (int i = 0; i < CameraStore.Cameras.Count; i++)
+            {
+                CameraStore.Cameras[i + 1].DisableImageMode();
+            }
+        }
+
+        // Turns on/off the frame around a camera screen in the 3D scene
         private void ToggleCameraScreenFrame(bool flag)
         {
             List<DataModels.Camera> cameras = CameraStore.GetCameras();
@@ -342,7 +412,23 @@ namespace Arqus
                 if (currentScreenLayout.GetType() == typeof(GridScreenLayout))
                     CastTouchRay(eventArgs.X, eventArgs.Y);
             }
-        }    
+        }
+        protected override void Dispose(bool disposing)
+        {
+            gridImageStreamEnabled = false;
+            streamHasStarted = false;
+
+            CameraStore.CurrentCamera.Deselect();
+
+            cameraStreamService.Dispose();
+            cameraStreamService = null;
+
+            // Update the application when a new screen layout is set in the view model
+            MessagingCenter.Unsubscribe<CameraPageViewModel, string>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
+            MessagingCenter.Unsubscribe<CameraPageViewModel, bool>(this, MessageSubject.STREAM_START);
+
+            base.Dispose(disposing);
+        }
     }
 }
 

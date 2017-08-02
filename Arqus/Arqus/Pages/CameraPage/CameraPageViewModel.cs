@@ -62,17 +62,6 @@ namespace Arqus
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
             SetCameraModeToIntensityCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarkerIntensity));
 
-            if (QTMNetworkConnection.IsMaster || IsDemoModeActive)
-            {
-                IsModeToolbarActive = true;
-                IsDrawerActive = true;
-            }
-            else
-            {
-                IsModeToolbarActive = false;
-                IsDrawerActive = false;
-            }
-
             ToggleBottomSheetCommand = new DelegateCommand(() => {
                 IsBottomSheetVisible = !isBottomSheetVisible;
             });
@@ -204,6 +193,17 @@ namespace Arqus
             catch (Exception e)
             {
                 Debug.WriteLine(e);
+            }
+
+            if (QTMNetworkConnection.IsMaster || IsDemoModeActive)
+            {
+                IsModeToolbarActive = true;
+                IsDrawerActive = true;
+            }
+            else
+            {
+                IsModeToolbarActive = false;
+                IsDrawerActive = false;
             }
         }
 

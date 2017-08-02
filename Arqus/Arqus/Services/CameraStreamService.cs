@@ -75,6 +75,26 @@ namespace Arqus
             }
         }
 
+        // Updates every image-enabled camera in system
+        // NOTE: Used when in grid mode
+        public void UpdateGridCameras()
+        {
+            imageStream.UpdateGridCameras();
+        }
+
+        // Prepares the stream for grid mode streaming by temporarily pausing
+        // the normal image stream
+        public void StartGridCamerasUpdate()
+        {
+            imageStream.PauseDetailStream();
+        }
+
+        // Resume normal image streaming
+        public void StopGridCamerasUpdate()
+        {
+            imageStream.ResumeDetailStream();
+        }
+
         public void Dispose()
         {
             if (!streamingDemo)

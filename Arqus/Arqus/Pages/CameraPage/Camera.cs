@@ -59,7 +59,7 @@ namespace Arqus.DataModels
 
             // TODO: this should not have to be done in the constructor
             if (IsImageMode())
-                EnableImageMode();
+                EnableImageMode(false);
         }
 
         public void SetMode()
@@ -83,14 +83,12 @@ namespace Arqus.DataModels
 
         public void ApplyMode(CameraMode mode)
         {
-            
-
             if (Screen != null)
             {
                 bool isImageMode = mode != CameraMode.ModeMarker;
                 if (isImageMode)
                 {
-                    EnableImageMode();
+                    EnableImageMode(false);
                 }
 
                 Screen.SetImageMode(isImageMode);
@@ -139,9 +137,9 @@ namespace Arqus.DataModels
         {
             // Enable image mode if neccessary
             if (IsImageMode())
-                EnableImageMode();
+                EnableImageMode(false);
             
-            Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Amber));
+            Task.Run(() => SettingsService.SetLED(ID, SettingsService.LEDMode.On, SettingsService.LEDColor.Green));
         }
         public void Deselect()
         {
@@ -163,9 +161,12 @@ namespace Arqus.DataModels
         /// <summary>
         /// Enable image mode for streaming on the QTM host
         /// </summary>
-        public void EnableImageMode()
+        /// <param name="isGridMode">If true, divides image stream size by factor</param>
+        public void EnableImageMode(bool isGridMode)
         {
-            SettingsService.EnableImageMode(ID, true, ImageResolution.Width, ImageResolution.Height);
+            SettingsService.EnableImageMode(ID, true, 
+                isGridMode ? ImageResolution.Width / 5 : ImageResolution.Width,
+                isGridMode ? ImageResolution.Height / 5 : ImageResolution.Height);
         }
         
         /// <summary>

@@ -74,6 +74,8 @@ namespace Arqus.Visualization
             }
         }
 
+        private bool selected = false;
+
         public override void Select(int id)
         {
             if(Offset > 0)
@@ -82,6 +84,7 @@ namespace Arqus.Visualization
                 Offset = Offset + screenDistance;
 
             Selection = id;
+            selected = true;
 
             // Only communicate camera selection when user is not scrolling
             if (Offset == 0)
@@ -231,8 +234,11 @@ namespace Arqus.Visualization
         public override void OnTouchReleased(Input input, TouchEndEventArgs eventArgs)
         {
             // Only communicate camera selection when user is not scrolling
-            if(Offset != 0)
+            if(selected)
+            {
                 MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
+                selected = false;
+            }
 
             Offset = 0;
         }

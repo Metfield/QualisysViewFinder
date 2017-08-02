@@ -8,7 +8,7 @@ namespace Arqus
     /// Loading spinner to be used when no content can currently be displayed
     /// in an Urho component
     /// </summary>
-    class LoadingSpinner
+    public class LoadingSpinner
     {
         private Node[] circles;
         private Node root;

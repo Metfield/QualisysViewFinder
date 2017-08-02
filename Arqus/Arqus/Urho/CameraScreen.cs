@@ -104,8 +104,7 @@ namespace Arqus.Visualization
             return Camera.Settings.Mode != CameraMode.ModeMarker;
         }
 
-        // Intensity mode properties
-        private Texture2D texture;
+        public Texture2D texture;
 
         private byte[] imageData;
 
@@ -122,7 +121,7 @@ namespace Arqus.Visualization
             }
         }
 
-        private LoadingSpinner loadingSpinner;
+        public LoadingSpinner loadingSpinner;
 
         // TODO: Add initialization for float frameHeight, float frameWidth, float min
         public CameraScreen(DataModels.Camera camera, Node cameraNode)
@@ -162,7 +161,7 @@ namespace Arqus.Visualization
         }
 
         Node markerSphereNode;
-        Node screenNode;
+        public Node screenNode;
         
         CustomGeometry geom;
         public override void OnAttachedToNode(Node node)
@@ -275,13 +274,6 @@ namespace Arqus.Visualization
             // methods will be called during update
             OnUpdateHandler = null;
 
-            Urho.Application.InvokeOnMainAsync(() =>
-            {
-                defaultScreen.Enabled = true;
-                imageScreen.Enabled = false;
-                loadingSpinner.Start();
-            });
-
             if (enable)
             {
                 CleanMarkerScreen();
@@ -304,9 +296,12 @@ namespace Arqus.Visualization
         {
             OnUpdateHandler = OnMarkerUpdate;
         }
-        
+
+        private float tempTime = Time.TimeSinceEpoch;
+
         public void OnImageUpdate()
         {
+
             if(loadingSpinner.Running)
             {
                 loadingSpinner.Stop();
@@ -377,10 +372,19 @@ namespace Arqus.Visualization
                 Node.Enabled = true;
             }
 
+
+            float deltaTime = Time.SystemTime - tempTime;
+
+            if (deltaTime > 500)
+            {
+                loadingSpinner.Start();
+            }
+
             loadingSpinner.UpdateSpinner(timeStep);
             
             if (Node.Enabled && dirty)
             {
+                tempTime = Time.SystemTime;
                 dirty = false;
                 OnUpdateHandler?.Invoke();
             }

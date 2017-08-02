@@ -197,30 +197,17 @@ namespace Arqus.Visualization
                 // Get Touchstates
                 TouchState fingerOne = input.GetTouch(0);
                 TouchState fingerTwo = input.GetTouch(1);
-                float zoomValue = Gestures.GetZoomAmountFromPinch(fingerOne, fingerTwo);
 
-                imageZoom += zoomValue * 0.02f;
-
-                if (imageZoom > 1)
-                    imageZoom = 1;
-                else if( imageZoom <= 0)
-                    imageZoom = 0;
-                
                 Camera.Zoom += Gestures.GetZoomAmountFromPinch(fingerOne, fingerTwo) * 0.2f;
                 if (Camera.Zoom < 1)
                 {
                     Camera.Zoom = 1;
                     // Reset panning instantly instead of waiting for next finger touch
-                    /*Camera.Pan(eventArgs.DX,
-                        eventArgs.DY);*/
+                    Camera.Pan(eventArgs.DX,
+                        eventArgs.DY);
                 }
-
-
-                CameraStore.Cameras[Selection].Screen.Zoom(1 - imageZoom);
             }
         }
-
-        private float imageZoom = 0;
 
         private void SelectNeighbour(bool leftNeighbour)
         {
@@ -248,10 +235,6 @@ namespace Arqus.Visualization
                 MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
 
             Offset = 0;
-
-
-            CameraStore.Cameras[Selection].CropImage(imageZoom);
-            CameraStore.Cameras[Selection].Screen.Zoom(1);
         }
     }
 }

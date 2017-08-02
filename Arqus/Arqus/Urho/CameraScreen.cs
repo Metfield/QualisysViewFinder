@@ -46,9 +46,6 @@ namespace Arqus.Visualization
         private Urho.Shapes.Plane imageScreen;
         private Urho.Shapes.Plane defaultScreen;
 
-        private Urho.Shapes.Plane zoomScreen;
-        private Node zoomScreenNode;
-
         private Node screenFrame;
 
         private bool isDisabledStreamModePlaceholderActive = false;
@@ -100,11 +97,6 @@ namespace Arqus.Visualization
             {
                 return markerData;
             }
-        }
-
-        public void Zoom(float amount)
-        {
-            zoomScreenNode.SetScale(amount);
         }
 
         public bool IsImageMode()
@@ -181,7 +173,6 @@ namespace Arqus.Visualization
             screenNode = node.CreateChild("screenNode");
             markerSphereNode = node.CreateChild("markerSphereNode"); 
             backdropNode = node.CreateChild("backdrop");
-            zoomScreenNode = node.CreateChild("zoomScreen");
 
             loadingSpinner = new LoadingSpinner(node.CreateChild("spinner"), 40, 1);
 
@@ -193,8 +184,6 @@ namespace Arqus.Visualization
             // Rotate the camera in the clockwise direction with 90 degrees
             backdropNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
 
-            CreateFrame(zoomScreenNode, 0.1f, Urho.Color.Red);
-
             // Apply camera orientation and an offset to match the no rotation position with QTM
             backdropNode.Rotate(new Quaternion(0, 90 - Camera.Orientation, 0), TransformSpace.Local);
             markerSphereNode.Rotate(new Quaternion(0, 0, -Camera.Orientation), TransformSpace.Local);
@@ -205,10 +194,9 @@ namespace Arqus.Visualization
 
             // Create intensity plane, its material and assign it
             imageScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
+            Material = new Material();
 
-           
             SetImageTexture(Camera.ImageResolution.Width, Camera.ImageResolution.Height);
-            
 
             // Set detail info label
             // TODO: Fix magic numbers
@@ -249,8 +237,6 @@ namespace Arqus.Visualization
             textMessage.TextAlignment = HorizontalAlignment.Center;
             nodeTextMessage.Enabled = false;
             nodeTextMessage.Position = new Vector3(0.0f, 0.0f, -0.1f);
-
-            
 
             //nodeTextMessage.SetPosition2D(new Vector2(-textMessage.Width/2, 0.0f));
 
@@ -350,17 +336,14 @@ namespace Arqus.Visualization
             }
         }
 
-        public int x = 0, y = 0;
-        public float zoom = 0;
-
         private void LoadImage(byte[] image)
         {
             if (image == null)
                 return;
-            
+
             try
             {
-                texture?.SetData(0, x, y, (int) ((1 - zoom) * Constants.URHO_TEXTURE_SIZE), (int) ((1 - zoom) * Constants.URHO_TEXTURE_SIZE), image);
+                texture?.SetData(0, 0, 0, Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, image);
             }
             catch (Exception e)
             {
@@ -371,7 +354,6 @@ namespace Arqus.Visualization
         
         private void SetImageTexture(int width, int height)
         {
-            Material = new Material();
             texture = new Texture2D();
             texture.SetNumLevels(1);
             texture.SetSize(Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
@@ -489,12 +471,11 @@ namespace Arqus.Visualization
         {
             // Set both parent and children nodes
             screenFrame.SetDeepEnabled(flag);
-            zoomScreenNode.SetDeepEnabled(!flag);
         }        
 
 
         // Creates nice frame around the screen
-        private void CreateFrame(Node node, float frameWidth, Urho.Color? color = null)
+        private void CreateFrame(Node node, float frameWidth)
         {
             float originX = node.Position.X - Width / 2;
             float originY = Height / 2;
@@ -502,19 +483,10 @@ namespace Arqus.Visualization
             // Create frame node to hold all pieces
             screenFrame = node.CreateChild("screenFrame");
             screenFrame.Rotate(new Quaternion(0, 0, -orientation), TransformSpace.Local);
-
+            
+            // Get correct colors for shadows and lit frame areas
             Urho.Color leftColor, topColor, rightColor, bottomColor;
-
-            if (color == null)
-            {
-                // Get correct colors for shadows and lit frame areas
-                GetFrameColors(out leftColor, out topColor, out rightColor, out bottomColor);
-            }
-            else
-            {
-                leftColor = topColor = rightColor = bottomColor = color.Value;
-            }
-
+            GetFrameColors(out leftColor, out topColor, out rightColor, out bottomColor);
 
             // Right frame
             Node framePieceNode = screenFrame.CreateChild("FrameRight");
@@ -523,7 +495,7 @@ namespace Arqus.Visualization
             framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
             framePieceNode.Position = new Vector3(originX + Width,
                                                  node.Position.Y,
-                                                 node.Position.Z - 0.1f);
+                                                 node.Position.Z);
 
             Urho.Shapes.Plane framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
             framePiece.SetMaterial(Material.FromColor(rightColor, true));
@@ -535,7 +507,7 @@ namespace Arqus.Visualization
             framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
             framePieceNode.Position = new Vector3(node.Position.X,
                                                  originY,
-                                                 node.Position.Z - 0.1f);
+                                                 node.Position.Z);
 
             framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
             framePiece.SetMaterial(Material.FromColor(topColor, true));
@@ -547,7 +519,7 @@ namespace Arqus.Visualization
             framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
             framePieceNode.Position = new Vector3(node.Position.X,
                                                  -originY,
-                                                 node.Position.Z - 0.1f);
+                                                 node.Position.Z);
 
             framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
             framePiece.SetMaterial(Material.FromColor(bottomColor, true));
@@ -559,7 +531,7 @@ namespace Arqus.Visualization
             framePieceNode.Rotate(new Quaternion(-90, 0, 0), TransformSpace.Local);
             framePieceNode.Position = new Vector3(originX,
                                                  node.Position.Y,
-                                                 node.Position.Z - 0.1f);
+                                                 node.Position.Z);
 
             framePiece = framePieceNode.CreateComponent<Urho.Shapes.Plane>();
             framePiece.SetMaterial(Material.FromColor(leftColor, true));

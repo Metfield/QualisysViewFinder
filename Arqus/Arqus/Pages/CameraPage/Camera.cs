@@ -112,7 +112,6 @@ namespace Arqus.DataModels
         {
             if (settings != null)
             {
-                // If th
                 if (settings.Value.Mode != Settings.Mode)
                     ApplyMode(settings.Value.Mode);
 
@@ -127,8 +126,7 @@ namespace Arqus.DataModels
         /// <param name="value">the value to set the setting to</param>
         public void SetSetting(string setting, double value)
         {
-            if (SettingsService.SetCameraSettings(ID, setting, value.ToString()))
-                UpdateSettings();
+            SettingsService.SetCameraSettings(ID, setting, value.ToString());
         }
         
         /// <summary>

@@ -55,7 +55,7 @@ namespace QTMRealTimeSDK.Settings
 
         /// <summary>Camera Settings </summary>
         [XmlElement("Camera")]
-        public List<SettingsGeneralCameraSystem> CameraSettings;
+        public List<SettingsGeneralCameraSystem> CameraSettings { get; set; }
 
         public SettingsGeneral()
         {

@@ -9,7 +9,7 @@
         <ListView 
             SeparatorColor="#101010"
             BackgroundColor="Transparent"
-            HorizontalOptions="Center"
+            HorizontalOptions="FillAndExpand"
             Margin="0"
             WidthRequest="350"
             HeightRequest="450"

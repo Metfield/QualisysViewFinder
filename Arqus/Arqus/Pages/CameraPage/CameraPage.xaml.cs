@@ -139,7 +139,6 @@ namespace Arqus
             UrhoSurface.OnDestroy();
             application = null;
 
-
             // NOTE: Check this when wokring demo mode is merged with this version
             //viewModel.Dispose();
             //viewModel = null;
@@ -153,12 +152,10 @@ namespace Arqus
             application = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
             //Set the orientation of the application to match the rest of the UI
             application.Orientation = orientation;
-            
 
             // Notify ViewModel that loading for 3D app is done
             MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
         }
-        
     }
 }
 

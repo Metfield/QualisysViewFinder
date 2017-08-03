@@ -27,10 +27,11 @@ namespace Arqus
                 {
                     float scale = (float)(newDistance / oldDistance);
                     float zoom = (newDistance > oldDistance) ? scale : -scale;
-                    zoom *= pinchSpeed;
+                    zoom *= newDistance < oldDistance ? pinchSpeed * 2.0f : pinchSpeed;
                     return zoom;
                 }
             }
+
             return 0;
         }
         
@@ -75,8 +76,8 @@ namespace Arqus
             // Only pan if camera is zoomed
             if (!onZoom || camera.Zoom > 1)
             {   
-                float x = camera.Node.Position.X + -dx * precision * camera.Zoom;
-                float y = camera.Node.Position.Y + dy * precision * camera.Zoom;
+                float x = camera.Node.Position.X + -dx * precision;
+                float y = camera.Node.Position.Y + dy * precision;
 
                 // TODO: create an extension method to handle clamping of values
                 if (maxY > -99999 && y > maxY)

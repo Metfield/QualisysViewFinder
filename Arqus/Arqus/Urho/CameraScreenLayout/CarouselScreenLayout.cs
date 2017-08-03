@@ -12,11 +12,10 @@ using Xamarin.Forms.Internals;
 
 namespace Arqus.Visualization
 {
-
     public class CarouselScreenLayout : CameraScreenLayout
     {
         // TODO: Fix number of camerascreens
-        private float speed = 0.025f;
+        private float scrollSpeed = 0.025f;
 
         public double Radius
         {
@@ -118,7 +117,6 @@ namespace Arqus.Visualization
             else
                 distance = DataOperations.GetDistanceForFrustrumHeight(screen.Height, Camera.Fov);
 
-
             if (screen.targetDistanceFromCamera != distance)
             {
                 if (screen.position == Selection)
@@ -158,7 +156,7 @@ namespace Arqus.Visualization
                     }
 
                     // We want to scroll 
-                    Offset += eventArgs.DX * speed;
+                    Offset += eventArgs.DX * scrollSpeed;
 
                     double deltaTime = Time.SystemTime - touchThrottleTime;
 
@@ -202,12 +200,13 @@ namespace Arqus.Visualization
                 TouchState fingerTwo = input.GetTouch(1);
 
                 Camera.Zoom += Gestures.GetZoomAmountFromPinch(fingerOne, fingerTwo) * 0.2f;
+
                 if (Camera.Zoom < 1)
                 {
                     Camera.Zoom = 1;
+
                     // Reset panning instantly instead of waiting for next finger touch
-                    Camera.Pan(eventArgs.DX,
-                        eventArgs.DY);
+                    Camera.Pan(eventArgs.DX, eventArgs.DY);
                 }
             }
         }

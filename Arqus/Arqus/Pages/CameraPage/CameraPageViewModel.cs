@@ -127,11 +127,8 @@ namespace Arqus
             Task.Run(() => userDialogs.HideLoading());
         }
 
-        private float tempTime = 0;
-
         public void SetCameraSetting(string setting, double value)
         {
-            
             // If nothing has been recieved from QTM then update the settings
             // If one or several events has been recieved skip updating QTM an decrement the counter
             if (skipCounter == 0)

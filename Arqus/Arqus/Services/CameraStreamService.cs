@@ -41,8 +41,13 @@ namespace Arqus
                 // If this is false it means that there is a QTM instance without any 
                 if (!(imageStream.StartStream() && markerStream.StartStream()))
                 {
-                    if (await UserDialogs.Instance.ConfirmAsync("There is no active measurement, would you like to start one?", null, "Start Measurement", "Cancel"))
-                    {   
+                    if (!QTMNetworkConnection.IsMaster)
+                    {
+                        await UserDialogs.Instance.AlertAsync("There is no active measurement. Connect to the system in master mode to be able to start a new one." +
+                                                              " Alternatively, start a measurement directly from QTM", "Attention");
+                    }
+                    else if (await UserDialogs.Instance.ConfirmAsync("There is no active measurement, would you like to start one?", null, "Start Measurement", "Cancel"))
+                    {
                         SettingsService.StartMeasurement();
 
                         // Wait a maximum of three seconds for data to start coming

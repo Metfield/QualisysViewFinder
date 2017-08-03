@@ -262,6 +262,11 @@ namespace Arqus.DataModels
         {
             Screen = new CameraScreen(this, node);
         }
+
+        public void CropImage(float left, float right, float top, float bottom)
+        {
+            SettingsService.CropImage(ID, left, right, top, bottom);
+        }
         
     }
 }

@@ -57,7 +57,7 @@ namespace Arqus
                 if (!imageCameraSettings.Enabled && cameraSettings.Mode != CameraMode.ModeMarker)
                     SettingsService.SetCameraMode(imageCameraSettings.CameraID, cameraSettings.Mode);
                                 
-                ImageResolution imageResolution = new ImageResolution(imageCameraSettings.Width, imageCameraSettings.Height);
+                ImageResolution imageResolution = new ImageResolution(imageCameraSettings.Width / 2, imageCameraSettings.Height / 2);
 
                 // Create camera object and add it to dictionary
                 Camera camera = new Camera(imageCameraSettings.CameraID, cameraSettings, imageResolution);                

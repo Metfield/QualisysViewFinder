@@ -104,6 +104,24 @@ namespace Arqus.Helpers
             return FormatStringToXML(string.Format(packet, id, value));
         }
 
+        public static string CropImage(int id, float left, float right, float top, float bottom)
+        {
+
+            string packet = @"<QTM_Settings>
+                <Image>
+                    <Camera>
+                        <ID>{0}</ID>
+                        <Left_Crop>{1}</Left_Crop>
+                        <Right_Crop>{2}</Right_Crop>
+                        <Top_Crop>{3}</Top_Crop>
+                        <Bottom_Crop>{4}</Bottom_Crop>
+                    </Camera>
+                </Image>
+            </QTM_Settings>";
+
+            return FormatStringToXML(string.Format(packet, id, left, right, top, bottom));
+        }
+
         private static string FormatStringToXML(string value)
         {
             XmlDocument document = new XmlDocument();

@@ -51,7 +51,7 @@ namespace Arqus.Services
 
                 // Set current camera's image data and ready it
                 // to create a texture
-                if (CameraStore.CurrentCamera.Screen != null)
+                if (CameraStore.CurrentCamera.Screen != null && data[0].CameraID == CameraStore.CurrentCamera.ID)
                     CameraStore.CurrentCamera.Screen.ImageData = bitmap.Bytes;
             }
             catch (Exception e)

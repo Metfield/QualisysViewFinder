@@ -26,9 +26,6 @@ namespace Arqus.Services
         // Variables to handle packets
         protected QTMNetworkConnection connection;
 
-        // This task handles do ContinuousStreaming loop
-        Task streamTask;
-
         protected Stream(ComponentType type, int frequency, bool demoMode)
         {
             this.type = type;
@@ -69,16 +66,12 @@ namespace Arqus.Services
                                 }
                             }
                         }
-
-                        // Run continuous stream method
-                        streamTask = Task.Run(() => ContinuousStream());
                     }
                 }
-                else
-                {
-                    // TODO: Assuming DemoStream is going great!
-                    streamTask = Task.Run(() => ContinuousStream());
-                }
+
+                // Run continuous stream method
+                // TODO: In case of demo mode, this assumes it all went well
+                Task.Factory.StartNew(() => ContinuousStream(), TaskCreationOptions.LongRunning);
             }
             else
             {

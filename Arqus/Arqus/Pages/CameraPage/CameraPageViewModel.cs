@@ -122,9 +122,6 @@ namespace Arqus
             IsLensControlActive = false;
 
             UpdatePageTitle(IsGridLayoutActive);
-
-            // Dismiss loading screen once the page has finished loading
-            Task.Run(() => userDialogs.HideLoading());
         }
 
         public void SetCameraSetting(string setting, double value)
@@ -184,6 +181,10 @@ namespace Arqus
                 IsModeToolbarActive = false;
                 IsDrawerActive = false;
             }
+
+            // Dismiss loading screen once the page has finished loading
+            if(!IsDemoModeActive)
+                Task.Run(() => userDialogs.HideLoading());
         }
 
         /// <summary>

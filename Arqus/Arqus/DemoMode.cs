@@ -5,6 +5,7 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
+using Acr.UserDialogs;
 
 namespace Arqus
 {
@@ -30,7 +31,9 @@ namespace Arqus
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 frames = (List<List<Camera>>)binaryFormatter.Deserialize(stream);
             }
-            
+
+            Task.Run(() => UserDialogs.Instance.HideLoading());
+
             frameCount = frames.Count;
             assembly = null;
         }

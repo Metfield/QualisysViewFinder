@@ -55,6 +55,8 @@ namespace Arqus
             // Start with a visible drawer
             // Otherwise iOS will mess everything up..
             IsBottomSheetVisible = true;
+            IsModeToolbarActive = true;
+            IsDrawerActive = true;
 
             CurrentCamera = CameraStore.CurrentCamera;
 
@@ -68,33 +70,11 @@ namespace Arqus
 
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
-                // Hide/show drawer according to mode
-                // We don't want to show any drawers in grid mode
-                if (IsGridLayoutActive)
-                {
-                    if (QTMNetworkConnection.IsMaster)
-                    {
-                        IsGridLayoutActive = false;
-                        ShowDrawer();
-                    }
+                IsGridLayoutActive = true;
+                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
 
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Carousel);
-
-                    // Update the page title 
-                    UpdatePageTitle(false);
-                }
-                else
-                {
-                    if (QTMNetworkConnection.IsMaster)
-                    {
-                        IsGridLayoutActive = true;
-                    }
-
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
-
-                    // Update the page title 
-                    UpdatePageTitle(true);
-                }
+                // Update the page title 
+                UpdatePageTitle(true);
             });
 
             // We're starting with carousel mode
@@ -184,6 +164,8 @@ namespace Arqus
             // Related to iOS issue where this flag is set at the constructor
             // Hide the drawer now that Xamarin.Forms has finished loading the interface
             IsBottomSheetVisible = false;
+            IsModeToolbarActive = false;
+            IsDrawerActive = false;
 
             try
             {
@@ -193,7 +175,7 @@ namespace Arqus
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-            }
+            } 
 
             if (QTMNetworkConnection.IsMaster || IsDemoModeActive)
             {
@@ -234,6 +216,13 @@ namespace Arqus
             if (IsGridLayoutActive)
             {
                 IsGridLayoutActive = false;
+
+                // Don't display drawer nor toolbar if this is slave mode
+                if (!QTMNetworkConnection.IsMaster && !IsDemoModeActive)
+                {
+                    IsDrawerActive = false;
+                    IsModeToolbarActive = false;
+                }
             }
 
             // Switch drawer mode

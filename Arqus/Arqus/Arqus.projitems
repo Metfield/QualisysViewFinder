@@ -35,7 +35,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\FlatButtonEffect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RTClientSDK.Net\TimecodeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IOrientation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\BottomSheet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\IpAdressEntryRenderer .cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\JiggleButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />

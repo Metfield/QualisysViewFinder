@@ -13,14 +13,6 @@ namespace Arqus.Visualization
         public CameraScreenLayout currentLayout { get; private set; }
         private Dictionary<ScreenLayoutType, CameraScreenLayout> layouts;
 
-        private int selection;
-
-        public int Selection
-        {
-            get { return currentLayout.Selection; }
-        }
-
-
         public CameraScreenLayoutManager(Dictionary<ScreenLayoutType, CameraScreenLayout> layouts)
         {
             this.layouts = layouts;

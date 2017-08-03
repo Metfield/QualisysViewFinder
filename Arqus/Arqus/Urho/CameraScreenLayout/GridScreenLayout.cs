@@ -12,9 +12,6 @@ namespace Arqus
 {
     class GridScreenLayout : CameraScreenLayout
     {
-        int cameraCount;
-        Node gridNode;
-        
         public int Columns { get; set; }
         public float Padding { get; set; }
         public Vector3 Origin { get; set; }

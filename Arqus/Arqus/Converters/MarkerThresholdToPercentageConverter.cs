@@ -13,10 +13,10 @@ namespace Arqus.Converters
         {
             try
             {
-                float markerThreshold = float.Parse(value.ToString().Replace('.',','));
+                float markerThreshold = float.Parse(value.ToString());
                 float markerThresholdInPercentage = markerThreshold / 10;
 
-                return String.Format("{0}%", markerThresholdInPercentage);
+                return String.Format("{0}%", (int)markerThresholdInPercentage);
             }
             catch (InvalidCastException e)
             {
@@ -28,7 +28,7 @@ namespace Arqus.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return value;
         }
     }
 }

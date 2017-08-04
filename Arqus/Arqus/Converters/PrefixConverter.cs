@@ -10,12 +10,13 @@ namespace Arqus.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return String.Format("{0} {1}", value, parameter);
+            float fvalue = float.Parse(value.ToString());
+            return String.Format("{0} {1}", (int)fvalue, parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return value;
         }
     }
 }

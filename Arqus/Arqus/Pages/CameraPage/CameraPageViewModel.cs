@@ -136,25 +136,11 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
-
-            try
-            {
-                NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
-
-                //if (navigationMode == NavigationMode.Back)
-                //MessagingCenter.Send(Application.Current, MessageSubject.DISCONNECTED);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
+            // Not used
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
-
             // Related to iOS issue where this flag is set at the constructor
             // Hide the drawer now that Xamarin.Forms has finished loading the interface
             IsBottomSheetVisible = false;
@@ -201,7 +187,7 @@ namespace Arqus
 
         public void OnNavigatingTo(NavigationParameters parameters)
         {
-            MessagingService.Send(Application.Current, MessageSubject.CONNECTED, payload: new { Navigate = "OnNavigatingTo" });
+            // Not used
         }
 
         private void OnCameraSelection(Object sender, int cameraID)

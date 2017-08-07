@@ -1,11 +1,9 @@
-﻿using Arqus.Services;
-using Prism.Unity;
+﻿using Prism.Unity;
 using Xamarin.Forms;
-using Arqus.Helpers;
+
 using Microsoft.Practices.Unity;
-using System.Diagnostics;
-using Arqus.Services.MobileCenterService;
-using Arqus.Service;
+using Urho.Forms;
+
 using Acr.UserDialogs;
 
 namespace Arqus
@@ -34,7 +32,18 @@ namespace Arqus
         protected override void OnStart()
         {
             base.OnStart();
-            MobileCenterService.Init();
+        }
+
+        protected override void OnSleep()
+        {
+            UrhoSurface.OnPause();
+            base.OnSleep();
+        }
+
+        protected override void OnResume()
+        {
+            UrhoSurface.OnResume();
+            base.OnResume();
         }
     }
 }

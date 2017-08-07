@@ -413,6 +413,7 @@ namespace Arqus
                     CastTouchRay(eventArgs.X, eventArgs.Y);
             }
         }
+
         protected override void Dispose(bool disposing)
         {
             gridImageStreamEnabled = false;

@@ -12,13 +12,15 @@ using System.Reactive.Linq;
 using System.Threading;
 using Arqus.Helpers;
 using Arqus.Service;
+using Prism.Navigation;
 
 namespace Arqus
 {
-    public partial class CameraPage : ContentPage
+    public partial class CameraPage : ContentPage, Prism.Navigation.INavigationAware
     {
         CameraApplication application;
         CameraPageViewModel viewModel;
+        DeviceOrientations orientation;
 
         // NOTE: Using a really low throttle time will cause QTM to crash
         int throttleTime = 50;
@@ -125,36 +127,41 @@ namespace Arqus
                 application.Orientation = orientation;
         }
 
-        DeviceOrientations orientation;
-
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            StartUrhoApp();
+
+            if(application == null)
+                StartUrhoApp();
         }
-
-        protected override async void OnDisappearing()
-        {
-            await application.Exit();
-            UrhoSurface.OnDestroy();
-            application = null;
-
-            // NOTE: Check this when wokring demo mode is merged with this version
-            //viewModel.Dispose();
-            //viewModel = null;
-
-            base.OnDisappearing();
-        }        
-        
 
         async void StartUrhoApp()
         {
+            // Create and start cameraPage Urho 3D application
             application = await urhoSurface.Show<CameraApplication>(new ApplicationOptions(assetsFolder: null) { Orientation = ApplicationOptions.OrientationType.LandscapeAndPortrait });
+            
             //Set the orientation of the application to match the rest of the UI
             application.Orientation = orientation;
 
             // Notify ViewModel that loading for 3D app is done
             MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+        }
+
+        public void OnNavigatedFrom(NavigationParameters parameters)
+        {
+            // Exit 3D application and nullify as we move away from view
+            application.Exit();
+            application = null;
+        }
+
+        public void OnNavigatedTo(NavigationParameters parameters)
+        {
+            // Not used
+        }
+
+        public void OnNavigatingTo(NavigationParameters parameters)
+        {
+            // Not used
         }
     }
 }

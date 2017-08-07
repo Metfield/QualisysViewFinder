@@ -15,8 +15,8 @@ namespace Arqus.Droid.Renderers
 
             var native = Control as EntryEditText;
 
-            native.InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberFlagDecimal | Android.Text.InputTypes.NumberFlagSigned;
-            native.KeyListener = DigitsKeyListener.GetInstance("1234567890.");
+            native.InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberFlagDecimal | Android.Text.InputTypes.NumberFlagSigned | Android.Text.InputTypes.ClassText;
+            native.KeyListener = DigitsKeyListener.GetInstance(false, true);
         }
     }
 }

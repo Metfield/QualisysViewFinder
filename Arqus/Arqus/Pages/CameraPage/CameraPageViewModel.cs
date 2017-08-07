@@ -47,6 +47,8 @@ namespace Arqus
 
         private CameraMode cameraMode;
 
+        private Urho.Application urhoApplicationReference;
+
         public CameraPageViewModel(INavigationService navigationService, IUserDialogs userDialogs)
         {
             this.navigationService = navigationService;
@@ -97,10 +99,6 @@ namespace Arqus
                         SetCameraMode(CurrentCamera.Settings.Mode);
                 });
 
-            // Waits for urho to finish loading to start with streaming
-            MessagingCenter.Subscribe<CameraPage>(this,
-                MessageSubject.URHO_SURFACE_FINISHED_LOADING, (sender) => StartStreaming());
-
             // Used to hide drawer when the urho surface is tapped
             MessagingCenter.Subscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED, (sender) => 
             {
@@ -136,7 +134,9 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            // Not used
+            // Exit 3D application and nullify as we move away from view
+            Urho.Forms.UrhoSurface.OnDestroy();
+            urhoApplicationReference = null;
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
@@ -449,6 +449,15 @@ namespace Arqus
         {
             bottomSheet = handle;
             bottomSheetInitialPosition = bottomSheet.Y;
+        }
+
+        public void SetUrhoApplicationReference(Urho.Application application)
+        {
+            // Copy reference
+            urhoApplicationReference = application;
+
+            // Application can now begin streaming
+            StartStreaming();
         }
 
         public void Dispose()

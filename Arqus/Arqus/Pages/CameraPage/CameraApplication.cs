@@ -414,13 +414,21 @@ namespace Arqus
             }
         }
 
-        protected override void Dispose(bool disposing)
+        // Called before dispose
+        protected override void Stop()
         {
+            DisableImageStreamOnAllCameras();
+
             gridImageStreamEnabled = false;
             streamHasStarted = false;
 
             CameraStore.CurrentCamera.Deselect();
 
+            base.Stop();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
             cameraStreamService.Dispose();
             cameraStreamService = null;
 

@@ -16,7 +16,7 @@ using Prism.Navigation;
 
 namespace Arqus
 {
-    public partial class CameraPage : ContentPage, Prism.Navigation.INavigationAware
+    public partial class CameraPage : ContentPage
     {
         CameraApplication application;
         CameraPageViewModel viewModel;
@@ -143,25 +143,8 @@ namespace Arqus
             //Set the orientation of the application to match the rest of the UI
             application.Orientation = orientation;
 
-            // Notify ViewModel that loading for 3D app is done
-            MessagingCenter.Send(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
-        }
-
-        public void OnNavigatedFrom(NavigationParameters parameters)
-        {
-            // Exit 3D application and nullify as we move away from view
-            application.Exit();
-            application = null;
-        }
-
-        public void OnNavigatedTo(NavigationParameters parameters)
-        {
-            // Not used
-        }
-
-        public void OnNavigatingTo(NavigationParameters parameters)
-        {
-            // Not used
+            // Set viewModel's urho application reference
+            viewModel.SetUrhoApplicationReference(application);
         }
     }
 }

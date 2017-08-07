@@ -30,7 +30,7 @@
             </Grid.ColumnDefinitions>
 
 
-            <ui:JiggleButton Text="Discover"
+            <ui:JiggleButton Text="DISCOVER"
                     Grid.Row="0"
                     Grid.Column="0"
                     HorizontalOptions="End" 
@@ -38,7 +38,7 @@
                     Style="{StaticResource primaryButton}"
                     Command="{Binding ConnectionModeDiscoveryCommand}"/>
 
-            <ui:JiggleButton Text="Manually"
+            <ui:JiggleButton Text="MANUALLY"
                              Grid.Row="0"
                              Grid.Column="1"
                              HorizontalOptions="Start" 
@@ -68,7 +68,7 @@
 
             <ui:IpAdressEntryRenderer Placeholder="Ip Address" Text="{Binding IPAddress}"/>
 
-            <ui:JiggleButton Text="Connect"
+            <ui:JiggleButton Text="CONNECT"
                     Style="{StaticResource primaryButton}"
                     Command="{Binding ConnectCommand}" />
 

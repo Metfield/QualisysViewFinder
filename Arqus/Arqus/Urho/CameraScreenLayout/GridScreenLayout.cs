@@ -56,7 +56,7 @@ namespace Arqus
             else
             {
                 Columns = 2;
-                heightOffset = 1.5f;
+                heightOffset = 1.25f;
             }
 
             min = 0;
@@ -71,7 +71,7 @@ namespace Arqus
             float margin = 5;
             
             // Calculate the distance where the camera screen width is half the width of the frustrum
-            float distance = (float)DataOperations.GetDistanceForFrustrumWidth(screen.Width * Columns + margin, Camera.AspectRatio, Camera.Fov); ;
+            float distance = (float)DataOperations.GetDistanceForFrustrumWidth(screen.Width * Columns + margin, Camera.AspectRatio, Camera.Fov);
             
             float halfHeight = distance * Camera.HalfViewSize;
             float halfWidth = halfHeight * Camera.AspectRatio;

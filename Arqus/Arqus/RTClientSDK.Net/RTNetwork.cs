@@ -47,7 +47,15 @@ namespace QTMRealTimeSDK.Network
                 }
 
                 mTCPClient = new TcpClient();
+
+                // [Eman]: Adding timeout to connection, otherwise system sometimes
+                // hangs when attempting to connect to an invalid host; program won't
+                // continue after mTCPClient.Connect() until a new request is made 
+                mTCPClient.SendTimeout = 500;
+
+                // Connect to IP through port
                 mTCPClient.Connect(serverIP[0], port);
+
                 // Disable Nagle's algorithm
                 mTCPClient.NoDelay = true;
             }

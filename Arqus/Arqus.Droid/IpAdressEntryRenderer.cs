@@ -13,10 +13,7 @@ namespace Arqus.Droid.Renderers
         {
             base.OnElementChanged(e);
 
-            var native = Control as EntryEditText;
-
-            native.InputType = Android.Text.InputTypes.ClassNumber | Android.Text.InputTypes.NumberFlagDecimal | Android.Text.InputTypes.NumberFlagSigned | Android.Text.InputTypes.ClassText;
-            native.KeyListener = DigitsKeyListener.GetInstance(false, true);
+            (Control as EntryEditText).InputType = Android.Text.InputTypes.ClassPhone;
         }
     }
 }

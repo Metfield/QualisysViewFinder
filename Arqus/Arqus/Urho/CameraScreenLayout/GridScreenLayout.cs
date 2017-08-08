@@ -42,8 +42,25 @@ namespace Arqus
         // our cell height
         private float cellHeight;
 
+        float min, newMin;
+
         public override void SetCameraScreenPosition(CameraScreen screen, DeviceOrientations orientation)
         {
+            float heightOffset;
+
+            if (orientation == DeviceOrientations.Landscape)
+            {
+                Columns = 3;
+                heightOffset = 0;
+            }
+            else
+            {
+                Columns = 2;
+                heightOffset = 1.5f;
+            }
+
+            min = 0;
+
             // Prevent the camera from being zoomed when in grid view
             if (Camera.Zoom > 1)
                 Camera.Zoom = 1;
@@ -61,17 +78,17 @@ namespace Arqus
 
             cellHeight = screen.Height > cellHeight ? screen.Height : cellHeight;
 
-            float x = -halfWidth + (((Columns - 1) - screen.position % Columns)) * halfWidth * 2 / Columns + halfWidth / Columns;
-            float y = halfHeight - screen.Height / 2 - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (cellHeight + margin / 2) - margin / 2;
-            
-            if ((y - screen.Height / 2) < min)
-                min = y - screen.Height / 2;
+            float screenPosition = Math.Abs(((screen.position - 1) % Columns) - (Columns - 1));
 
+            float x = -halfWidth + (((Columns - 1) - screenPosition)) * halfWidth * 2 / Columns + halfWidth / Columns;
+            float y = halfHeight - screen.Height / 2 - (float)Math.Floor((double)(screen.position - 1) / (float)Columns) * (cellHeight + margin / 2) - margin / 2;
+
+            newMin = y + screen.Height * heightOffset;
+            min = newMin < min ? newMin : min;
+            
             // We need a small offset or the will not be seen by the camera
             screen.Node.SetWorldPosition(new Vector3(x, y, distance));
         }
-
-        float min;
 
         public override void OnTouch(Input input, TouchMoveEventArgs eventArgs)
         {

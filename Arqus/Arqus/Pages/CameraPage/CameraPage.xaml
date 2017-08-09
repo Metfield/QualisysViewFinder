@@ -16,7 +16,7 @@
 
     <StackLayout Margin="0" Style="{StaticResource Background}">
 
-        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False">
+        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False" MinimumHeightRequest="40">
 
             <ContentView.Margin>
                 <OnPlatform x:TypeArguments="Thickness"

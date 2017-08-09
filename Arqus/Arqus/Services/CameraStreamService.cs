@@ -59,9 +59,11 @@ namespace Arqus
                             iterationsToWait--;
                             System.Threading.Thread.Sleep(100);
 
-                            // This is an unlikely scenario
+                            // If this is true, QTM is not yet ready to start a new measurement
                             if (iterationsToWait == 0)
-                                Debugger.Break();
+                            {
+                                SharedProjects.Notification.Show("Error", "Please make sure QTM is ready to start new measurements");
+                            }
                         }
 
                         // Re-select current camera to start streaming again

@@ -84,8 +84,10 @@ namespace Arqus
                     return false;
 
                 // Get the first one manually and then let the auto-update run
-                connection.Protocol.GetGeneralSettings();
-                generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
+                if (connection.Protocol.GetGeneralSettings())
+                    generalSettings = connection.Protocol.GeneralSettings.CameraSettings;
+                else
+                    return false;
             }    
             else // Demo mode
             {

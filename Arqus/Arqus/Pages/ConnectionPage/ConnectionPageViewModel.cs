@@ -318,31 +318,23 @@ namespace Arqus
                     }
                 }
 
+                // Send connection instance to settings service
+                if(!SettingsService.Initialize())
+                {
+                    // There was a problem when attempting to establish the connection
+                    userDialogs.Alert("There was a communication mismatch with QTM, please make sure you are running the" +
+                                      " latest version of this application and that you have the QTM version specified in" +
+                                      " the requirements", "Error", "Dismiss");
+
+                    connection.Disconnect();
+                    return;
+                }
+
                 // Show loading screen whilst connecting
                 // This loading screen is disabled in the CameraPageViewModel constructor
                 Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
 
-                bool connectionSuccess = false;
-
-                try
-                {
-                    // Send connection instance to settings service
-                    connectionSuccess = SettingsService.Initialize();
-                }
-                catch(Exception e)
-                {
-                    Debug.Print("ConnectionPageViewModel::OnConnectionStarted Exception -> " + e.Message);
-                    Debugger.Break();
-                }
-                
-                if(!connectionSuccess)
-                {
-                    // There was a problem when attempting to establish the connection
-                    // Dismiss loading screen and get the hell out
-                    Task.Run(() => userDialogs.HideLoading());
-                    return;
-                }
-
+                // Fetch information from system and fill structures accordingly
                 CameraStore.GenerateCameras();
 
                 // Connection was successfull                
@@ -355,6 +347,8 @@ namespace Arqus
             {
                 Debug.WriteLine(e);
                 notificationService.Show("Attention", "Please make sure that QTM is up and running");
+
+                Task.Run(() => userDialogs.HideLoading());
 
                 return;
             }

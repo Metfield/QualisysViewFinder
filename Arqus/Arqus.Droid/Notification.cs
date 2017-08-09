@@ -1,13 +1,12 @@
-using System;
-using Android.Widget;
-
 namespace SharedProjects
 {    
     internal class Notification
     {
+        static Notification_Android notification = new Notification_Android();
+
         internal static void Show(string title, string message)
         {
-            Toast.MakeText(Android.App.Application.Context, message, ToastLength.Short).Show();
+            notification.Show(title, message);
         }
     }
 }

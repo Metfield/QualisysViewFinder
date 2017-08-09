@@ -1,98 +1,104 @@
-﻿ [
-    {
-      "Model": "Oqus 100",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Oqus 200 C",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Oqus 210 C",
-      "AutoExposure": true,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Oqus 300",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Oqus 300 Plus",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Oqus 400",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Oqus 500",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Oqus 700",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Oqus 700 Plus",
-      "AutoExposure": false,
-      "LensControl": true,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Oqus 701 Plus",
-      "AutoExposure": false,
-      "LensControl": true,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Oqus 710 Plus",
-      "AutoExposure": false,
-      "LensControl": true,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Miqus M1",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Miqus M3",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Miqus M5",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": true
-    },
-    {
-      "Model": "Miqus Sync Unit",
-      "AutoExposure": false,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    },
-    {
-      "Model": "Miqus Video",
-      "AutoExposure": true,
-      "LensControl": false,
-      "MarkerModeSupport": false
-    }
+﻿[
+  {
+    "Model": "Oqus 100",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  },
+  {
+    "Model": "Oqus 200 C",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  },
+  {
+    "Model": "Oqus 210 C",
+    "AutoExposure": true,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  },
+  {
+    "Model": "Oqus 300",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  },
+  {
+    "Model": "Oqus 300 Plus",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 400",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 500",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 500 Plus",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 700",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 700 Plus",
+    "AutoExposure": false,
+    "LensControl": true,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 701 Plus",
+    "AutoExposure": false,
+    "LensControl": true,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Oqus 710 Plus",
+    "AutoExposure": false,
+    "LensControl": true,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Miqus M1",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  },
+  {
+    "Model": "Miqus M3",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Miqus M5",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "Miqus Sync Unit",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  },
+  {
+    "Model": "Miqus Video",
+    "AutoExposure": true,
+    "LensControl": false,
+    "MarkerModeSupport": false
+  }
 ]

@@ -3,7 +3,7 @@
     "Model": "Oqus 100",
     "AutoExposure": false,
     "LensControl": false,
-    "MarkerModeSupport": false
+    "MarkerModeSupport": true
   },
   {
     "Model": "Oqus 200 C",

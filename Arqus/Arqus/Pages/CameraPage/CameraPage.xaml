@@ -16,7 +16,7 @@
 
     <StackLayout Margin="0" Style="{StaticResource Background}">
 
-        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False" MinimumHeightRequest="40">
+        <Frame Style="{StaticResource AppBar}" Padding="0" IsVisible="{Binding IsModeToolbarActive}" InputTransparent="False" MinimumHeightRequest="20">
 
             <ContentView.Margin>
                 <OnPlatform x:TypeArguments="Thickness"
@@ -71,7 +71,7 @@
             </Grid>
         </Frame>
 
-        <StackLayout VerticalOptions="FillAndExpand" BackgroundColor="Transparent" Padding="0" >
+        <StackLayout VerticalOptions="FillAndExpand" BackgroundColor="Transparent" Padding="0">
             <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
         </StackLayout>
 
@@ -138,12 +138,12 @@
                         <!-- Video-specific drawer -->
                         <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
 
-                            <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" UnselectedSegmentTextColor="White" SelectedSegmentTextColor="White" 
+                            <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" UnselectedSegmentTextColor="White" SelectedSegmentTextColor="White"
                                                     BackgroundColor="Chocolate" TintColor="{StaticResource highlightColor}" SelectedSegment="0" Padding="2"
-                                                    IsVisible="{Binding CurrentCamera.LensControlEnabled}" VerticalOptions="StartAndExpand" MinimumHeightRequest="100">
+                                                    IsVisible="{Binding CurrentCamera.LensControlEnabled}" VerticalOptions="StartAndExpand" MinimumHeightRequest="50">
                                 <segcon:SegmentedTabControl.Children>
-                                    <Label Text="Video Settings" />
-                                    <Label Text="Lens Control" />
+                                    <Label Text="Video Settings" TextColor="White"/>
+                                    <Label Text="Lens Control" TextColor="White"/>
                                 </segcon:SegmentedTabControl.Children>
                             </segcon:SegmentedTabControl>
 
@@ -189,7 +189,7 @@
 
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
                                     <Label Style="{StaticResource DrawerText}" Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
-                                    <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='f'}}" HorizontalOptions="End"/>
+                                    <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='f'}}" HorizontalOptions="End"/>
                                 </StackLayout>
 
                                 <Slider x:Name="lensApertureSlider"

@@ -3,6 +3,7 @@ using Arqus.Services;
 using Acr.UserDialogs;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Arqus.Service;
 
 namespace Arqus
 {
@@ -41,11 +42,21 @@ namespace Arqus
                 // If this is false it means that there is a QTM instance without any 
                 if (!(imageStream.StartStream() && markerStream.StartStream()))
                 {
+                    // Test if there aren't any cameras in system
+                    if(CameraStore.GetCameras().Count == 0)
+                    {
+                        // Notify this and navigate back to main menu
+                        await UserDialogs.Instance.AlertAsync("There are no cameras connected to the system. Please plug them in and try again.", "Attention");
+                        return;
+                    }
+
+                    // Can't start measurement without master mode
                     if (!QTMNetworkConnection.IsMaster)
                     {
                         await UserDialogs.Instance.AlertAsync("There is no active measurement. Connect to the system in master mode to be able to start a new one." +
                                                               " Alternatively, start a measurement directly from QTM", "Attention");
                     }
+                    // Master mode, ask whether user would like to start measurement
                     else if (await UserDialogs.Instance.ConfirmAsync("There is no active measurement, would you like to start one?", null, "Start Measurement", "Cancel"))
                     {
                         SettingsService.StartMeasurement();

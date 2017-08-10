@@ -467,7 +467,8 @@ namespace Arqus
             IsDemoModeActive = false;
 
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
-            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);            
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
+            MessagingCenter.Unsubscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED);
 
             GC.Collect();
         }

@@ -346,7 +346,7 @@ namespace Arqus
             catch (Exception e)
             {
                 Debug.WriteLine(e);
-                notificationService.Show("Attention", "Please make sure that QTM is up and running");
+                notificationService.Show("Attention", "Please make sure that QTM is up and running and that the cameras are plugged in");
 
                 Task.Run(() => userDialogs.HideLoading());
 

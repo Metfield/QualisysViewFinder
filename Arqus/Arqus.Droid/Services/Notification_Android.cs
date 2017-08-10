@@ -10,7 +10,7 @@ public class Notification_Android : INotification
     {
         var activity = (Activity)Forms.Context;
         var view = activity.FindViewById(Android.Resource.Id.Content);
-        Snackbar.Make(view, messageTitle + ": " + message, 1000).Show();
+        Snackbar.Make(view, messageTitle + ": " + message, 2500).Show();
     }
 }
 

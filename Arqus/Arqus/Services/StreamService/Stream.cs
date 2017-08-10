@@ -130,6 +130,8 @@ namespace Arqus.Services
                 }
                 catch (Exception e)
                 {
+                    GC.Collect();
+
                     Debug.WriteLine(e);
                     Debugger.Break();
                 }                

@@ -189,14 +189,14 @@
 
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
                                     <Label Style="{StaticResource DrawerText}" Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
-                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=lensApertureSlider}" Text="{Binding Path=Value}" HorizontalOptions="End"/>
+                                    <Label Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='f'}}" HorizontalOptions="End"/>
                                 </StackLayout>
 
                                 <Slider x:Name="lensApertureSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding ApertureSnapMax}"
-                                Minimum="0"                                
-                                Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay} "  />
+                                Minimum="0"
+                                Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay}"/>
 
                             </StackLayout>
 

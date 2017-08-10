@@ -122,11 +122,11 @@ namespace Arqus
             UpdatePageTitle(IsGridLayoutActive);
         }
 
-        public void SetCameraSetting(string setting, double value)
+        public void SetCameraSetting(string setting, double value, bool bypassSkipCounter = false)
         {
             // If nothing has been recieved from QTM then update the settings
             // If one or several events has been recieved skip updating QTM an decrement the counter
-            if (skipCounter == 0)
+            if (skipCounter == 0 || bypassSkipCounter)
                 CurrentCamera.SetSetting(setting, value);
             else
                 skipCounter--;
@@ -409,7 +409,7 @@ namespace Arqus
             SnappedValue = lensApertureSnapper.OnSliderValueChanged(value);
 
             // Once value is snapped, set the aperture setting
-            SetCameraSetting(Constants.LENS_APERTURE_PACKET_STRING, SnappedValue);
+            SetCameraSetting(Constants.LENS_APERTURE_PACKET_STRING, SnappedValue, true);
         }
 
         public string PageTitle

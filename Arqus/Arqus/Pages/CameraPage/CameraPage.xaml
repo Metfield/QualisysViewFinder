@@ -177,7 +177,7 @@
                                 <!-- Automated lens control for Oqus 700+ cameras -->
                                 <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
                                     <Label Style="{StaticResource DrawerText}" Text="Lens Focus" HorizontalOptions="StartAndExpand"/>
-                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='mm'}" 
+                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='m'}" 
                                    HorizontalOptions="End"/>
                                 </StackLayout>
 

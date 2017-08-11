@@ -12,11 +12,10 @@ namespace Arqus.Converters
         {
             float fvalue = float.Parse(value.ToString());
 
-            if(parameter.ToString() == "mm" || parameter.ToString() == "f")
+            if(parameter.ToString() == "m" || parameter.ToString() == "f")
                 return String.Format("{0} {1}", fvalue.ToString("0.00"), parameter);
             else
                 return String.Format("{0} {1}", (int)fvalue, parameter);
-
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

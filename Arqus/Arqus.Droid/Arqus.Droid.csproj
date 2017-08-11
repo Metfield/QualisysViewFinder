@@ -63,6 +63,7 @@
     <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
+    <BundleAssemblies>true</BundleAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Acr.Support.Android, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

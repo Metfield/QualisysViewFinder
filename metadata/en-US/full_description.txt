@@ -1,0 +1,12 @@
+The Viewfinder utility lets users of Qualisys' motion capture solutions get a real-time view from Qualisys Oqus motion capture cameras.
+
+FEATURES
+- See all tracked markers from the point of view of any connected camera.
+- Swiftly switch between cameras by swiping left/right or use an intuitive slider.
+- Change of marker colors possible.
+
+REQUIREMENTS
+This application requires a working motion capture system from Qualisys and a computer running Qualisys Track Manager version 2.5 or later.
+
+ADDITIONAL INFO
+For more information about Qualisys and their latest technologies, please visit http://qualisys.se.

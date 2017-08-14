@@ -27,7 +27,7 @@ namespace Arqus
         public static RTProtocol Master { get; set; }
         public RTProtocol Protocol { get; private set; }
 
-        public bool QTMVersionSupported { get; private set; }
+        public static bool QTMVersionSupported { get; set; }
 
         public const short MINIMUM_SUPPORTED_QTM_VERSION = 216;
         

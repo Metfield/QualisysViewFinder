@@ -286,7 +286,7 @@ namespace Arqus
 
                 if (!success)
                 {
-                    if(!connection.QTMVersionSupported)
+                    if(!QTMNetworkConnection.QTMVersionSupported)
                     {
                         // QTM is not supported
                         userDialogs.Alert("Please make sure that you are connecting to a Windows PC with " +
@@ -298,7 +298,6 @@ namespace Arqus
                         notificationService.Show("Attention", "There was a connection error, please check IP address");
                     }
 
-                    connection.Disconnect();
                     return;
                 }
                 else if(connection.HasPassword())

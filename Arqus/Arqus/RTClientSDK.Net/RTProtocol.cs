@@ -276,6 +276,7 @@ namespace QTMRealTimeSDK
                             {
                                 //Error setting version
                                 mErrorString = "Error setting version of protocol";
+                                Arqus.QTMNetworkConnection.QTMVersionSupported = false;
                                 Disconnect();
                                 return false;
                             }

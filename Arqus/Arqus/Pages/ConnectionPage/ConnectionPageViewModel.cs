@@ -5,22 +5,19 @@ using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Navigation;
-using Prism.Services;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
+
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
+
 using Xamarin.Forms;
 
-using QTMRealTimeSDK.Data;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
-using System.Reflection;
-using QTMRealTimeSDK.Settings;
 using Acr.UserDialogs;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Arqus
 {
@@ -70,6 +67,9 @@ namespace Arqus
             OnAboutButtonPressedCommand = new DelegateCommand(() => OnAboutButtonPressed());
 
             OnQualisysLinkTappedCommand = new DelegateCommand(() => Device.OpenUri(new Uri("http://www.qualisys.com/start/")));
+
+            // Get LAN address
+            IPAddress = GetLocalIPAddress();
         }
         
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -101,7 +101,30 @@ namespace Arqus
                 Debug.WriteLine(e);
             }            
         }
-        
+
+        // Gets LAN IP and strips down the last byte
+        private string GetLocalIPAddress()
+        {
+            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (IPAddress ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    if (ip.ToString() == "127.0.0.1")
+                        notificationService.Show("Warning", "Please make sure that you are connected to a network");
+
+                    if (ip.GetAddressBytes()[0] != 192)
+                    {
+                        continue;
+                    }
+
+                    return ip.ToString().Remove(ip.ToString().LastIndexOf('.') + 1);
+                }
+            }
+
+            // No ip was found.. weird!!
+            return "IP Address";
+        }
 
         QTMServer selectedServer = null;
 
@@ -258,7 +281,7 @@ namespace Arqus
         // Command button binding        
         public DelegateCommand ConnectCommand { private set;  get; }
         
-        private string ipAddress = "192.168.10.168";
+        private string ipAddress;
 
         public string IPAddress
         {

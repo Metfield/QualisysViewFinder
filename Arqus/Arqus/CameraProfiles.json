@@ -75,7 +75,7 @@
     "Model": "Miqus M1",
     "AutoExposure": false,
     "LensControl": false,
-    "MarkerModeSupport": false
+    "MarkerModeSupport": true
   },
   {
     "Model": "Miqus M3",

@@ -102,8 +102,18 @@ namespace Arqus
             // Used to hide drawer when the urho surface is tapped
             MessagingCenter.Subscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED, (sender) => 
             {
-                if(isBottomSheetVisible)
+                if (isBottomSheetVisible)
                     IsBottomSheetVisible = false;
+            });
+
+            // Handle back-button presses on Android
+            MessagingCenter.Subscribe<CameraApplication>(this, MessageSubject.URHO_ANDROID_BACK_BUTTON_PRESSED, (sender) =>
+            {
+                // Go back to main menu if settings drawer is not visible
+                if (isBottomSheetVisible)
+                    IsBottomSheetVisible = false;
+                else
+                    Device.BeginInvokeOnMainThread(() => navigationService.GoBackAsync());
             });
 
             // Notifies of camera selection
@@ -469,6 +479,7 @@ namespace Arqus
             MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
             MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
             MessagingCenter.Unsubscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED);
+            MessagingCenter.Unsubscribe<CameraApplication>(this, MessageSubject.URHO_ANDROID_BACK_BUTTON_PRESSED);
 
             GC.Collect();
         }

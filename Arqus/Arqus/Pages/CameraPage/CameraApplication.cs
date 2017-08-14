@@ -95,6 +95,12 @@ namespace Arqus
                 // Switch to new screen layout
                 InvokeOnMainAsync(() => SwitchScreenLayout(type));
             });
+
+            // Subscribe to touch event
+            Input.TouchMove += OnTouched;
+            Input.TouchBegin += OnTouchBegan;
+            Input.TouchEnd += OnTouchReleased;
+            Input.KeyDown += OnKeyDown;
         }
 
         // Starts streaming based on input
@@ -110,11 +116,6 @@ namespace Arqus
 
         private async void CreateScene()
         {
-            // Subscribe to touch event
-            Input.TouchMove += OnTouched;
-            Input.TouchBegin += OnTouchBegan;
-            Input.TouchEnd += OnTouchReleased;
-            
             // Create new scene
             scene = new Scene();
             scene.Clear(true, true);
@@ -378,6 +379,21 @@ namespace Arqus
 
                     MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
                 }
+            }
+        }
+
+        // Used to catch Android's back button
+        private void OnKeyDown(KeyDownEventArgs args)
+        {
+            switch(args.Key)
+            {
+                case Key.Esc:
+                    MessagingService.Send(this, MessageSubject.URHO_ANDROID_BACK_BUTTON_PRESSED);
+                    break;
+
+                default:
+                    // ¯\_(ツ)_/¯ 
+                    break;
             }
         }
 

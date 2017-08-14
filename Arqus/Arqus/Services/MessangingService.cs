@@ -16,8 +16,8 @@ namespace Arqus.Service
         public static readonly string URHO_SURFACE_FINISHED_LOADING = "URHO_SURFACE_FINISHED_LOADING";
         public static readonly string ORIENTATION_CHANGED = "ORIENTATION_CHANGED";
         public static readonly string URHO_SURFACE_TAPPED = "URHO_SURFACE_TAPPED";
+        public static readonly string URHO_ANDROID_BACK_BUTTON_PRESSED = "URHO_ANDROID_BACK_BUTTON_PRESSED";
     }
-
 
     public static class MessagingService
 	{
@@ -58,6 +58,5 @@ namespace Arqus.Service
         {
             MobileCenterService.TrackEvent(name, message);
         }
-
     }
 }

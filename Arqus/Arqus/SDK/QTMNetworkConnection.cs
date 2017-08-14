@@ -7,6 +7,7 @@ using System.Diagnostics;
 using QTMRealTimeSDK.Settings;
 using System.Net;
 using QTMRealTimeSDK.Data;
+using System.Text.RegularExpressions;
 
 namespace Arqus
 {
@@ -26,11 +27,16 @@ namespace Arqus
         public static RTProtocol Master { get; set; }
         public RTProtocol Protocol { get; private set; }
 
+        public bool QTMVersionSupported { get; private set; }
+
+        public const short MINIMUM_SUPPORTED_QTM_VERSION = 216;
         
         public QTMNetworkConnection()
         {
             Protocol = new RTProtocol();
             Connect(GetRandomPort());
+
+            QTMVersionSupported = true;
         }
 
         /// <summary>
@@ -62,11 +68,36 @@ namespace Arqus
                     string ver;
                     Protocol.GetQTMVersion(out ver);
                     Version = ver;
+
+                    if (!QTMVersionIsSupported())
+                    {
+                        QTMVersionSupported = false;
+                        return false;
+                    }
+
                     return true;
                 }
             }
 
             return false;
+        }
+
+        // Check if the QTM version to which we've connected is supported
+        // IMPORTANT - Assuming that RTProtocol returns QTM version in the 
+        // form of "QTM version is M.mm build bbbb"
+        private bool QTMVersionIsSupported()
+        {
+            string versionString = Regex.Replace(Version, "[^0-9 _]", "");
+
+            while(versionString.ElementAt(0) == ' ')
+                versionString = versionString.Remove(0, 1);
+            
+            versionString = versionString.Remove(versionString.IndexOf(" ") + 1);
+
+            if (int.Parse(versionString) < MINIMUM_SUPPORTED_QTM_VERSION)
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -140,17 +171,13 @@ namespace Arqus
             Protocol.Disconnect();
         }
 
-
-
         /// <summary>
         /// Makes sure ipAddress string is a valid IPv4
         /// </summary>
         /// <param name="ipString">Holds QTM instance IP address</param>
         /// <returns></returns>
         public static bool IsValidIPv4(string ipString)
-
         {
-
             // Check for null string
             if (ipString == null)
                 return false;
@@ -175,7 +202,6 @@ namespace Arqus
             
             // TODO: Check if address is in LAN and in a valid range!
             return false;
-
         }
 
         public List<DiscoveryResponse> DiscoverQTMServers(ushort port = 4547)
@@ -204,21 +230,16 @@ namespace Arqus
             return imageSettings ? Protocol.ImageSettings.Cameras: null;
         }
 
-
-
         public IEnumerable<ImageResolution> GetAllCameraResolutions()
         {
             return GetImageSettings().Select(camera => new ImageResolution(camera.Width, camera.Height));
         }
-
         
         public ImageResolution GetCameraResolution(int cameraID)
         {
             ImageCamera camera = GetImageSettings().Where(c => c.CameraID == cameraID).First();
             return new ImageResolution(camera.Width, camera.Height);
         }
-
-
 
         public bool SetCameraMode(int id, string mode)
         {

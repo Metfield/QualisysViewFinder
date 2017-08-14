@@ -286,8 +286,19 @@ namespace Arqus
 
                 if (!success)
                 {
-                    // There was an error with the connection
-                    notificationService.Show("Attention", "There was a connection error, please check IP address");
+                    if(!connection.QTMVersionSupported)
+                    {
+                        // QTM is not supported
+                        userDialogs.Alert("Please make sure that you are connecting to a Windows PC with " +
+                                          "a Qualisys Track Manager software version of at least 2.16", "Attention", "Dismiss");
+                    }
+                    else
+                    {
+                        // There was an error with the connection
+                        notificationService.Show("Attention", "There was a connection error, please check IP address");
+                    }
+
+                    connection.Disconnect();
                     return;
                 }
                 else if(connection.HasPassword())

@@ -16,5 +16,15 @@ namespace Arqus.Droid
             // Load main application
             StartActivity(typeof(MainActivity));
         }
+        
+        // Called when coming back from main menu
+        protected override void OnRestart()
+        {
+            base.OnRestart();
+
+            // Say good night!
+            Finish();
+            Process.KillProcess(Process.MyPid());
+        }
     }
 }

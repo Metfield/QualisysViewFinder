@@ -1,0 +1,42 @@
+﻿<ContentView   xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="Arqus.QTMServerList"
+        xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+        >
+    <StackLayout    
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+        <ListView 
+            SeparatorColor="#101010"
+            BackgroundColor="Transparent"
+            HorizontalOptions="FillAndExpand"
+            Margin="0"
+            WidthRequest="350"
+            HeightRequest="450"
+            VerticalOptions="Center"
+            ItemsSource="{Binding QTMServers}"
+            SelectedItem="{Binding SelectedServer, Mode=TwoWay}"
+            IsPullToRefreshEnabled="true"
+            RefreshCommand="{Binding RefreshQTMServers}"
+            IsRefreshing="{Binding IsRefreshing}"
+            HasUnevenRows="true" >
+
+            <ListView.ItemTemplate>
+
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Padding="5" >
+                            <Label Text="{Binding HostName}" TextColor="White" />
+                            <Label  Text="{Binding Details}"
+                                    TextColor="White"
+                                    FontSize="Micro" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+                
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+
+</ContentView>
+    

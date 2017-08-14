@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             
+             xmlns:ui="clr-namespace:Arqus.UI"
+             xmlns:local="clr-namespace:Arqus"
+             x:Class="Arqus.ConnectionPage"
+             xmlns:prism="clr-namespace:Prism.Mvvm;assembly=Prism.Forms"
+             prism:ViewModelLocator.AutowireViewModel="True"
+             Title="Home Page"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundImage="arqus_background.jpg">
+    
+    <StackLayout VerticalOptions="FillAndExpand" >
+
+        <Image Source="arqus_logo.png" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
+
+        <Grid   
+            VerticalOptions="Start" 
+            HorizontalOptions="CenterAndExpand">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="50" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+
+            <ui:JiggleButton Text="DISCOVER"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    HorizontalOptions="End" 
+                    VerticalOptions="FillAndExpand"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectionModeDiscoveryCommand}"/>
+
+            <ui:JiggleButton Text="MANUALLY"
+                             Grid.Row="0"
+                             Grid.Column="1"
+                             HorizontalOptions="Start" 
+                             VerticalOptions="FillAndExpand"
+                             Style="{StaticResource primaryButton}"
+                             Command="{Binding ConnectionModeManuallyCommand}"/>
+        </Grid>
+
+        <Frame IsVisible="{Binding IsDiscovery}"
+               Style="{StaticResource Card}"
+               VerticalOptions="Start"
+               HorizontalOptions="Center" 
+               Padding="0"
+               Margin="15" 
+               BackgroundColor="#3c4c70" >
+
+            <local:QTMServerList x:Name="qtmListView" 
+                                 HorizontalOptions="Fill"
+                                 VerticalOptions="Fill"/>
+
+        </Frame>
+
+        <StackLayout IsVisible="{Binding IsManually}" 
+                    VerticalOptions="StartAndExpand" 
+                    HorizontalOptions="Center" 
+                    WidthRequest="300" >
+
+            <ui:IpAdressEntryRenderer Placeholder="Ip Address" Text="{Binding IPAddress}"/>
+
+            <ui:JiggleButton Text="CONNECT"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectCommand}" />
+
+        </StackLayout>
+
+        <StackLayout VerticalOptions="EndAndExpand" Orientation="Horizontal">
+
+            <Button HorizontalOptions="StartAndExpand"
+                             Text="Demo Mode"
+                             TextColor="White"
+                             BackgroundColor="Transparent"
+                             Command="{Binding ConnectionModeDemoCommand}">
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
+
+            <Image Source="Qualisys_Home.png" HorizontalOptions="CenterAndExpand" HeightRequest="40" Scale="0.6" Margin="-90, 0, 0, 8"/>
+                <Button WidthRequest="145" Margin="-220, 0, 0, 0"  BackgroundColor="Transparent"
+                        Command="{Binding OnQualisysLinkTappedCommand}">
+                
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
+            
+            <Button HorizontalOptions="EndAndExpand"
+                             Image="ic_info_outline_white_24dp" 
+                             Command="{Binding OnAboutButtonPressedCommand}" 
+                             BackgroundColor="Transparent" 
+                             WidthRequest="60"
+                             BorderRadius="10">
+                <Button.Effects>
+                    <local:FlatButtonEffect />
+                </Button.Effects>
+            </Button>
+
+        </StackLayout>
+    </StackLayout>
+
+
+
+
+</ContentPage>

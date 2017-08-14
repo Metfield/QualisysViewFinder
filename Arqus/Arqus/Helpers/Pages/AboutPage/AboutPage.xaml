@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Arqus.AboutPage" 
+             Title="About">
+    
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" Style="{StaticResource Background}">
+                
+                <Image Source="Qualisys_White_Transparency_2000x.png" Margin="20" HorizontalOptions="FillAndExpand" />
+
+                <Label TextColor="WhiteSmoke" Text="ArqusFinder" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
+                <Frame  CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
+                    <Label TextColor="White" Text="This application is intended to be used as an aid for setting up Qualisys motion capture systems. It is also an example of what developers can achieve with the use of Qualisys' Real-time SDK." />
+                </Frame>
+
+                <Label TextColor="WhiteSmoke" Text="Real-time SDK" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
+                <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
+                    <Label TextColor="White" Text="ArqusFinder uses the C# implementation of Qualisys' Real-time SDK. For more information regarding this and other implementations, head to http://www.qualisys.com/software/real-time-sdk/ "/>
+                </Frame>
+
+                <Label TextColor="WhiteSmoke" Text="Troubleshooting" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
+                <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
+                    <StackLayout>
+                        <Label TextColor="White" Text="If you are experiencing connection problems, please consider the following: "/>
+
+                        <Label TextColor="White" Margin="0, 0, 0, 0" Text="- Check that Qualisys Track Manager (QTM) is up and running on your Windows PC "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- Ensure that both this device and the computer running QTM are connected to the same LAN "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- If you cannot see your QTM host PC in the host discovery list, try refreshing it by swipping down "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- If you are experiencing problems with the automatic QTM host discovery function, try manually introducing the IP address of the QTM host "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- Make sure that the manually introduced IP is correct "/>
+                        <Label TextColor="White" Margin="0, -5, 0, 0" Text="- If a camera displays a black screen when on the camera overview (grid layout), select it to refresh the video buffer "/>
+                    </StackLayout>
+                </Frame>
+
+                <Label TextColor="WhiteSmoke" Text="Gestures" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
+                <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
+                    <StackLayout>
+                        <Label TextColor="White" Text="(Grid View)" FontAttributes="Italic" HorizontalOptions="Center"/>
+
+                            <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                                <Label TextColor="White" Text="Swipe up/down" HorizontalTextAlignment="Start" FontAttributes="Bold"/>
+                                <Label TextColor="White" Text="Scroll the view up and down" HorizontalTextAlignment="End" />
+                            </StackLayout>
+
+                            <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal" Margin="0, 0, 0, 20">
+                                <Label TextColor="White" Text="Tap camera" HorizontalTextAlignment="Start" FontAttributes="Bold"/>
+                                <Label TextColor="White" Text="Select camera and go to detail view" HorizontalTextAlignment="End" />
+                            </StackLayout>
+
+                        <Label TextColor="White" Text="(Camera Detail View)" FontAttributes="Italic" HorizontalOptions="Center"/>
+
+                            <StackLayout HorizontalOptions="Center" Orientation="Horizontal">
+                                <Label TextColor="White" Text="Swipe left/right" HorizontalTextAlignment="Start" FontAttributes="Bold"/>
+                                <Label TextColor="White" Text="Browse active cameras" HorizontalTextAlignment="End" />
+                            </StackLayout>
+
+                            <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal">
+                                <Label TextColor="White" Text="Pinch" HorizontalTextAlignment="Start" FontAttributes="Bold"/>
+                                <Label TextColor="White" Text="Zoom in/out" HorizontalTextAlignment="End" />
+                            </StackLayout>
+
+                            <StackLayout HorizontalOptions="CenterAndExpand" Orientation="Horizontal">
+                                <Label TextColor="White" Text="Drag (while zoomed)" HorizontalTextAlignment="Start" FontAttributes="Bold"/>
+                                <Label TextColor="White" Text="Pan camera in view" HorizontalTextAlignment="End" /> 
+                            </StackLayout>
+
+                    </StackLayout>
+                </Frame>
+                
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

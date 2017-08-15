@@ -24,7 +24,7 @@ namespace Arqus
         private INavigationService navigationService;
 
         // Keep track if latest value was updated by QTM
-        public uint skipCounter = 0;
+        public uint lastQTMUpdate = 0;
 
         // Keep tabs on demo mode
         private bool isDemoModeActive;
@@ -87,7 +87,8 @@ namespace Arqus
                 Messages.Subject.CAMERA_SETTINGS_CHANGED.ToString(),
                 (QTMEventListener sender) =>
                 {
-                    skipCounter++;
+                    // TODO: Remove Urho dependency
+                    lastQTMUpdate = Urho.Time.SystemTime;
 
                     CameraManager.RefreshSettings();
                     CurrentCamera = CameraManager.CurrentCamera;
@@ -132,11 +133,11 @@ namespace Arqus
         public void SetCameraSetting(string setting, double value, bool bypassSkipCounter = false)
         {
             // If nothing has been recieved from QTM then update the settings
-            // If one or several events has been recieved skip updating QTM an decrement the counter
-            if (skipCounter == 0 || bypassSkipCounter)
+            // else wait 500 ms before updating qtm again to Xamarin.Forms time to update
+            // and prevent an infinite feedback loop
+            if (Urho.Time.SystemTime - lastQTMUpdate > 500)
                 CurrentCamera.SetSetting(setting, value);
-            else
-                skipCounter--;
+
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)

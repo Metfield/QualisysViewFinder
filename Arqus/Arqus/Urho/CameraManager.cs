@@ -16,7 +16,7 @@ namespace Arqus
     /// Camera store that handles retreival of up-to-date cameras and the current 
     /// state of the cameras in the application
     /// </summary>
-    class CameraStore : BindableBase
+    class CameraManager : BindableBase
     {
         private static Camera currentCamera;
 
@@ -141,5 +141,34 @@ namespace Arqus
                 Screens = null;
             }                        
         }
+
+        /// <summary>
+        /// Enables all camera screens so that they get rendered to the screen
+        /// NOTE: The current camera is not modified as it is assumed to already be enabled
+        /// </summary>
+        /// <param name="enable">bool that decides if the screens should be enabled or not</param>
+        public static void EnableCameraScreens(bool enable = true, int selection = -1)
+        {
+            Cameras.Values.ToList().ForEach((camera) =>
+            {
+                if ((selection == -1 || camera.ID != selection) && camera.Screen != null)
+                {
+                    Urho.Application.InvokeOnMain(() =>
+                    {
+                        
+                        if (enable)
+                            camera.Screen.Node.ResetDeepEnabled();
+                        else
+                            camera.Screen.Node.SetDeepEnabled(enable);
+
+                    });
+                }
+                else
+                {
+                    Debug.WriteLine(camera.ID);
+                }
+            });
+        }
+
     }
 }

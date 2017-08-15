@@ -43,7 +43,7 @@ namespace Arqus
                 if (!(imageStream.StartStream() && markerStream.StartStream()))
                 {
                     // Test if there aren't any cameras in system
-                    if(CameraStore.GetCameras().Count == 0)
+                    if(CameraManager.GetCameras().Count == 0)
                     {
                         // Notify this and navigate back to main menu
                         await UserDialogs.Instance.AlertAsync("There are no cameras connected to the system. Please plug them in and try again.", "Attention");
@@ -78,7 +78,7 @@ namespace Arqus
                         }
 
                         // Re-select current camera to start streaming again
-                        CameraStore.SetCurrentCamera(CameraStore.CurrentCamera.ID);
+                        CameraManager.SetCurrentCamera(CameraManager.CurrentCamera.ID);
                     }
                 }
 

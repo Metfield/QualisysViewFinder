@@ -50,7 +50,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\BindableToolbarItem.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\CameraScreenLayoutManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\Gestures.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreenLayout\GridScreenLayout.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DataOperations.cs" />

@@ -74,14 +74,20 @@ namespace Arqus
 
         public void Start()
         {
-            Running = true;
-            root.SetDeepEnabled(true);
+            if(!Running)
+            {
+                Running = true;
+                root.SetEnabledRecursive(true);
+            }
         }
         
         public void Stop()
         {
-            Running = false;
-            root.SetDeepEnabled(false);
+            if(Running)
+            {
+                Running = false;
+                root.SetEnabledRecursive(false);
+            }
         }
         
         

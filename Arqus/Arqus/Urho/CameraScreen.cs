@@ -360,19 +360,7 @@ namespace Arqus.Visualization
         protected override void OnUpdate(float timeStep)
         {
             base.OnUpdate(timeStep);
-
-            if (Node.Enabled && Node.Distance(cameraNode) > urhoCamera.FarClip)
-            {
-                //Camera.DisableImageMode();
-                Node.Enabled = false;
-            }
-            else if (!Node.Enabled && Node.Distance(cameraNode) < urhoCamera.FarClip)
-            {
-                //Camera.EnableImageMode();
-                Node.Enabled = true;
-            }
-
-
+           
             float deltaTime = Time.SystemTime - tempTime;
 
             if (deltaTime > 500)
@@ -382,8 +370,9 @@ namespace Arqus.Visualization
 
             loadingSpinner.UpdateSpinner(timeStep);
             
-            if (Node.Enabled && dirty)
+            if (dirty)
             {
+                loadingSpinner.Stop();
                 tempTime = Time.SystemTime;
                 dirty = false;
                 OnUpdateHandler?.Invoke();
@@ -396,10 +385,6 @@ namespace Arqus.Visualization
         {
             nodeTextMessage.Enabled = false;
 
-            if (loadingSpinner.Running)
-            {
-                loadingSpinner.Stop();
-            }
 
             if (imageScreen.Enabled)
             {
@@ -474,7 +459,7 @@ namespace Arqus.Visualization
         public void ToggleFrame(bool flag)
         {
             // Set both parent and children nodes
-            screenFrame.SetDeepEnabled(flag);
+            screenFrame.SetEnabledRecursive(flag);
         }        
 
 

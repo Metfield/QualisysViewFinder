@@ -37,7 +37,7 @@ namespace Arqus.Services
 
                 try
                 {
-                    CameraStore.Cameras[id].Screen.MarkerData = cameras[i];
+                    CameraManager.Cameras[id].Screen.MarkerData = cameras[i];
                 }
                 catch (Exception e)
                 {

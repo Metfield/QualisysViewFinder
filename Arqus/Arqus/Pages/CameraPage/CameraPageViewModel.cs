@@ -60,7 +60,7 @@ namespace Arqus
             IsModeToolbarActive = true;
             IsDrawerActive = true;
 
-            CurrentCamera = CameraStore.CurrentCamera;
+            CurrentCamera = CameraManager.CurrentCamera;
 
             SetCameraModeToMarkerCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeMarker));
             SetCameraModeToVideoCommand = new DelegateCommand(() => SetCameraMode(CameraMode.ModeVideo));
@@ -92,8 +92,8 @@ namespace Arqus
                 {
                     skipCounter++;
 
-                    CameraStore.RefreshSettings();
-                    CurrentCamera = CameraStore.CurrentCamera;
+                    CameraManager.RefreshSettings();
+                    CurrentCamera = CameraManager.CurrentCamera;
 
                     if (cameraMode != CurrentCamera.Settings.Mode)
                         SetCameraMode(CurrentCamera.Settings.Mode);
@@ -203,8 +203,8 @@ namespace Arqus
         private void OnCameraSelection(Object sender, int cameraID)
         {
             // Set current camera
-            CameraStore.SetCurrentCamera(cameraID);
-            CurrentCamera = CameraStore.CurrentCamera;
+            CameraManager.SetCurrentCamera(cameraID);
+            CurrentCamera = CameraManager.CurrentCamera;
 
             // Check if camera selection was done through grid mode
             if (IsGridLayoutActive)

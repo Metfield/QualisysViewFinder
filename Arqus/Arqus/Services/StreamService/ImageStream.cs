@@ -51,8 +51,8 @@ namespace Arqus.Services
 
                 // Set current camera's image data and ready it
                 // to create a texture
-                if (CameraStore.CurrentCamera.Screen != null && data[0].CameraID == CameraStore.CurrentCamera.ID)
-                    CameraStore.CurrentCamera.Screen.ImageData = bitmap.Bytes;
+                if (CameraManager.CurrentCamera.Screen != null && data[0].CameraID == CameraManager.CurrentCamera.ID)
+                    CameraManager.CurrentCamera.Screen.ImageData = bitmap.Bytes;
             }
             catch (Exception e)
             {
@@ -67,9 +67,9 @@ namespace Arqus.Services
             DataModels.Camera camera;
             List<CameraImage> cameraImages = connection.Protocol.GetRTPacket().GetImageData();
 
-            for (int i = 0; i < CameraStore.Cameras.Count; i++)
+            for (int i = 0; i < CameraManager.Cameras.Count; i++)
             {
-                camera = CameraStore.Cameras[i + 1];
+                camera = CameraManager.Cameras[i + 1];
 
                 if (!camera.IsImageMode())
                     continue;

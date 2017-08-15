@@ -143,7 +143,7 @@ namespace Arqus
             // Initialize marker sphere meshes   
             InitializeCameras(cameraNode);
 
-            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+            List<DataModels.Camera> cameras = CameraManager.GetCameras();
 
             // Set the default layout
             screenLayout = new Dictionary<ScreenLayoutType, CameraScreenLayout>()
@@ -153,7 +153,7 @@ namespace Arqus
             };
 
             SwitchScreenLayout(ScreenLayoutType.Carousel);
-            currentScreenLayout.Select(CameraStore.CurrentCamera.ID);
+            currentScreenLayout.Select(CameraManager.CurrentCamera.ID);
         }
         
         /// <summary>
@@ -163,9 +163,9 @@ namespace Arqus
         {
             // Create mesh node that will hold every marker
             meshNode = scene.CreateChild();
-            CameraStore.GenerateCameraScreens(cameraNode);
+            CameraManager.GenerateCameraScreens(cameraNode);
             
-            foreach(DataModels.Camera camera in CameraStore.GetCameras())
+            foreach(DataModels.Camera camera in CameraManager.GetCameras())
             {
                 Node screenNode = meshNode.CreateChild();
                 // Create and Initialize cameras, order matters here so make sure to attach children AFTER creation
@@ -197,7 +197,7 @@ namespace Arqus
             // Update camera offset and reset 
             //UpdateCameraPosition();
 
-            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+            List<DataModels.Camera> cameras = CameraManager.GetCameras();
 
             for (int i = 0; i < cameras.Count; i++)
             {
@@ -228,7 +228,7 @@ namespace Arqus
         // Handles camera info depending on view mode
         private void ToggleCameraUIInfo(ScreenLayoutType screenLayoutType)
         {
-            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+            List<DataModels.Camera> cameras = CameraManager.GetCameras();
 
             // Iterate over screens and toggle the info
             foreach (DataModels.Camera camera in cameras)
@@ -287,7 +287,7 @@ namespace Arqus
 
             // Deselect a camera when going into grid mode
             // Technically all are selected/not-selected
-            CameraStore.CurrentCamera.Deselect();
+            CameraManager.CurrentCamera.Deselect();
 
             cameraStreamService.StartGridCamerasUpdate();
             EnableImageStreamOnAllCameras();
@@ -315,29 +315,31 @@ namespace Arqus
         // Enables image streaming for every camera in the system
         private void EnableImageStreamOnAllCameras()
         {
-            for (int i = 0; i < CameraStore.Cameras.Count; i++)
+            for (int i = 0; i < CameraManager.Cameras.Count; i++)
             {
-                CameraStore.Cameras[i + 1].EnableImageMode(true);
+                CameraManager.Cameras[i + 1].EnableImageMode(true);
             }
         }
 
         // Disables image streaming for every camera
         private void DisableImageStreamOnAllCameras()
         {
-            for (int i = 0; i < CameraStore.Cameras.Count; i++)
+            for (int i = 0; i < CameraManager.Cameras.Count; i++)
             {
-                CameraStore.Cameras[i + 1].DisableImageMode();
+                CameraManager.Cameras[i + 1].DisableImageMode();
             }
         }
 
         // Turns on/off the frame around a camera screen in the 3D scene
         private void ToggleCameraScreenFrame(bool flag)
         {
-            List<DataModels.Camera> cameras = CameraStore.GetCameras();
+            List<DataModels.Camera> cameras = CameraManager.GetCameras();
 
             for (int i = 0; i < cameras.Count; i++)
             {
+                cameras[i].Screen.Node.ResetDeepEnabled();
                 cameras[i].Screen.ToggleFrame(flag);
+
             }
         }
 
@@ -438,7 +440,7 @@ namespace Arqus
             gridImageStreamEnabled = false;
             streamHasStarted = false;
 
-            CameraStore.CurrentCamera.Deselect();
+            CameraManager.CurrentCamera.Deselect();
 
             base.Stop();
         }

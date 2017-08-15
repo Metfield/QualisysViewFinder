@@ -14,15 +14,15 @@ namespace Arqus.Visualization
 {
     public class CarouselScreenLayout : CameraScreenLayout
     {
-        // TODO: Fix number of camerascreens
+        private bool touching = false;
+        private double length;
         private float scrollSpeed = 0.025f;
+        
 
         public double Radius
         {
             get { return length / (2 * Math.PI); }
         }
-
-        private double length;
 
         public double Length
         {
@@ -34,8 +34,6 @@ namespace Arqus.Visualization
         public override float Offset { get; set; }
         public double PivotX { get; set; }
         public double PivotY { get; set; }
-
-        public float Min { get; set; }
         public override Camera Camera { get; }
         
         public CarouselScreenLayout(int itemCount, Camera camera)
@@ -45,9 +43,6 @@ namespace Arqus.Visualization
             Length = itemCount * screenDistance;
             ItemCount = itemCount;
             Camera = camera;
-                
-            // Offset the minimum somewhat to emphasize on having at least a small distance from the screen
-            Min -= 10;
         }
         
 
@@ -113,9 +108,16 @@ namespace Arqus.Visualization
             double distance;
             
             if (orientation == DeviceOrientations.Portrait)
+            {
                 distance = DataOperations.GetDistanceForFrustrumWidth(screen.Width, Camera.AspectRatio, Camera.Fov);
+            }
             else
+            {
+                // Increades the screen distance in the x axis when in landscape mode
+                // TODO: Remove magic number and determine how much space is needed to get off screen
+                x = x * 2;
                 distance = DataOperations.GetDistanceForFrustrumHeight(screen.Height, Camera.Fov);
+            }
 
             if (screen.targetDistanceFromCamera != distance)
             {
@@ -186,10 +188,10 @@ namespace Arqus.Visualization
                         eventArgs.DY,
                         0.005f,
                         true,
-                        CameraStore.CurrentCamera.Screen.Height / 2,
-                        -CameraStore.CurrentCamera.Screen.Height / 2,
-                        CameraStore.CurrentCamera.Screen.Width / 2,
-                        -CameraStore.CurrentCamera.Screen.Width / 2);
+                        CameraManager.CurrentCamera.Screen.Height / 2,
+                        -CameraManager.CurrentCamera.Screen.Height / 2,
+                        CameraManager.CurrentCamera.Screen.Width / 2,
+                        -CameraManager.CurrentCamera.Screen.Width / 2);
                 }
 
             }
@@ -227,18 +229,21 @@ namespace Arqus.Visualization
 
         public override void OnTouchBegan(TouchBeginEventArgs eventArgs)
         {
+            CameraManager.EnableCameraScreens(true, Selection);
             touchThrottleTime = Time.SystemTime;
         }
 
         public override void OnTouchReleased(Input input, TouchEndEventArgs eventArgs)
         {
+
             // Only communicate camera selection when user is not scrolling
-            if(selected)
+            if (selected)
             {
                 MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
                 selected = false;
             }
 
+            CameraManager.EnableCameraScreens(false, Selection);
             Offset = 0;
         }
     }

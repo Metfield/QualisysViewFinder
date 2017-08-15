@@ -368,7 +368,7 @@ namespace Arqus
                 Task.Run(() => userDialogs.ShowLoading("Establishing connection..."));
 
                 // Fetch information from system and fill structures accordingly
-                CameraStore.GenerateCameras();
+                CameraManager.GenerateCameras();
 
                 // Connection was successfull                
                 // Navigate to camera page
@@ -396,7 +396,7 @@ namespace Arqus
 
             // Initialize mock general settings
             SettingsService.Initialize(true);
-            CameraStore.GenerateCameras();
+            CameraManager.GenerateCameras();
             
             // Navigate to camera page
             NavigationParameters navigationParams = new NavigationParameters();

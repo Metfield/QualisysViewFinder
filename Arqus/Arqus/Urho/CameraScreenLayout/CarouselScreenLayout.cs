@@ -102,18 +102,38 @@ namespace Arqus.Visualization
 
             x = positionFromCameraFocus * screenDistance + Offset;
             
-            double distance;
+            double distance = 0;
             
             if (orientation == DeviceOrientations.Portrait)
             {
-                distance = DataOperations.GetDistanceForFrustrumWidth(screen.Width, Camera.AspectRatio, Camera.Fov);
+                switch (screen.Camera.Orientation)
+                {
+                    case 0:
+                    case 180:
+                        distance = DataOperations.GetDistanceForFrustrumWidth(screen.Width, Camera.AspectRatio, Camera.Fov);
+                        break;
+                    case 90:
+                    case 360:
+                        distance = DataOperations.GetDistanceForFrustrumWidth(screen.Height, Camera.AspectRatio, Camera.Fov);
+                        break;
+                }
             }
             else
             {
                 // Increades the screen distance in the x axis when in landscape mode
                 // TODO: Remove magic number and determine how much space is needed to get off screen
                 x = x * 2;
-                distance = DataOperations.GetDistanceForFrustrumHeight(screen.Height, Camera.Fov);
+                switch(screen.Camera.Orientation)
+                {
+                    case 0:
+                    case 180:
+                        distance = DataOperations.GetDistanceForFrustrumHeight(screen.Height, Camera.Fov);
+                        break;
+                    case 90:
+                    case 360:
+                        distance = DataOperations.GetDistanceForFrustrumHeight(screen.Width, Camera.Fov);
+                        break;
+                }
             }
 
             if (screen.targetDistanceFromCamera != distance)

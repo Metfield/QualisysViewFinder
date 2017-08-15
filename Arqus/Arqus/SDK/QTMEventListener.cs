@@ -1,9 +1,9 @@
 ﻿
-using Arqus.Service;
 using QTMRealTimeSDK.Data;
 using System;
 
 using System.Threading.Tasks;
+using Xamarin.Forms;
 
 namespace Arqus
 {
@@ -65,7 +65,7 @@ namespace Arqus
                             //continue;
                         }
 
-                        MessagingService.Send(this, MessageSubject.CAMERA_SETTINGS_CHANGED, payload: new { });
+                        MessagingCenter.Send(this, Messages.Subject.CAMERA_SETTINGS_CHANGED);
                         ignoreNextPacket = true;
                     }
                 }

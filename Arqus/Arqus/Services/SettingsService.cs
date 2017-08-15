@@ -1,20 +1,14 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Http;
 using System.Threading.Tasks;
-using QTMRealTimeSDK;
-using Arqus.Helpers;
 using QTMRealTimeSDK.Settings;
-using System.Threading;
 using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace Arqus
+namespace Arqus.Services
 {
     class SettingsService
     {
@@ -108,7 +102,7 @@ namespace Arqus
             Assembly assembly = typeof(SettingsService).Assembly;
 
             // Get General Settings file
-            using (Stream stream = assembly.GetManifestResourceStream("Arqus.RunningGeneralSettings.xml"))
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus.RunningGeneralSettings.xml"))
             {
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsGeneral));
                 SettingsGeneral gs = (SettingsGeneral)xmlSerializer.Deserialize(stream);
@@ -124,7 +118,7 @@ namespace Arqus
             Assembly assembly = typeof(SettingsService).Assembly;
 
             // Get General Settings file
-            using (Stream stream = assembly.GetManifestResourceStream("Arqus.RunningImageSettings.xml"))
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus.RunningImageSettings.xml"))
             {
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsImage));
                 SettingsImage si = (SettingsImage)xmlSerializer.Deserialize(stream);

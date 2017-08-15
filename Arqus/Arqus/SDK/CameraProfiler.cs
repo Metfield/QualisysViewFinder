@@ -9,6 +9,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Arqus.DataModels;
+using Arqus.Services;
 
 namespace Arqus
 {
@@ -34,7 +35,7 @@ namespace Arqus
             Assembly assembly = typeof(SettingsService).Assembly;
 
             // Get General Settings file stream
-            using (Stream stream = assembly.GetManifestResourceStream("Arqus." + filename))
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus." + filename))
             {
                 // Create a stream reader to read from stream (duh)
                 using (StreamReader streamReader = new StreamReader(stream))

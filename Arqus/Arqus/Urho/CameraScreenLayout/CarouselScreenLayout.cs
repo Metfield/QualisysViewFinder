@@ -1,14 +1,11 @@
-﻿using Arqus.Helpers;
-using Arqus.Service;
-using Arqus.Services;
-using Prism.Services;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+﻿using System;
+
 using Urho;
 using Urho.Actions;
-using Xamarin.Forms.Internals;
+using Xamarin.Forms;
+
+using Arqus.Helpers;
+using Arqus.Services;
 
 namespace Arqus.Visualization
 {
@@ -82,7 +79,7 @@ namespace Arqus.Visualization
 
             // Only communicate camera selection when user is not scrolling
             if (Offset == 0)
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
+                MessagingCenter.Send(this, Messages.Subject.SET_CAMERA_SELECTION, Selection);
         }
         
         public override void SetCameraScreenPosition(CameraScreen screen, DeviceOrientations orientation)
@@ -239,7 +236,7 @@ namespace Arqus.Visualization
             // Only communicate camera selection when user is not scrolling
             if (selected)
             {
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, Selection, payload: new { });
+                MessagingCenter.Send(this, Messages.Subject.SET_CAMERA_SELECTION, Selection);
                 selected = false;
             }
 

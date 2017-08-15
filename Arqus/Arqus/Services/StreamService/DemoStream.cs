@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using QTMRealTimeSDK.Data;
-using Arqus.Service;
 using System.Diagnostics;
 using Arqus.Visualization;
 

@@ -1,5 +1,4 @@
 ﻿using Arqus.Helpers;
-using Arqus.Service;
 using Arqus.Visualization;
 using QTMRealTimeSDK;
 using QTMRealTimeSDK.Data;

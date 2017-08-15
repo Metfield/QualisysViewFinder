@@ -5,16 +5,14 @@ using Arqus.DataModels;
 using Urho;
 using Urho.Urho2D;
 using Xamarin.Forms;
-using QTMRealTimeSDK;
 using Arqus.Services;
-using Arqus.Service;
 using System.Diagnostics;
 using Urho.Gui;
 using System;
 
-using static Arqus.CameraApplication;
 using System.Reflection;
-using System.IO;
+using static Arqus.CameraApplication;
+
 
 using QTMRealTimeSDK.Settings;
 
@@ -256,13 +254,13 @@ namespace Arqus.Visualization
         public void SubscribeToDataEvents()
         {
             // Subscribe to demoMode stream data as well
-            MessagingService.Subscribe<DemoStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
+            MessagingCenter.Subscribe<DemoStream, QTMRealTimeSDK.Data.Camera>(this, Messages.Subject.STREAM_DATA_SUCCESS.ToString() + Camera.ID, (sender, markerData) =>
             {
                 if (!IsImageMode())
                     Urho.Application.InvokeOnMain(() => MarkerData = markerData);
             });
 
-            MessagingService.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
+            MessagingCenter.Subscribe<Arqus.DataModels.Camera, CameraMode>(this, Messages.Subject.STREAM_MODE_CHANGED.ToString() + Camera.ID, (sender, mode) =>
             {
                 SetImageMode(Camera.IsImageMode());
             });
@@ -565,8 +563,8 @@ namespace Arqus.Visualization
 
         protected override void Dispose(bool disposing)
         {
-            MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, MessageSubject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
-            MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, MessageSubject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<MarkerStream, QTMRealTimeSDK.Data.Camera>(this, Messages.Subject.STREAM_DATA_SUCCESS.ToString() + Camera.ID);
+            MessagingCenter.Unsubscribe<Arqus.DataModels.Camera, CameraMode>(this, Messages.Subject.STREAM_MODE_CHANGED.ToString() + Camera.ID);
             base.Dispose(disposing);
         }
     }

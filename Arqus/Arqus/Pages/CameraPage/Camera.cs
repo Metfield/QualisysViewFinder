@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Arqus.Helpers;
-using Arqus.Service;
 using Arqus.Visualization;
 
 using QTMRealTimeSDK;
@@ -10,6 +9,7 @@ using QTMRealTimeSDK.Settings;
 using Prism.Mvvm;
 using System;
 using Xamarin.Forms;
+using Arqus.Services;
 
 namespace Arqus.DataModels
 {

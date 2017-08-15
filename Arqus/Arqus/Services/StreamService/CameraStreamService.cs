@@ -1,9 +1,6 @@
 ﻿using System;
 using Arqus.Services;
 using Acr.UserDialogs;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using Arqus.Service;
 
 namespace Arqus
 {

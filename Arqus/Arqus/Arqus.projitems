@@ -40,9 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\Resolution.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\Camera.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\QTMEventListener.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\CameraStreamService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\IMobileCenterService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MobileCenterService\MobileCenterService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\CameraStreamService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\MarkerStream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\Stream.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\StreamService\ImageStream.cs" />
@@ -62,13 +60,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraPageViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\ISettingsService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService\SettingsService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\SettingsService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\CameraScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\LoadingSpinner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSpherePool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Urho\MarkerSphere.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\MessangingService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SDK\Messages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Pages\CameraPage\CameraApplication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>

@@ -1,6 +1,5 @@
 ﻿using Arqus.Connection;
 using Arqus.Services;
-using Arqus.Services.MobileCenterService;
 using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -73,14 +72,10 @@ namespace Arqus
             Task.Run(() => IPAddress = GetLocalIPAddress());
         }
         
-        public void OnNavigatedFrom(NavigationParameters parameters)
-        {
-            MobileCenterService.TrackEvent(GetType().Name, "NavigatedFrom");
-        }
+        public void OnNavigatedFrom(NavigationParameters parameters){ }
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
 
             try
             {

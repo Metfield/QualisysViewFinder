@@ -8,6 +8,7 @@ using Arqus.Helpers;
 using Arqus.DataModels;
 using Prism.Mvvm;
 using System.Diagnostics;
+using Arqus.Services;
 
 namespace Arqus
 {

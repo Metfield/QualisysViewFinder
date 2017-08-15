@@ -11,7 +11,6 @@ using Xamarin.Forms;
 using System.Reactive.Linq;
 using System.Threading;
 using Arqus.Helpers;
-using Arqus.Service;
 using Prism.Navigation;
 
 namespace Arqus

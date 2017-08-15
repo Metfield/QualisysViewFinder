@@ -1,16 +1,12 @@
-﻿using System.Linq;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
-using Arqus.Service;
-using Arqus.Visualization;
-
+using Urho;
 using Xamarin.Forms;
 
-using Urho;
 using Arqus.Services;
-using System.Threading.Tasks;
-using System.Threading;
+using Arqus.Visualization;
 
 namespace Arqus
 {
@@ -66,7 +62,7 @@ namespace Arqus
         public CameraApplication(ApplicationOptions options) : base(options)
         {
             // Listen to start stream event (from CameraPageviewModel)
-            MessagingService.Subscribe<CameraPageViewModel, bool>(this, MessageSubject.STREAM_START, (sender, demoMode) => StartStream(demoMode));
+            MessagingCenter.Subscribe<CameraPageViewModel, bool>(this, Messages.Subject.STREAM_START, (sender, demoMode) => StartStream(demoMode));
         }
       
         static CameraApplication()
@@ -90,7 +86,7 @@ namespace Arqus
             SetupViewport();
             
             // Update the application when a new screen layout is set in the view model
-            MessagingService.Subscribe<CameraPageViewModel, ScreenLayoutType>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, (sender, type) =>
+            MessagingCenter.Subscribe<CameraPageViewModel, ScreenLayoutType>(this, Messages.Subject.SET_CAMERA_SCREEN_LAYOUT, (sender, type) =>
             {
                 // Switch to new screen layout
                 InvokeOnMainAsync(() => SwitchScreenLayout(type));
@@ -379,7 +375,7 @@ namespace Arqus
                     SwitchScreenLayout(ScreenLayoutType.Carousel);
                     currentScreenLayout.Select(cameraID);
 
-                    MessagingService.Send(this, MessageSubject.SET_CAMERA_SELECTION, currentScreenLayout.Selection, payload: new { });
+                    MessagingCenter.Send(this, Messages.Subject.SET_CAMERA_SELECTION, currentScreenLayout.Selection);
                 }
             }
         }
@@ -390,7 +386,7 @@ namespace Arqus
             switch(args.Key)
             {
                 case Key.Esc:
-                    MessagingService.Send(this, MessageSubject.URHO_ANDROID_BACK_BUTTON_PRESSED);
+                    MessagingCenter.Send(this, Messages.Subject.URHO_ANDROID_BACK_BUTTON_PRESSED);
                     break;
 
                 default:
@@ -424,7 +420,7 @@ namespace Arqus
             {
                 // Notify CameraPageViewModel of a tap. This is used to hide
                 // the settings drawer
-                MessagingService.Send(this, MessageSubject.URHO_SURFACE_TAPPED);
+                MessagingCenter.Send(this, Messages.Subject.URHO_SURFACE_TAPPED);
 
                 // Are we in grid mode? Test for camera selection
                 if (currentScreenLayout.GetType() == typeof(GridScreenLayout))
@@ -451,8 +447,8 @@ namespace Arqus
             cameraStreamService = null;
 
             // Update the application when a new screen layout is set in the view model
-            MessagingCenter.Unsubscribe<CameraPageViewModel, string>(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT);
-            MessagingCenter.Unsubscribe<CameraPageViewModel, bool>(this, MessageSubject.STREAM_START);
+            MessagingCenter.Unsubscribe<CameraPageViewModel, string>(this, Messages.Subject.SET_CAMERA_SCREEN_LAYOUT);
+            MessagingCenter.Unsubscribe<CameraPageViewModel, bool>(this, Messages.Subject.STREAM_START);
 
             base.Dispose(disposing);
         }

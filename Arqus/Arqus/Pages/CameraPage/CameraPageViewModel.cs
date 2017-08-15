@@ -1,9 +1,6 @@
 ﻿using Acr.UserDialogs;
 using Arqus.DataModels;
 using Arqus.Helpers;
-using Arqus.Service;
-using Arqus.Services;
-using Arqus.Services.MobileCenterService;
 using Arqus.Visualization;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -73,7 +70,7 @@ namespace Arqus
             SetCameraScreenLayoutCommand = new DelegateCommand(() =>
             {
                 IsGridLayoutActive = true;
-                MessagingService.Send(this, MessageSubject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
+                MessagingCenter.Send(this, Messages.Subject.SET_CAMERA_SCREEN_LAYOUT, ScreenLayoutType.Grid);
 
                 // Update the page title 
                 UpdatePageTitle(true);
@@ -83,11 +80,11 @@ namespace Arqus
             IsGridLayoutActive = false;
 
             MessagingCenter.Subscribe<CarouselScreenLayout, int>(this,
-                MessageSubject.SET_CAMERA_SELECTION.ToString(),
+                Messages.Subject.SET_CAMERA_SELECTION.ToString(),
                 OnCameraSelection);
 
             MessagingCenter.Subscribe(this,
-                MessageSubject.CAMERA_SETTINGS_CHANGED.ToString(),
+                Messages.Subject.CAMERA_SETTINGS_CHANGED.ToString(),
                 (QTMEventListener sender) =>
                 {
                     skipCounter++;
@@ -100,14 +97,14 @@ namespace Arqus
                 });
 
             // Used to hide drawer when the urho surface is tapped
-            MessagingCenter.Subscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED, (sender) => 
+            MessagingCenter.Subscribe<CameraApplication>(this, Messages.Subject.URHO_SURFACE_TAPPED, (sender) => 
             {
                 if (isBottomSheetVisible)
                     IsBottomSheetVisible = false;
             });
 
             // Handle back-button presses on Android
-            MessagingCenter.Subscribe<CameraApplication>(this, MessageSubject.URHO_ANDROID_BACK_BUTTON_PRESSED, (sender) =>
+            MessagingCenter.Subscribe<CameraApplication>(this, Messages.Subject.URHO_ANDROID_BACK_BUTTON_PRESSED, (sender) =>
             {
                 // Go back to main menu if settings drawer is not visible
                 if (isBottomSheetVisible)
@@ -117,7 +114,7 @@ namespace Arqus
             });
 
             // Notifies of camera selection
-            MessagingCenter.Send(this, MessageSubject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
+            MessagingCenter.Send(this, Messages.Subject.SET_CAMERA_SELECTION.ToString(), CurrentCamera.ID);
 
             // Initialize lens aperture snapper
             lensApertureSnapper = new LensApertureSnapper(this);
@@ -189,10 +186,10 @@ namespace Arqus
         private void StartStreaming()
         {
             // Notify UrhoSurface Application of the stream mode start intent
-            MessagingService.Send(this, MessageSubject.STREAM_START, IsDemoModeActive);
+            MessagingCenter.Send(this, Messages.Subject.STREAM_START, IsDemoModeActive);
 
             // Once this is done we unsubscribe to the msg
-            MessagingCenter.Unsubscribe<CameraPage>(this, MessageSubject.URHO_SURFACE_FINISHED_LOADING);
+            MessagingCenter.Unsubscribe<CameraPage>(this, Messages.Subject.URHO_SURFACE_FINISHED_LOADING);
         }
 
         public void OnNavigatingTo(NavigationParameters parameters)
@@ -476,10 +473,10 @@ namespace Arqus
             currentCamera = null;
             IsDemoModeActive = false;
 
-            MessagingCenter.Unsubscribe<CameraApplication, int>(this, MessageSubject.SET_CAMERA_SELECTION);
-            MessagingCenter.Unsubscribe<QTMEventListener>(this, MessageSubject.CAMERA_SETTINGS_CHANGED);
-            MessagingCenter.Unsubscribe<CameraApplication>(this, MessageSubject.URHO_SURFACE_TAPPED);
-            MessagingCenter.Unsubscribe<CameraApplication>(this, MessageSubject.URHO_ANDROID_BACK_BUTTON_PRESSED);
+            MessagingCenter.Unsubscribe<CameraApplication, int>(this, Messages.Subject.SET_CAMERA_SELECTION);
+            MessagingCenter.Unsubscribe<QTMEventListener>(this, Messages.Subject.CAMERA_SETTINGS_CHANGED);
+            MessagingCenter.Unsubscribe<CameraApplication>(this, Messages.Subject.URHO_SURFACE_TAPPED);
+            MessagingCenter.Unsubscribe<CameraApplication>(this, Messages.Subject.URHO_ANDROID_BACK_BUTTON_PRESSED);
 
             GC.Collect();
         }

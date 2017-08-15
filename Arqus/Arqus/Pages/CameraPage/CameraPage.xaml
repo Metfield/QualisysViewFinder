@@ -71,33 +71,35 @@
             </Grid>
         </Frame>
 
-        <StackLayout VerticalOptions="FillAndExpand" BackgroundColor="Transparent" Padding="0">
-            <urho:UrhoSurface x:Name="urhoSurface" VerticalOptions="FillAndExpand"/>
-        </StackLayout>
+        <StackLayout x:Name="mainContent" Orientation="Vertical" VerticalOptions="FillAndExpand" Padding="0">
 
-        <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}" BackgroundColor="Transparent"
+            <!-- NOTE: We need an arbitrary HeighRequest to fix a bug in iOS 
+                when changing orientation concerning the size of the surface -->
+            <urho:UrhoSurface x:Name="urhoSurface" HeightRequest="42" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" Margin="0 10 0 10"/>
+
+            <StackLayout HorizontalOptions="End" IsVisible="{Binding IsDrawerActive}" BackgroundColor="Transparent"
                      Margin="0, -35, 0, -10" WidthRequest="45"  Style="{StaticResource Card}">
-            
-            <ContentView.Padding>
-                <OnPlatform x:TypeArguments="Thickness"
+
+                <ContentView.Padding>
+                    <OnPlatform x:TypeArguments="Thickness"
                     iOS="0, 0, 10, 10"
                     Android="0, 0, 0, 0" />
-            </ContentView.Padding>
+                </ContentView.Padding>
 
-            <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
+                <Button x:Name="toggleButton" HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" 
                     Command="{Binding ToggleBottomSheetCommand}" Image="ic_settings_white_24dp" BackgroundColor="Transparent"
                     IsVisible="{Binding IsBottomSheetVisible, Converter={StaticResource InverseBoolConverter}}">
-                <Button.Effects>
-                    <local:FlatButtonEffect />
-                </Button.Effects>
-            </Button>
+                    <Button.Effects>
+                        <local:FlatButtonEffect />
+                    </Button.Effects>
+                </Button>
 
-        </StackLayout>
+            </StackLayout>
 
-        <StackLayout IsVisible="{Binding IsDrawerActive}">
+            <StackLayout IsVisible="{Binding IsDrawerActive}">
 
-            <!-- Drawers layout -->
-            <StackLayout x:Name="bottomSheet" IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
+                <!-- Drawers layout -->
+                <StackLayout x:Name="bottomSheet" IsVisible="{Binding IsBottomSheetVisible}"  VerticalOptions="End" IsEnabled="True" Margin="0" Padding="0" BackgroundColor="Chocolate">
 
                 <Frame Style="{StaticResource Card}" HorizontalOptions="Fill" IsVisible="{Binding IsGridLayoutActive, Converter={StaticResource InverseBoolConverter}}" CornerRadius="0" >
 
@@ -107,108 +109,109 @@
                     <Button HorizontalOptions="End" BorderWidth="0" BorderColor="Transparent" IsEnabled="True" IsVisible="True" Margin="40, -20, 0, -10" WidthRequest="50" 
                     BackgroundColor="#444444"  Command="{Binding ToggleBottomSheetCommand}" Image="drawable-hdpi/ic_arrow_drop_down_white_24dp"/>-->
 
-                        <!-- Marker-specific drawer -->
-                        <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
-                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                <Label Style="{StaticResource DrawerText}" Text="Exposure &amp; Flashtime" HorizontalOptions="StartAndExpand"/>
-                                <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=markerExposureSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" 
+                <!-- Marker-specific drawer -->
+                <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsMarkerMode}">
+                    <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                        <Label Style="{StaticResource DrawerText}" Text="Exposure &amp; Flashtime" HorizontalOptions="StartAndExpand"/>
+                        <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=markerExposureSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" 
                                    HorizontalOptions="End"/>
-                            </StackLayout>
+                    </StackLayout>
 
-                            <Slider x:Name="markerExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                    <Slider x:Name="markerExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.Settings.MarkerExposure.Max}"
                                 Minimum="{Binding CurrentCamera.Settings.MarkerExposure.Min}"
                                 Value="{Binding CurrentCamera.Settings.MarkerExposure.Current}"
                                 />
 
-                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                <Label Style="{StaticResource DrawerText}" Text="Marker Threshold" HorizontalOptions="StartAndExpand" />
-                                <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=markerThresholdSlider}" Text="{Binding Path=Value, Converter={StaticResource MarkerThresholdToPercentageConverter}}" 
+                    <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                        <Label Style="{StaticResource DrawerText}" Text="Marker Threshold" HorizontalOptions="StartAndExpand" />
+                        <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=markerThresholdSlider}" Text="{Binding Path=Value, Converter={StaticResource MarkerThresholdToPercentageConverter}}" 
                                    HorizontalOptions="End"/>
-                            </StackLayout>
+                    </StackLayout>
 
-                            <Slider x:Name="markerThresholdSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                    <Slider x:Name="markerThresholdSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                 HorizontalOptions="Fill"
                                 Maximum="{Binding CurrentCamera.Settings.MarkerThreshold.Max}"
                                 Minimum="{Binding CurrentCamera.Settings.MarkerThreshold.Min}"
                                 Value="{Binding CurrentCamera.Settings.MarkerThreshold.Current}" />
-                        </StackLayout>
+                </StackLayout>
 
-                        <!-- Video-specific drawer -->
-                        <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
+                <!-- Video-specific drawer -->
+                <StackLayout VerticalOptions="StartAndExpand" IsVisible="{Binding IsVideoMode}">
 
-                            <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" UnselectedSegmentTextColor="White" SelectedSegmentTextColor="White"
+                    <segcon:SegmentedTabControl x:Name="segmentedControls" UnselectedSegmentBackgroundColor="#444444" UnselectedSegmentTextColor="White" SelectedSegmentTextColor="White"
                                                     BackgroundColor="Chocolate" TintColor="{StaticResource highlightColor}" SelectedSegment="0" Padding="2"
                                                     IsVisible="{Binding CurrentCamera.LensControlEnabled}" VerticalOptions="StartAndExpand" MinimumHeightRequest="50">
-                                <segcon:SegmentedTabControl.Children>
-                                    <Label Text="Video Settings" TextColor="White"/>
-                                    <Label Text="Lens Control" TextColor="White"/>
-                                </segcon:SegmentedTabControl.Children>
-                            </segcon:SegmentedTabControl>
+                        <segcon:SegmentedTabControl.Children>
+                            <Label Text="Video Settings" TextColor="White"/>
+                            <Label Text="Lens Control" TextColor="White"/>
+                        </segcon:SegmentedTabControl.Children>
+                    </segcon:SegmentedTabControl>
 
-                            <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
+                    <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
 
-                                <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Style="{StaticResource DrawerText}" Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
-                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
-                                </StackLayout>
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Style="{StaticResource DrawerText}" Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
+                            <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
+                        </StackLayout>
 
-                                <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                        <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                     HorizontalOptions="Fill" 
                                     Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
                                     Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
                                     Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
 
-                                <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Style="{StaticResource DrawerText}" Text="Video Flash" HorizontalOptions="StartAndExpand" />
-                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
-                                </StackLayout>
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Style="{StaticResource DrawerText}" Text="Video Flash" HorizontalOptions="StartAndExpand" />
+                            <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
+                        </StackLayout>
 
-                                <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                        <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
                                     HorizontalOptions="Fill" 
                                     Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
                                     Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
                                     Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
-                            </StackLayout>
+                    </StackLayout>
 
-                            <StackLayout IsVisible="{Binding IsLensControlActive}">
+                    <StackLayout IsVisible="{Binding IsLensControlActive}">
 
-                                <!-- Automated lens control for Oqus 700+ cameras -->
-                                <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Style="{StaticResource DrawerText}" Text="Lens Focus" HorizontalOptions="StartAndExpand"/>
-                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='m'}" 
+                        <!-- Automated lens control for Oqus 700+ cameras -->
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Style="{StaticResource DrawerText}" Text="Lens Focus" HorizontalOptions="StartAndExpand"/>
+                            <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=lensFocusSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='m'}" 
                                    HorizontalOptions="End"/>
-                                </StackLayout>
+                        </StackLayout>
 
-                                <Slider x:Name="lensFocusSlider"
+                        <Slider x:Name="lensFocusSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding CurrentCamera.MaxFocus}"
                                 Minimum="{Binding CurrentCamera.Settings.LensControl.Focus.Min}"
                                 Value="{Binding CurrentCamera.Settings.LensControl.Focus.Value}" />
 
-                                <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                                    <Label Style="{StaticResource DrawerText}" Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
-                                    <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='f'}}" HorizontalOptions="End"/>
-                                </StackLayout>
+                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                            <Label Style="{StaticResource DrawerText}" Text="Lens Aperture" HorizontalOptions="StartAndExpand"/>
+                            <Label Style="{StaticResource DrawerText}" Text="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Converter={StaticResource PrefixConverter}, ConverterParameter='f'}}" HorizontalOptions="End"/>
+                        </StackLayout>
 
-                                <Slider x:Name="lensApertureSlider"
+                        <Slider x:Name="lensApertureSlider"
                                 HorizontalOptions="Fill" 
                                 Maximum="{Binding ApertureSnapMax}"
                                 Minimum="0"
                                 Value="{Binding CurrentCamera.Settings.LensControl.Aperture.Value, Mode=OneWay}"/>
 
-                            </StackLayout>
-
-                        </StackLayout>
                     </StackLayout>
 
-                </Frame>
-
+                </StackLayout>
             </StackLayout>
 
+            </Frame>
+
         </StackLayout>
-        
+
+    </StackLayout>
+        </StackLayout>
+
     </StackLayout>
 
 </ContentPage>

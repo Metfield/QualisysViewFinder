@@ -83,6 +83,7 @@ namespace Arqus
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe((value) => viewModel.SnapAperture(value));
+
         }
 
         // Handles segment selection for segmented control

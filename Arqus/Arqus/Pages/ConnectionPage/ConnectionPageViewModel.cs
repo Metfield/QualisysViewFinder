@@ -69,7 +69,8 @@ namespace Arqus
             OnQualisysLinkTappedCommand = new DelegateCommand(() => Device.OpenUri(new Uri("http://www.qualisys.com/start/")));
 
             // Get LAN address
-            IPAddress = GetLocalIPAddress();
+            // RUN ASYNCHRONOUSLY OR APP WILL CRASH WITH NO ERROR MESSAGE!
+            Task.Run(() => IPAddress = GetLocalIPAddress());
         }
         
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -79,7 +80,6 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-
             MobileCenterService.TrackEvent(GetType().Name, "NavigatedTo");
 
             try

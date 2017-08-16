@@ -72,12 +72,13 @@
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7s, ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Distribution: Qualisys AB (UG95XTPGTJ)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchLink>SdkOnly</MtouchLink>
     <OptimizePNGs>true</OptimizePNGs>
     <MtouchUseLlvm>false</MtouchUseLlvm>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CodesignProvision>ff234bf8-9d08-4f64-995f-7b9c89fdf58e</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>

@@ -13,7 +13,7 @@ namespace Arqus.Visualization
     {
         private bool touching = false;
         private double length;
-        private float scrollSpeed = 0.025f;
+        private float scrollSpeed = 0.045f;
         
 
         public double Radius
@@ -158,7 +158,7 @@ namespace Arqus.Visualization
 
         SwipingDirection swipingDirection;
 
-        private float swipeThreshold = 75.0f;
+        private float swipeThreshold = 50.0f;
         private float swipeSelectionThrottle = 500;
 
         public override void OnTouch(Input input, TouchMoveEventArgs eventArgs)

@@ -5,7 +5,7 @@ using Android.OS;
 namespace Arqus.Droid
 {
 
-    [Activity (Label = "Arqus", Icon = "@drawable/ic_launcher", MainLauncher = true, Theme = "@style/Theme.Splash", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity (Label = "Qualisys Viewfinder", Icon = "@drawable/ic_launcher", MainLauncher = true, Theme = "@style/Theme.Splash", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     // This class is used to display a splash screen and load the main activity
     public class SplashScreen : Activity
     {

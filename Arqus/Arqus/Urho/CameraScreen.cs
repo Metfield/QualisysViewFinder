@@ -145,7 +145,7 @@ namespace Arqus.Visualization
                 // Run on separate task (don't slowdown exectution)
                 System.Threading.Tasks.Task.Run(() => 
                 {
-                    using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus." + "disabled_stream_mode.jpg"))
+                    using (System.IO.Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".disabled_stream_mode.jpg"))
                     {
                         disabledStreamModePlaceholder = SkiaSharp.SKBitmap.Decode(stream).Resize(new SkiaSharp.SKImageInfo(Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE), SkiaSharp.SKBitmapResizeMethod.Lanczos3).Bytes;
                     }

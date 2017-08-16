@@ -35,7 +35,7 @@ namespace Arqus
             Assembly assembly = typeof(SettingsService).Assembly;
 
             // Get General Settings file stream
-            using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus." + filename))
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + filename))
             {
                 // Create a stream reader to read from stream (duh)
                 using (StreamReader streamReader = new StreamReader(stream))

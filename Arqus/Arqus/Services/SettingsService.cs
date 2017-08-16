@@ -102,7 +102,7 @@ namespace Arqus.Services
             Assembly assembly = typeof(SettingsService).Assembly;
 
             // Get General Settings file
-            using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus.RunningGeneralSettings.xml"))
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".RunningGeneralSettings.xml"))
             {
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsGeneral));
                 SettingsGeneral gs = (SettingsGeneral)xmlSerializer.Deserialize(stream);
@@ -118,7 +118,7 @@ namespace Arqus.Services
             Assembly assembly = typeof(SettingsService).Assembly;
 
             // Get General Settings file
-            using (System.IO.Stream stream = assembly.GetManifestResourceStream("Arqus.RunningImageSettings.xml"))
+            using (System.IO.Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".RunningImageSettings.xml"))
             {
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(SettingsImage));
                 SettingsImage si = (SettingsImage)xmlSerializer.Deserialize(stream);

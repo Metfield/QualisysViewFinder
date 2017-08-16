@@ -26,7 +26,7 @@ namespace Arqus
             Assembly assembly = typeof(DemoMode).Assembly;
 
             // Get camera frames information
-            using (Stream stream = assembly.GetManifestResourceStream("Arqus." + filename))
+            using (Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + "." + filename))
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 frames = (List<List<Camera>>)binaryFormatter.Deserialize(stream);

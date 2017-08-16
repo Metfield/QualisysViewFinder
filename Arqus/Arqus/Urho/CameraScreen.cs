@@ -331,7 +331,7 @@ namespace Arqus.Visualization
 
         private void LoadImage(byte[] image)
         {
-            if (image == null)
+            if (image == null || nodeTextMessage.Enabled)
                 return;
 
             try

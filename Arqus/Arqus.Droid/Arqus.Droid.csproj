@@ -64,6 +64,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
     <BundleAssemblies>true</BundleAssemblies>
+    <AndroidVersionCodePattern>{abi}{versionCode}</AndroidVersionCodePattern>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Acr.Support.Android, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

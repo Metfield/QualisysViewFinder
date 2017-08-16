@@ -133,11 +133,10 @@ namespace Arqus
         public void SetCameraSetting(string setting, double value, bool bypassSkipCounter = false)
         {
             // If nothing has been recieved from QTM then update the settings
-            // else wait 500 ms before updating qtm again to Xamarin.Forms time to update
+            // else wait 200 ms before updating qtm again to Xamarin.Forms time to update
             // and prevent an infinite feedback loop
-            if (Urho.Time.SystemTime - lastQTMUpdate > 500)
+            if (Urho.Time.SystemTime - lastQTMUpdate > 200)
                 CurrentCamera.SetSetting(setting, value);
-
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)

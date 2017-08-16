@@ -76,7 +76,6 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-
             try
             {
                 NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
@@ -100,7 +99,7 @@ namespace Arqus
         // Gets LAN IP and strips down the last byte
         private string GetLocalIPAddress()
         {
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
+            IPHostEntry host = Dns.GetHostEntry("");
             foreach (IPAddress ip in host.AddressList)
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)

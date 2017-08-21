@@ -53,8 +53,8 @@ namespace Arqus
                         Debug.Print("Something went wrong when parsing " + filename);
                         Debug.Print(e.Message);
                     }
-                }                
-            }            
+                }
+            }
         }
 
         public void Run()
@@ -68,6 +68,9 @@ namespace Arqus
                         camera.Value.Profile = cameraProfile;
                         break;
                     }
+
+                    // Defaults markerMode to true if no profile for camera was found
+                    camera.Value.Profile.MarkerModeSupport = true;
                 }
             }
         }

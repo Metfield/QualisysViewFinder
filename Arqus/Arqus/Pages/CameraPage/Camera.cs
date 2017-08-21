@@ -52,6 +52,7 @@ namespace Arqus.DataModels
             ImageResolution = imageResolution;
             Model = GetModelName(settings.Model);
             Orientation = settings.Orientation;
+            Profile = new CameraProfile();
 
             PageTitle = "#" + ID + " " + Model;
 
@@ -194,7 +195,7 @@ namespace Arqus.DataModels
             }
 
             // Avoid XAML crash when there are no lens control values and 
-            // MAX and MIN end up being 0 (which causes an exception)            
+            // MAX and MIN end up being 0 (which causes an exception)
             MaxFocus = 1;
             return false;
         }
@@ -205,6 +206,21 @@ namespace Arqus.DataModels
         {
             switch (cameraModel)
             {
+                case CameraModel.ModelMacReflex:
+                    return "MacReflex";
+
+                case CameraModel.ModelProReflex120:
+                    return "ProReflex 120";
+
+                case CameraModel.ModelProReflex240:
+                    return "ProReflex 240";
+
+                case CameraModel.ModelProReflex500:
+                    return "ProReflex 500";
+
+                case CameraModel.ModelProReflex1000:
+                    return "ProReflex 1000";
+
                 case CameraModel.ModelQqus100:
                     return "Oqus 100 ";
 
@@ -248,7 +264,7 @@ namespace Arqus.DataModels
                     return "Miqus Sync Unit";
 
                 default:
-                    return "Model Unknown";
+                    return "";
             }
         }
 

@@ -1,5 +1,35 @@
 ﻿[
   {
+    "Model": "MacReflex",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "ProReflex 120",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "ProReflex 240",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "ProReflex 500",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
+    "Model": "ProReflex 1000",
+    "AutoExposure": false,
+    "LensControl": false,
+    "MarkerModeSupport": true
+  },
+  {
     "Model": "Oqus 100",
     "AutoExposure": false,
     "LensControl": false,

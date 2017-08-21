@@ -11,10 +11,8 @@ namespace Arqus.Visualization
 {
     public class CarouselScreenLayout : CameraScreenLayout
     {
-        private bool touching = false;
         private double length;
         private float scrollSpeed = 0.045f;
-        
 
         public double Radius
         {
@@ -41,7 +39,6 @@ namespace Arqus.Visualization
             ItemCount = itemCount;
             Camera = camera;
         }
-        
 
         private double GetAngle(int position)
         {
@@ -252,7 +249,6 @@ namespace Arqus.Visualization
 
         public override void OnTouchReleased(Input input, TouchEndEventArgs eventArgs)
         {
-
             // Only communicate camera selection when user is not scrolling
             if (selected)
             {

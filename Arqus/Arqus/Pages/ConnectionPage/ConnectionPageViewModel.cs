@@ -117,7 +117,7 @@ namespace Arqus
             }
 
             // No ip was found.. weird!!
-            return "IP Address";
+            return "";
         }
 
         QTMServer selectedServer = null;

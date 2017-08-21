@@ -44,7 +44,7 @@ namespace Arqus
 
         private CameraMode cameraMode;
 
-        private Urho.Application urhoApplicationReference;
+        private CameraApplication urhoApplicationReference;
 
         public CameraPageViewModel(INavigationService navigationService, IUserDialogs userDialogs)
         {
@@ -141,9 +141,12 @@ namespace Arqus
 
         public void OnNavigatedFrom(NavigationParameters parameters)
         {
-            // Exit 3D application and nullify as we move away from view
-            Urho.Forms.UrhoSurface.OnDestroy();
-            urhoApplicationReference = null;
+            // Not used
+        }
+
+        public void OnNavigatingTo(NavigationParameters parameters)
+        {
+            // Not used
         }
 
         public void OnNavigatedTo(NavigationParameters parameters)
@@ -190,11 +193,6 @@ namespace Arqus
 
             // Once this is done we unsubscribe to the msg
             MessagingCenter.Unsubscribe<CameraPage>(this, Messages.Subject.URHO_SURFACE_FINISHED_LOADING);
-        }
-
-        public void OnNavigatingTo(NavigationParameters parameters)
-        {
-            // Not used
         }
 
         private void OnCameraSelection(Object sender, int cameraID)
@@ -458,7 +456,7 @@ namespace Arqus
             bottomSheetInitialPosition = bottomSheet.Y;
         }
 
-        public void SetUrhoApplicationReference(Urho.Application application)
+        public void SetUrhoApplicationReference(CameraApplication application)
         {
             // Copy reference
             urhoApplicationReference = application;

@@ -72,8 +72,8 @@ namespace Arqus.Visualization
         public float Height { set; get; }
 
         public bool Focused { get; set; }
-        
-        public Material Material { get; set; }
+
+        private Material screenMaterial;
         
         private delegate void UpdateDelegate();
         private UpdateDelegate OnUpdateHandler;
@@ -191,7 +191,7 @@ namespace Arqus.Visualization
 
             // Create intensity plane, its material and assign it
             imageScreen = backdropNode.CreateComponent<Urho.Shapes.Plane>();
-            Material = new Material();
+            screenMaterial = new Material();
 
             SetImageTexture(Camera.ImageResolution.Width, Camera.ImageResolution.Height);
 
@@ -299,7 +299,6 @@ namespace Arqus.Visualization
 
         public void OnImageUpdate()
         {
-
             if(loadingSpinner.Running)
             {
                 loadingSpinner.Stop();
@@ -331,18 +330,10 @@ namespace Arqus.Visualization
 
         private void LoadImage(byte[] image)
         {
-            if (image == null || nodeTextMessage.Enabled)
+            if (screenMaterial == null || image == null || nodeTextMessage.Enabled)
                 return;
 
-            try
-            {
-                texture?.SetData(0, 0, 0, Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, image);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-                Debugger.Break();
-            }
+            texture?.SetData(0, 0, 0, Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, image);
         }
         
         private void SetImageTexture(int width, int height)
@@ -350,9 +341,9 @@ namespace Arqus.Visualization
             texture = new Texture2D();
             texture.SetNumLevels(1);
             texture.SetSize(Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE, Urho.Graphics.RGBAFormat, TextureUsage.Dynamic);
-            Material.SetTexture(TextureUnit.Diffuse, texture);
-            Material.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
-            imageScreen.SetMaterial(Material);
+            screenMaterial.SetTexture(TextureUnit.Diffuse, texture);
+            screenMaterial.SetTechnique(0, CoreAssets.Techniques.DiffUnlit, 0, 0);
+            imageScreen.SetMaterial(screenMaterial);
         }
         
         protected override void OnUpdate(float timeStep)
@@ -382,7 +373,6 @@ namespace Arqus.Visualization
         public void OnMarkerUpdate()
         {
             nodeTextMessage.Enabled = false;
-
 
             if (imageScreen.Enabled)
             {

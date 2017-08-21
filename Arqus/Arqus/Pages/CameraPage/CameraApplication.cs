@@ -71,6 +71,7 @@ namespace Arqus
             {
                 if (Debugger.IsAttached)
                 {
+                    Debug.Print(e.Exception.Message);
                     Debugger.Break();
                 }
 
@@ -188,6 +189,9 @@ namespace Arqus
         // Called every frame
         protected override void OnUpdate(float timeStep)
         {
+            if (IsExiting)
+                return;
+
             base.OnUpdate(timeStep);
 
             // Update camera offset and reset 

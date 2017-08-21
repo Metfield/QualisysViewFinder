@@ -135,6 +135,26 @@ namespace Arqus
                 StartUrhoApp();
         }
 
+        // IMPORTANT! This method behaves differently depending on the running platform
+        // ========================================================================================
+        // >> iOS:      This method only gets called when the camera page is explicitly navigated
+        //              back using the back button
+        // 
+        // >> Android:  This method gets called when navigating back (just like iOS) BUT also when
+        //              the application is sent to the background. Hence the NativeSharedBridge fix
+        // ========================================================================================
+        protected override void OnDisappearing()
+        {
+            // Terminate the 3D application ONLY when we are navigating back to the main menu
+            if(!NativeSharedBridge.applicationIsEnteringBackground)
+            {
+                // Exit Urho 3D application
+                application.Exit();
+            }
+
+            base.OnDisappearing();
+        }
+
         async void StartUrhoApp()
         {
             // Create and start cameraPage Urho 3D application

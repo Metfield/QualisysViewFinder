@@ -25,12 +25,27 @@ namespace Arqus.Droid
             UserDialogs.Init(() => (Activity)global::Xamarin.Forms.Forms.Context);
 			global::Xamarin.Forms.Forms.Init (this, bundle);
 
-			LoadApplication (new Arqus.App ());
+            LoadApplication (new Arqus.App ());
         }
 
         public override void OnConfigurationChanged(Configuration newConfig)
         {
             base.OnConfigurationChanged(newConfig);
+        }
+
+        // Called when sent to background
+        protected override void OnPause()
+        {
+            // This flag is used by CameraPage.xaml.cs::OnDisappear()
+            NativeSharedBridge.applicationIsEnteringBackground = true;
+            base.OnPause();
+        }
+
+        // Called when first executed and when coming back from background
+        protected override void OnResume()
+        {
+            NativeSharedBridge.applicationIsEnteringBackground = false;
+            base.OnResume();
         }
     }
 }

@@ -13,7 +13,6 @@ using System;
 using System.Reflection;
 using static Arqus.CameraApplication;
 
-
 using QTMRealTimeSDK.Settings;
 
 namespace Arqus.Visualization
@@ -51,7 +50,6 @@ namespace Arqus.Visualization
 
         public double targetDistanceFromCamera;
         private int orientation;
-
 
         // static fields
         static int screenCount;
@@ -235,8 +233,6 @@ namespace Arqus.Visualization
             nodeTextMessage.Enabled = false;
             nodeTextMessage.Position = new Vector3(0.0f, 0.0f, -0.1f);
 
-            //nodeTextMessage.SetPosition2D(new Vector2(-textMessage.Width/2, 0.0f));
-
             // Disable both label nodes at start
             nodeGridTextLabel.Enabled = false;
             nodeDetailTextLabel.Enabled = false;
@@ -249,6 +245,9 @@ namespace Arqus.Visualization
 
             // Create frame
             CreateFrame(screenNode, 0.04f);
+
+            // Start with loading spinner enabled
+            loadingSpinner.Start();
         }
         
         public void SubscribeToDataEvents()
@@ -373,6 +372,11 @@ namespace Arqus.Visualization
         public void OnMarkerUpdate()
         {
             nodeTextMessage.Enabled = false;
+
+            if (loadingSpinner.Running)
+            {
+                loadingSpinner.Stop();
+            }
 
             if (imageScreen.Enabled)
             {

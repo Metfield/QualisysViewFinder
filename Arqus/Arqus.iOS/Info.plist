@@ -26,8 +26,6 @@
 	<string>Qualisys Viewfinder</string>
 	<key>CFBundleIdentifier</key>
 	<string>se.qualisys.Viewfinder</string>
-	<key>CFBundleVersion</key>
-	<string>1.0</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -47,8 +45,14 @@
 		<string>Icon-Small@3x.png</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen.storyboard</string>
+	<string>LaunchScreen</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1</string>
+	<string>2.0.0</string>
+	<key>XSAppIconAssets</key>
+	<string>Resources/Media.xcassets/AppIcons.appiconset</string>
+	<key>XSLaunchImageAssets</key>
+	<string>Resources/Media.xcassets/LaunchImages.launchimage</string>
+	<key>CFBundleVersion</key>
+	<string>2.0.0</string>
 </dict>
 </plist>

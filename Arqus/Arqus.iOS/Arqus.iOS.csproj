@@ -123,23 +123,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\Default-568h%402x.png" />
-    <BundleResource Include="Resources\Default-Portrait.png" />
-    <BundleResource Include="Resources\Default-Portrait%402x.png" />
-    <BundleResource Include="Resources\Default.png" />
-    <BundleResource Include="Resources\Default%402x.png" />
-    <BundleResource Include="Resources\Icon-60%402x.png" />
-    <BundleResource Include="Resources\Icon-60%403x.png" />
-    <BundleResource Include="Resources\Icon-76.png" />
-    <BundleResource Include="Resources\Icon-76%402x.png" />
-    <BundleResource Include="Resources\Icon-Small-40.png" />
-    <BundleResource Include="Resources\Icon-Small-40%402x.png" />
-    <BundleResource Include="Resources\Icon-Small-40%403x.png" />
-    <BundleResource Include="Resources\Icon-Small.png" />
-    <BundleResource Include="Resources\Icon-Small%402x.png" />
-    <BundleResource Include="Resources\Icon-Small%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Acr.Support.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Acr.Support.2.1.0\lib\Xamarin.iOS10\Acr.Support.iOS.dll</HintPath>
     </Reference>
@@ -230,37 +213,37 @@
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\120x120.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\152x152.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\167x167.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\180x180.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\29x29.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\40x40.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\58x58.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\76x76.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\80x80.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\87x87.png">
+      <InProject>false</InProject>
+    </ImageAsset>
     <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Contents.json">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-120.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-152.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-167.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-180.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-29.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-40.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-58.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-76.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-80.png">
-      <InProject>false</InProject>
-    </ImageAsset>
-    <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Icon-87.png">
       <InProject>false</InProject>
     </ImageAsset>
     <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\Contents.json">
@@ -290,12 +273,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Qualisys_White_Transparency_2000x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Qualisys_Home.png" />
@@ -364,54 +341,6 @@
     <BundleResource Include="Resources\ic_arrow_drop_down_white_24dp%403x.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="splash\Default-1242%403x~iphone6s-landscape_2208x1242.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-1242%403x~iphone6s-portrait_1242x2208.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-568h%402x~iphone_640x1136.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-750%402x~iphone6-landscape_1334x750.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-750%402x~iphone6-portrait_750x1334.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Landscape%402x~ipad_2048x1496.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Landscape%402x~ipad_2048x1536.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Landscape~ipad_1024x748.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Landscape~ipad_1024x768.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Portrait%402x~ipad_1536x2008.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Portrait%402x~ipad_1536x2048.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default-Portrait~ipad_768x1024.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default%402x~iphone_640x960.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default~ipad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="splash\Default~iphone.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\splash\Default-1242%403x~iphone6s-landscape_2208x1242.png" />
   </ItemGroup>
   <ItemGroup>
@@ -460,9 +389,6 @@
     <BundleResource Include="Resources\splash\Default~iphone.png" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Resources\icons\icon_white.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\ic_markers_grey_800_24dp%402x.png" />
   </ItemGroup>
   <ItemGroup>
@@ -492,6 +418,7 @@
   <ItemGroup>
     <BundleResource Include="Resources\qvf_logo.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="..\Arqus\Arqus.projitems" Label="Shared" Condition="Exists('..\Arqus\Arqus.projitems')" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.4.267\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.4.267\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />

@@ -232,8 +232,7 @@ namespace Arqus.Services
                 return false;
 
             try
-            {    
-                
+            {
                 bool response = await Task.Run(() => MasterDelegate(() => connection.SetLED(id, mode.ToString(), color.ToString())));
                 return false;
             }

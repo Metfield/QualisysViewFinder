@@ -377,7 +377,7 @@ namespace Arqus
         // TODO: Handle other messages        
         private void HandleHostResponse(string response)
         {
-            // Right now just toast
+            // Right now just print in debug mode
             Debug.Print("QTM Response: " + response);
         }
 

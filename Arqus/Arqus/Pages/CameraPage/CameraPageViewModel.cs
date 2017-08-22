@@ -46,6 +46,10 @@ namespace Arqus
 
         private CameraApplication urhoApplicationReference;
 
+        // Used to avoid sending redundant settings data to QTM after selecting
+        // a camera in carousel layout. 
+        private bool ignoreSettingsAfterCameraSelection;
+
         public CameraPageViewModel(INavigationService navigationService, IUserDialogs userDialogs)
         {
             this.navigationService = navigationService;
@@ -135,7 +139,7 @@ namespace Arqus
             // If nothing has been recieved from QTM then update the settings
             // else wait 200 ms before updating qtm again to Xamarin.Forms time to update
             // and prevent an infinite feedback loop
-            if (Urho.Time.SystemTime - lastQTMUpdate > 200)
+            if (Urho.Time.SystemTime - lastQTMUpdate > 200 && !ignoreSettingsAfterCameraSelection)
                 CurrentCamera.SetSetting(setting, value);
         }
 
@@ -197,6 +201,9 @@ namespace Arqus
 
         private void OnCameraSelection(Object sender, int cameraID)
         {
+            // Don't send camera settings to QTM 
+            SetIgnoreSettingsAfterCameraSelection();
+
             // Set current camera
             CameraManager.SetCurrentCamera(cameraID);
             CurrentCamera = CameraManager.CurrentCamera;
@@ -219,6 +226,17 @@ namespace Arqus
 
             // Change camera page title
             UpdatePageTitle(IsGridLayoutActive);
+        }
+
+        // Set flag to avoid sending redundant data to QTM
+        private async void SetIgnoreSettingsAfterCameraSelection()
+        {
+            Task.Run(() =>
+            {
+                ignoreSettingsAfterCameraSelection = true;
+                    Thread.Sleep(500);
+                ignoreSettingsAfterCameraSelection = false;
+            });
         }
 
         private void SetCameraMode(CameraMode mode)

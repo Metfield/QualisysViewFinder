@@ -62,11 +62,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
     <EnableProguard>true</EnableProguard>
-    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi;armeabi-v7a;x86;x86_64;arm64-v8a</AndroidSupportedAbis>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
     <BundleAssemblies>true</BundleAssemblies>
     <AndroidVersionCodePattern>{abi}{versionCode}</AndroidVersionCodePattern>
+    <NoWarn>CS2014; CS4014; CS1998</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Acr.Support.Android, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">

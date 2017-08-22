@@ -13,7 +13,7 @@
     
     <StackLayout VerticalOptions="FillAndExpand" >
 
-        <Image Source="arqus_logo.png" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
+        <Image Source="qvf_logo" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
 
         <Grid   
             VerticalOptions="Start" 

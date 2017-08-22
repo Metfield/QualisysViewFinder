@@ -52,7 +52,6 @@ namespace Arqus
 
             RefreshQTMServers = new DelegateCommand(() => Task.Run(() => LoadQTMServers()));
 
-
             ConnectionModeDiscoveryCommand = new DelegateCommand(() => {
                 LoadQTMServers();
                 IsDiscovery = true;
@@ -76,24 +75,20 @@ namespace Arqus
 
         public void OnNavigatedTo(NavigationParameters parameters)
         {
-            try
+            if (!parameters.ContainsKey("__NavigationMode"))
+                return;
+
+            NavigationMode navigationMode = parameters.GetValue<NavigationMode>("__NavigationMode");
+
+            if (navigationMode == NavigationMode.Back)
             {
-                NavigationMode navigationMode = parameters.GetValue<NavigationMode>("NavigationMode");
+                connection.Dispose();
 
-                if (navigationMode == NavigationMode.Back)
-                {
-                    connection.Dispose();
+                // Make sure everything is clean
+                SettingsService.Clean();
 
-                    // Make sure everything is clean
-                    SettingsService.Clean();
-
-                    //GC.Collect();
-                }
+                GC.Collect();
             }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }            
         }
 
         // Gets LAN IP and strips down the last byte

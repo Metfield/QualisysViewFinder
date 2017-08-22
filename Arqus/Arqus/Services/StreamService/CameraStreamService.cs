@@ -116,6 +116,8 @@ namespace Arqus
             {
                 imageStream.Dispose();
                 markerStream.Dispose();
+
+                qtmEventListener.StopListening();
                 qtmEventListener.Dispose();
             }
             else

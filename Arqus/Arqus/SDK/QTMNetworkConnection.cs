@@ -29,6 +29,8 @@ namespace Arqus
 
         public static bool QTMVersionSupported { get; set; }
 
+        public static bool ConnectionIsRecordedMeasurement { get; set; }
+
         public const short MINIMUM_SUPPORTED_QTM_VERSION = 216;
         
         public QTMNetworkConnection()

@@ -140,6 +140,12 @@ namespace Arqus.Services
             // Refresh general settings
             connection.Protocol.GetGeneralSettings();
 
+            if (connection.Protocol.GetErrorString() == "Camera system not running")
+            {
+                QTMNetworkConnection.ConnectionIsRecordedMeasurement = true;
+                return generalSettings;
+            }
+
             try
             {
                 // Try and fetch the new settings
@@ -148,6 +154,7 @@ namespace Arqus.Services
             catch (Exception e)
             {
                 Debug.Print("SettingsService::GetCameraSettings Exception!.. " + e.Message);
+                Debugger.Break();
             }
 
             // If the 'try' fails, this will at least return the 
@@ -251,13 +258,24 @@ namespace Arqus.Services
 
         public static void Clean()
         {
-            if(connection != null)
+            QTMNetworkConnection.ConnectionIsRecordedMeasurement = false;
+
+            if (connection != null)
                 connection.Dispose();
 
             isDemoModeActive = false;
 
-            generalSettings = null;
-            imageCameras = null;
+            if (generalSettings != null)
+            {
+                generalSettings.Clear();
+                generalSettings = null;
+            }
+
+            if (imageCameras != null)
+            {
+                imageCameras.Clear();
+                imageCameras = null;
+            }
         }
 
         public static bool CropImage(int id, float left, float right, float top, float bottom)

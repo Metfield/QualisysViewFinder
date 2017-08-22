@@ -105,24 +105,14 @@ namespace Arqus
         {
             List<SettingsGeneralCameraSystem> settingsList = SettingsService.GetCameraSettings();
 
+            if (settingsList == null)
+                return;
+
             foreach(var settings in settingsList)
             {
                 Cameras[settings.CameraId].UpdateSettings(settings);
             }
         }
-
-
-        // TODO: Look over this later
-        /*static void RefreshCameraAndScreen()
-        {
-            connection.GetImageSettings()
-                .Where(camera => camera.CameraID == State.ID)
-                .Select(camera => new CameraScreen(camera.CameraID, camera.Width, camera.Height))
-                .ToList();
-        }*/
-
-        //public static void SelectCamera(int id){ State.ID = id; }
-        //public static void SelectCamera(int id, CameraMode mode) { State.ID = id; State.Mode = mode; }
 
         public static void Clean()
         {

@@ -15,7 +15,7 @@ namespace Arqus
         public QTMEventListener(int freq, bool startListening = true)
         {
             // Init variables
-            frequency = 60;
+            frequency = 30;
 
             // TODO: Mmmph.. new connection?
             networkConnection = new QTMNetworkConnection();
@@ -57,16 +57,9 @@ namespace Arqus
                     eventPacket = networkConnection.Protocol.GetRTPacket().GetEvent();
 
                     // Check if camera settings have changed
-                    if (eventPacket == QTMEvent.EventCameraSettingsChanged)
+                    if (eventPacket == QTMEvent.EventCameraSettingsChanged && !QTMNetworkConnection.ConnectionIsRecordedMeasurement)
                     {
-                        if (ignoreNextPacket)
-                        {
-                            ignoreNextPacket = false;
-                            //continue;
-                        }
-
                         MessagingCenter.Send(this, Messages.Subject.CAMERA_SETTINGS_CHANGED);
-                        ignoreNextPacket = true;
                     }
                 }
             }

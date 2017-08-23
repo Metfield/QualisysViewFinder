@@ -16,7 +16,7 @@
   </style>
 
   <style name="Theme.Splash" parent="Theme.AppCompat">
-    <item name="android:background">@drawable/arqus_background</item>
+    <item name="android:windowBackground">@drawable/splash_centered</item>
     <item name="android:windowNoTitle">true</item>
   </style>
   

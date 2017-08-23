@@ -9,7 +9,7 @@
     <Import_RootNamespace>Arqus</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)NativeSharedBridge.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\NativeSharedBridge.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\CameraProfile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SDK\CameraProfiler.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\DataSourceConverter.cs" />

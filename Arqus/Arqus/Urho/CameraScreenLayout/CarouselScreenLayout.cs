@@ -111,7 +111,7 @@ namespace Arqus.Visualization
                         break;
                     case 90:
                     case 360:
-                        distance = DataOperations.GetDistanceForFrustrumWidth(screen.Height, Camera.AspectRatio, Camera.Fov);
+                        distance = DataOperations.GetDistanceForFrustrumWidth(screen.Height * 1.1f, Camera.AspectRatio, Camera.Fov);
                         break;
                 }
             }
@@ -124,7 +124,7 @@ namespace Arqus.Visualization
                 {
                     case 0:
                     case 180:
-                        distance = DataOperations.GetDistanceForFrustrumHeight(screen.Height, Camera.Fov);
+                        distance = DataOperations.GetDistanceForFrustrumHeight(screen.Height + (screen.Camera.ImageResolution.PixelAspectRatio + DeviceInfo.GetAspectRatio()) * 0.5f, Camera.Fov);
                         break;
                     case 90:
                     case 360:

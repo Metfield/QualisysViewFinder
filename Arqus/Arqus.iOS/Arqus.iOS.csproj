@@ -111,6 +111,7 @@
     <Compile Include="IpAdressEntryRenderer.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
+    <Compile Include="Services\DeviceInfo.cs" />
     <Compile Include="Services\Notification_iOS.cs" />
     <Compile Include="Services\Orientation_iOS.cs" />
     <None Include="Entitlements.plist" />

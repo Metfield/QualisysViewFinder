@@ -229,6 +229,7 @@
     <Compile Include="Notification.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\DeviceInfo.cs" />
     <Compile Include="Services\Notification_Android.cs" />
     <Compile Include="Services\Orientation_Android.cs" />
     <Compile Include="SplashScreen.cs" />

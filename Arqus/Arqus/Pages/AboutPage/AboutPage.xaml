@@ -10,7 +10,7 @@
                 
                 <Image Source="Qualisys_White_Transparency_2000x.png" Margin="20" HorizontalOptions="FillAndExpand" />
 
-                <Label TextColor="WhiteSmoke" Text="ArqusFinder" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
+                <Label TextColor="WhiteSmoke" Text="Qualisys Viewfinder" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
                 <Frame  CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
                     <Label TextColor="White" Text="This application is intended to be used as an aid for setting up Qualisys motion capture systems. It is also an example of what developers can achieve with the use of Qualisys' Real-time SDK." />
                 </Frame>

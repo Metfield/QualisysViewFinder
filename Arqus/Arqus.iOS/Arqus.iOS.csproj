@@ -120,7 +120,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <ITunesArtwork Include="iTunesArtwork" />
     <ITunesArtwork Include="iTunesArtwork@2x" />
-    <InterfaceDefinition Include="LaunchScreen.storyboard" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -340,54 +339,6 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\ic_arrow_drop_down_white_24dp%403x.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-1242%403x~iphone6s-landscape_2208x1242.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-1242%403x~iphone6s-portrait_1242x2208.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-568h%402x~iphone_640x1136.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-750%402x~iphone6-landscape_1334x750.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-750%402x~iphone6-portrait_750x1334.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Landscape%402x~ipad_2048x1496.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Landscape%402x~ipad_2048x1536.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Landscape~ipad_1024x748.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Landscape~ipad_1024x768.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Portrait%402x~ipad_1536x2008.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Portrait%402x~ipad_1536x2048.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default-Portrait~ipad_768x1024.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default%402x~iphone_640x960.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default~ipad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <BundleResource Include="Resources\splash\Default~iphone.png" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\ic_markers_grey_800_24dp%402x.png" />

@@ -46,7 +46,6 @@ namespace Arqus.Visualization
         private Node screenFrame;
 
         private bool isDisabledStreamModePlaceholderActive = false;
-        private static byte[] disabledStreamModePlaceholder;
 
         public double targetDistanceFromCamera;
         private int orientation;
@@ -134,21 +133,6 @@ namespace Arqus.Visualization
             // so the screens can be positioned accordingly
             position = screenCount + 1;
             screenCount++;
-
-            if(!QTMNetworkConnection.IsMaster)
-            {
-                // Load placeholder image to be displayed when image stream mode is unavailable
-                Assembly assembly = typeof(CameraScreen).Assembly;
-
-                // Run on separate task (don't slowdown exectution)
-                System.Threading.Tasks.Task.Run(() => 
-                {
-                    using (System.IO.Stream stream = assembly.GetManifestResourceStream(assembly.GetName().Name + ".disabled_stream_mode.jpg"))
-                    {
-                        disabledStreamModePlaceholder = SkiaSharp.SKBitmap.Decode(stream).Resize(new SkiaSharp.SKImageInfo(Constants.URHO_TEXTURE_SIZE, Constants.URHO_TEXTURE_SIZE), SkiaSharp.SKBitmapResizeMethod.Lanczos3).Bytes;
-                    }
-                });                
-            }
         }
         
         public static void ResetScreenCounter()

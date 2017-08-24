@@ -93,9 +93,6 @@ namespace Arqus
                 InvokeOnMainAsync(() => SwitchScreenLayout(type));
             });
 
-            // Enable touch input
-            Input.Enabled = true;
-
             // Subscribe to touch events
             Input.TouchMove += OnTouched;
             Input.TouchBegin += OnTouchBegan;
@@ -439,10 +436,7 @@ namespace Arqus
         protected override void Stop()
         {
             DisableImageStreamOnAllCameras();
-
-            // Disable touch input
-            Input.Enabled = false;
-
+          
             // Unsubscribe from touch events
             Input.TouchMove -= OnTouched;
             Input.TouchBegin -= OnTouchBegan;

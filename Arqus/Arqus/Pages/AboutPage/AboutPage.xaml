@@ -7,8 +7,10 @@
     <ContentPage.Content>
         <ScrollView>
             <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" Style="{StaticResource Background}">
-                
-                <Image Source="Qualisys_White_Transparency_2000x.png" Margin="20" HorizontalOptions="FillAndExpand" />
+
+                <Label x:Name="buildVersion" TextColor="WhiteSmoke" FontAttributes="Bold" FontSize="Small" HorizontalTextAlignment="End" Margin="0, 12, 20, -20"/>
+
+                <Image Source="Qualisys_White_Transparency_2000x.png" Margin="20" HorizontalOptions="FillAndExpand" Scale="0.75"/>
 
                 <Label TextColor="WhiteSmoke" Text="Qualisys Viewfinder" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
                 <Frame  CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
@@ -17,7 +19,7 @@
 
                 <Label TextColor="WhiteSmoke" Text="Real-time SDK" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>
                 <Frame CornerRadius="10" Margin="20, 0, 20, 10" Style="{StaticResource Card}">
-                    <Label TextColor="White" Text="ArqusFinder uses the C# implementation of Qualisys' Real-time SDK. For more information regarding this and other implementations, head to http://www.qualisys.com/software/real-time-sdk/ "/>
+                    <Label TextColor="White" Text="Qualisys Viewfinder uses the C# implementation of Qualisys' Real-time SDK. For more information regarding this and other implementations, head to http://www.qualisys.com/software/real-time-sdk/ "/>
                 </Frame>
 
                 <Label TextColor="WhiteSmoke" Text="Troubleshooting" HorizontalTextAlignment="Center" FontAttributes="Bold" FontSize="Medium"/>

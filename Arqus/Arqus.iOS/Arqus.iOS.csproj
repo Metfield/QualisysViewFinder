@@ -88,7 +88,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <MtouchArch>ARMv7, ARM64</MtouchArch>
+    <MtouchArch>ARMv7s, ARM64</MtouchArch>
     <BuildIpa>True</BuildIpa>
     <CodesignProvision>5b93bcf0-684e-417e-88a6-c5e7fd80863b</CodesignProvision>
     <CodesignKey>iPhone Distribution: Qualisys AB (UG95XTPGTJ)</CodesignKey>

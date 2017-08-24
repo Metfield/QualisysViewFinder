@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" launchScreen="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment version="2048" identifier="iOS"/>
+    </dependencies>
+    <scenes/>
+    <resources>
+        <image name="arqus_background.jpg" width="1600" height="1200"/>
+        <image name="ic_arrow_drop_down_white_24dp.png" width="48" height="48"/>
+        <image name="ic_grid_white_24dp.png" width="48" height="48"/>
+        <image name="ic_info_outline_white_24dp.png" width="48" height="48"/>
+        <image name="ic_intensity_grey_800_24dp.png" width="48" height="48"/>
+        <image name="ic_intensity_white_24dp.png" width="48" height="48"/>
+        <image name="ic_markers_grey_800_24dp.png" width="48" height="48"/>
+        <image name="ic_markers_white_24dp.png" width="48" height="48"/>
+        <image name="ic_settings_white_24dp.png" width="48" height="48"/>
+        <image name="ic_videocam_grey_800_24dp.png" width="48" height="48"/>
+        <image name="ic_videocam_white_24dp.png" width="48" height="48"/>
+        <image name="Qualisys_Home.png" width="500" height="108"/>
+        <image name="Qualisys_White_Transparency_2000x.png" width="2000" height="522"/>
+        <image name="qvf_logo.png" width="2000" height="1370"/>
+    </resources>
+</document>

@@ -252,6 +252,9 @@
     <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\Default-568h@2x~iphone_640x1136.png">
       <InProject>false</InProject>
     </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\Default-750@2x~iphone6-portrait_750x1334.png">
+      <InProject>false</InProject>
+    </ImageAsset>
     <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\Default-Landscape@2x~ipad_2048x1536.png">
       <InProject>false</InProject>
     </ImageAsset>
@@ -265,6 +268,12 @@
       <InProject>false</InProject>
     </ImageAsset>
     <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\Default@2x~iphone_640x960.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\iPhone_Portrait_Retina@3x_2208x1242.png">
+      <InProject>false</InProject>
+    </ImageAsset>
+    <ImageAsset Include="Resources\Media.xcassets\LaunchImages.launchimage\iPhone_Retina@3x_1242x2208.png">
       <InProject>false</InProject>
     </ImageAsset>
   </ItemGroup>

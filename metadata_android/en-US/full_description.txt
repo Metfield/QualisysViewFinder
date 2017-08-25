@@ -1,19 +1,18 @@
 Qualisys Viewfinder allows you to stream real-time marker and image data from a running Qualisys motion capture system directly to your phone.
 
-<b>Features</b>
+<b>FEATURES</b>
 
     • Compatible with both Miqus and Oqus cameras.
     • See all tracked markers from the point of view of any connected camera.
     • Swiftly navigate between cameras by swiping left/right.
     • Visualize multiple cameras in the system at the same time.
-    • Change specific camera settings such as marker exposure and lens aperture<sup> 1</sup>.
+    • Change specific camera settings such as marker exposure and lens aperture*.
     • Stream real-time and pre-recorded measurements.
 
-<b>Requirements</b>
+<b>REQUIREMENTS</b>
 
     • Up and running Qualisys motion capture system.
     • Qualisys Track Manager version 2.16 or later.
 
-
+<i>*Lens control only available on Oqus 7+ cameras.</i>
 <i>For more information about Qualisys and their latest technologies, please visit http://qualisys.se</i>
-<i><sup>1 </sup>Lens control only available on Oqus 7+ cameras.</i>

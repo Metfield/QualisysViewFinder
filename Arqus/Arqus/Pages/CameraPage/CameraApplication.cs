@@ -230,10 +230,14 @@ namespace Arqus
         {
             List<DataModels.Camera> cameras = CameraManager.GetCameras();
 
+            if (cameras == null)
+                return;
+
             // Iterate over screens and toggle the info
             foreach (DataModels.Camera camera in cameras)
             {
-                camera.Screen.ToggleUIInfo(screenLayoutType);
+                if (camera.Screen != null)
+                    camera.Screen.ToggleUIInfo(screenLayoutType);
             }
         }
 

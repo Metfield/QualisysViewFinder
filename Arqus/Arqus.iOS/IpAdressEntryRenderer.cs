@@ -16,7 +16,7 @@ namespace Arqus.iOS.Renderers
             base.OnElementChanged(e);
 
             UITextField nativeField = Control as UITextField;
-            nativeField.KeyboardType = UIKeyboardType.DecimalPad;
+            nativeField.KeyboardType = UIKeyboardType.NumbersAndPunctuation;
             nativeField.ReloadInputViews();
         }
     }

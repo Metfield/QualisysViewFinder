@@ -12,10 +12,7 @@ namespace Arqus.Droid.Renderers
         protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
         {
             base.OnElementChanged(e);
-
-            // EntryEditText has been deprecated and FormsEditText must be used
-            // starting with Xamarin.forms 2.4
-            (Control as FormsEditText).InputType = Android.Text.InputTypes.ClassPhone;
-        }
+            (Control as EntryEditText).InputType = Android.Text.InputTypes.ClassPhone;
+        } 
     }
 }

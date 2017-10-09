@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Arqus", "Arqus\Arqus\Arqus.shproj", "{3988E928-8C20-495E-91D6-58C10739B4C8}"
 EndProject
@@ -131,6 +131,7 @@ Global
 		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.AppStore|x64.ActiveCfg = AppStore|iPhone
 		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.AppStore|x86.ActiveCfg = AppStore|iPhone
 		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.Debug|Any CPU.ActiveCfg = Debug|iPhone
+		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.Debug|Any CPU.Build.0 = Debug|iPhone
 		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.Debug|Any CPU.Deploy.0 = Debug|iPhone
 		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.Debug|ARM.ActiveCfg = Debug|iPhone
 		{73A95894-ECFF-42A7-AEF7-B16B1B899653}.Debug|iPhone.ActiveCfg = Debug|iPhone
@@ -151,5 +152,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FED0B68A-FE76-4B37-893C-423E98E0EDE1}
 	EndGlobalSection
 EndGlobal

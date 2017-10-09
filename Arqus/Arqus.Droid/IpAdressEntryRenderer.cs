@@ -13,7 +13,9 @@ namespace Arqus.Droid.Renderers
         {
             base.OnElementChanged(e);
 
-            (Control as EntryEditText).InputType = Android.Text.InputTypes.ClassPhone;
+            // EntryEditText has been deprecated and FormsEditText must be used
+            // starting with Xamarin.forms 2.4
+            (Control as FormsEditText).InputType = Android.Text.InputTypes.ClassPhone;
         }
     }
 }

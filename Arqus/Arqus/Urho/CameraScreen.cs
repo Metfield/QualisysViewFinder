@@ -384,10 +384,10 @@ namespace Arqus.Visualization
             {
                 // Transform from camera coordinates to frame coordinates
                 // TODO: Add marker resolution to class
-                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, -cameraScreenHalfWidth, cameraScreenHalfWidth, markerData.MarkerData2D[i].X);
-                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
-                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Width, 0, cameraScreenHalfWidth, markerData.MarkerData2D[i].DiameterX);
-                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerResolution.Height, 0, cameraScreenHalfHeight, markerData.MarkerData2D[i].DiameterY);
+                float x = DataOperations.ConvertRange(0, Camera.Settings.MarkerFieldOfViewSize.Width, -cameraScreenHalfWidth, cameraScreenHalfWidth, markerData.MarkerData2D[i].X);
+                float y = DataOperations.ConvertRange(0, Camera.Settings.MarkerFieldOfViewSize.Height, cameraScreenHalfHeight, -cameraScreenHalfHeight, markerData.MarkerData2D[i].Y);
+                float width = DataOperations.ConvertRange(0, Camera.Settings.MarkerFieldOfViewSize.Width, 0, cameraScreenHalfWidth, markerData.MarkerData2D[i].DiameterX);
+                float height = DataOperations.ConvertRange(0, Camera.Settings.MarkerFieldOfViewSize.Height, 0, cameraScreenHalfHeight, markerData.MarkerData2D[i].DiameterY);
 
                 Pool.Get(i).Redraw(x, y, width, height, cameraScreenHalfWidth, cameraScreenHalfHeight);
     

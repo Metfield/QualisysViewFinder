@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 
 namespace Arqus
 {
-
     public class QTMNetworkConnection : IDisposable
     {
         public static string Version { get; private set; }
@@ -342,21 +341,28 @@ namespace Arqus
                 return false;
             }
         }
-       
-        public bool SetCameraSettings(int id, string settingsParameter, string value)
+
+        public bool SetCameraSettings(Packet.Type packetType, int id, string settingsParameter, string value)
         {
             string response;
             string packetString;
 
             // Create XML command depending on type of camera settings parameter
-            if (SettingIsLensControl(settingsParameter))
+            switch(packetType)
             {
-                packetString = Packet.LensControlParameter(id, settingsParameter, value);
+                case Packet.Type.LensControl:
+                    packetString = Packet.LensControlParameter(id, settingsParameter, value);
+                    break;
+
+                case Packet.Type.AutoExposure:
+                    packetString = Packet.AutoExposureParameter(id, settingsParameter, value);
+                    break;
+
+                case Packet.Type.Default:
+                default:
+                    packetString = Packet.SettingsParameter(id, settingsParameter, value);
+                    break;
             }
-            else
-            {
-                packetString = Packet.SettingsParameter(id, settingsParameter, value);
-            }            
 
             // Take control and issue command
             TakeControl();

@@ -24,6 +24,8 @@ namespace Arqus.Helpers
         public const string VIDEO_FLASH_PACKET_STRING = "Video_Flash_Time";
         public const string LENS_FOCUS_PACKET_STRING = "Focus";
         public const string LENS_APERTURE_PACKET_STRING = "Aperture";
+        public const string AUTO_EXPOSURE_ENABLE_PACKET_STRING = "Enabled";
+        public const string AUTO_EXPOSURE_COMPENSATION_PACKET_STRING = "Compensation";
 
         // Mode toolbar icon constants
         public const string MODEBAR_ICON_MARKER_NORMAL = "ic_markers_white_24dp";

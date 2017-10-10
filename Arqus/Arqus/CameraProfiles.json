@@ -37,7 +37,7 @@
   },
   {
     "Model": "Oqus 200 C",
-    "AutoExposure": false,
+    "AutoExposure": true,
     "LensControl": false,
     "MarkerModeSupport": false
   },

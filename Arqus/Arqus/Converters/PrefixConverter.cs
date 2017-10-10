@@ -14,6 +14,8 @@ namespace Arqus.Converters
 
             if(parameter.ToString() == "m" || parameter.ToString() == "f")
                 return String.Format("{0} {1}", fvalue.ToString("0.00"), parameter);
+            else if(parameter.ToString() == "EV")
+                return String.Format("{0} {1}", fvalue.ToString("0.0"), parameter);
             else
                 return String.Format("{0} {1}", (int)fvalue, parameter);
         }

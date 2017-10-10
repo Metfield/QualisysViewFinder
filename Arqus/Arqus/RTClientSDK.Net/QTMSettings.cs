@@ -260,7 +260,7 @@ namespace QTMRealTimeSDK.Settings
         [XmlElement("LensControl")]
         public SettingsLensControl LensControl { get; set; }
         [XmlElement("AutoExposure")]
-        public SettingsAutoExposure AutoExposure;
+        public SettingsAutoExposure AutoExposure { get; set; }
         [XmlElement("Video_Resolution")]
         public SettingsVideoResolution VideoResolution;
         [XmlElement("Video_Aspect_Ratio")]
@@ -280,9 +280,9 @@ namespace QTMRealTimeSDK.Settings
     public struct SettingsAutoExposure
     {
         [XmlAttribute("Enabled")]
-        public bool Enabled;
+        public bool Enabled { get; set; }
         [XmlAttribute("Compensation")]
-        public float Compensation;
+        public float Compensation { get; set; }
     }
 
     /// <summary>Settings for Lens Control Focus</summary>

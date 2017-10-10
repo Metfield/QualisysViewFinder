@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using QTMRealTimeSDK.Settings;
 using System.Linq;
 using System.Reflection;
-using System.IO;
+using Arqus.Helpers;
 using System.Xml.Serialization;
 
 namespace Arqus.Services
@@ -203,14 +203,14 @@ namespace Arqus.Services
         /// <param name="settingsParameter">Parameter to send</param>
         /// <param name="value">Parameter's value</param>
         /// <returns>Returns true if successful</returns>
-        public static bool SetCameraSettings(int id, string settingsParameter, string value)
+        public static bool SetCameraSettings(Packet.Type packetType, int id, string settingsParameter, string value)
         {
             if (isDemoModeActive)
                 return false;
 
             try
             {
-                return MasterDelegate(() => connection.SetCameraSettings(id, settingsParameter, value));
+                return MasterDelegate(() => connection.SetCameraSettings(packetType, id, settingsParameter, value));
             }
             catch (Exception e)
             {

@@ -151,27 +151,54 @@
 
                     <StackLayout IsVisible="{Binding IsLensControlActive, Converter={StaticResource InverseBoolConverter}}">
 
-                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                            <Label Style="{StaticResource DrawerText}" Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
-                            <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
+                        <!-- Auto exposure switch-->
+                        <StackLayout IsVisible="{Binding CurrentCamera.Profile.AutoExposure}" HorizontalOptions="CenterAndExpand" Orientation="Horizontal" >
+                            <Label Style="{StaticResource DrawerText}" Text="Auto exposure" />
+                            <Switch x:Name="autoExposureSwitch" IsToggled="{Binding CurrentCamera.Settings.AutoExposure.Enabled}" />
                         </StackLayout>
-
-                        <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
-                                    HorizontalOptions="Fill" 
-                                    Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
-                                    Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
-                                    Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
-
-                        <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
-                            <Label Style="{StaticResource DrawerText}" Text="Video Flash" HorizontalOptions="StartAndExpand" />
-                            <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
+                        
+                        <!--Exposure compensation slider, visible only when auto exposure is enabled-->
+                        <StackLayout IsVisible="{Binding CurrentCamera.Settings.AutoExposure.Enabled}">
+                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                                <Label Style="{StaticResource DrawerText}" Text="Exposure Compensation" HorizontalOptions="StartAndExpand"/>
+                                <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=exposureCompensationSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='EV'}" HorizontalOptions="End"/>
+                            </StackLayout>                            
+                            
+                            <Slider x:Name="exposureCompensationSlider"
+                                    HorizontalOptions="Fill"
+                                    Maximum="2.0"
+                                    Minimum="-2.0"
+                                    Value="{Binding CurrentCamera.Settings.AutoExposure.Compensation}" />
                         </StackLayout>
+                        
+                        <!--Hide exposure and flash time sliders if auto exposure is enabled-->
+                        <StackLayout IsVisible="{Binding CurrentCamera.Settings.AutoExposure.Enabled, Converter={StaticResource InverseBoolConverter}}">
+                            <!--Video Exposure-->
+                            <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                                <Label Style="{StaticResource DrawerText}" Text="Video Exposure" HorizontalOptions="StartAndExpand"/>
+                                <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoExposureSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}" HorizontalOptions="End"/>
+                            </StackLayout>
 
-                        <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
-                                    HorizontalOptions="Fill" 
-                                    Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
-                                    Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
-                                    Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
+                            <Slider x:Name="videoExposureSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                                        HorizontalOptions="Fill" 
+                                        Maximum="{Binding CurrentCamera.Settings.VideoExposure.Max}" 
+                                        Minimum="{Binding CurrentCamera.Settings.VideoExposure.Min}"
+                                        Value="{Binding CurrentCamera.Settings.VideoExposure.Current}" />
+
+                            <!--Flash time, hide if auto exposure is available-->
+                            <StackLayout IsVisible="{Binding CurrentCamera.Profile.AutoExposure, Converter={StaticResource InverseBoolConverter}}">
+                                <StackLayout HorizontalOptions="FillAndExpand" Orientation="Horizontal">
+                                    <Label Style="{StaticResource DrawerText}" Text="Video Flash" HorizontalOptions="StartAndExpand" />
+                                    <Label Style="{StaticResource DrawerText}" BindingContext="{x:Reference Name=videoFlashTimeSlider}" Text="{Binding Path=Value, Converter={StaticResource PrefixConverter}, ConverterParameter='µs'}}" HorizontalOptions="End"/>
+                                </StackLayout>
+
+                                <Slider x:Name="videoFlashTimeSlider" IsEnabled="{Binding IsDemoModeActive, Converter={StaticResource InverseBoolConverter}}"
+                                            HorizontalOptions="Fill" 
+                                            Maximum="{Binding CurrentCamera.Settings.VideoFlashTime.Max}" 
+                                            Minimum="{Binding CurrentCamera.Settings.VideoFlashTime.Min}"
+                                            Value="{Binding CurrentCamera.Settings.VideoFlashTime.Current}" />
+                            </StackLayout>
+                        </StackLayout>
                     </StackLayout>
 
                     <StackLayout IsVisible="{Binding IsLensControlActive}">

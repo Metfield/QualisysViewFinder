@@ -50,33 +50,33 @@ namespace Arqus
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.MARKER_EXPOSURE_PACKET_STRING, Math.Round(value, 1)));
+                .Subscribe((value) => viewModel.SetCameraSetting(Packet.Type.Default, Constants.MARKER_EXPOSURE_PACKET_STRING, Math.Round(value, 1)));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(markerThresholdSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.MARKER_THRESHOLD_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Packet.Type.Default, Constants.MARKER_THRESHOLD_PACKET_STRING, value));
 
             // Video-specific value bindings
             Observable.FromEventPattern<ValueChangedEventArgs>(videoExposureSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.VIDEO_EXPOSURE_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Packet.Type.Default, Constants.VIDEO_EXPOSURE_PACKET_STRING, value));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(videoFlashTimeSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.VIDEO_FLASH_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Packet.Type.Default, Constants.VIDEO_FLASH_PACKET_STRING, value));
 
             // Extra video-specific value bindings for Lens control
             Observable.FromEventPattern<ValueChangedEventArgs>(lensFocusSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
                 .Throttle(TimeSpan.FromMilliseconds(throttleTime))
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe((value) => viewModel.SetCameraSetting(Constants.LENS_FOCUS_PACKET_STRING, value));
+                .Subscribe((value) => viewModel.SetCameraSetting(Packet.Type.LensControl, Constants.LENS_FOCUS_PACKET_STRING, value));
 
             Observable.FromEventPattern<ValueChangedEventArgs>(lensApertureSlider, "ValueChanged")
                 .Select(eventPattern => eventPattern.EventArgs.NewValue)
@@ -84,6 +84,15 @@ namespace Arqus
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe((value) => viewModel.SnapAperture(value));
 
+            // Auto exposure toggle switch
+            autoExposureSwitch.Toggled += (object sender, ToggledEventArgs args) => viewModel.SetCameraSetting(Packet.Type.AutoExposure, Constants.AUTO_EXPOSURE_ENABLE_PACKET_STRING, args.Value ? 1 : 0);
+            
+            // Exposure compensation slider
+            Observable.FromEventPattern<ValueChangedEventArgs>(exposureCompensationSlider, "ValueChanged")
+                .Select(eventPattern => eventPattern.EventArgs.NewValue)
+                .Throttle(TimeSpan.FromMilliseconds(throttleTime))
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe((value) => viewModel.SetCameraSetting(Packet.Type.AutoExposure, Constants.AUTO_EXPOSURE_COMPENSATION_PACKET_STRING, value));
         }
 
         // Handles segment selection for segmented control

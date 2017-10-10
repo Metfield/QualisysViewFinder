@@ -125,9 +125,9 @@ namespace Arqus.DataModels
         /// </summary>
         /// <param name="setting">the settings to be set</param>
         /// <param name="value">the value to set the setting to</param>
-        public void SetSetting(string setting, double value)
+        public void SetSetting(Packet.Type packetType, string setting, double value)
         {
-            SettingsService.SetCameraSettings(ID, setting, value.ToString());
+            SettingsService.SetCameraSettings(packetType, ID, setting, value.ToString());
         }
         
         /// <summary>

@@ -134,13 +134,13 @@ namespace Arqus
             UpdatePageTitle(IsGridLayoutActive);
         }
 
-        public void SetCameraSetting(string setting, double value, bool bypassSkipCounter = false)
+        public void SetCameraSetting(Packet.Type packetType, string setting, double value, bool bypassSkipCounter = false)
         {
             // If nothing has been recieved from QTM then update the settings
             // else wait 200 ms before updating qtm again to Xamarin.Forms time to update
             // and prevent an infinite feedback loop
             if (Urho.Time.SystemTime - lastQTMUpdate > 200 && !ignoreSettingsAfterCameraSelection)
-                CurrentCamera.SetSetting(setting, value);
+                CurrentCamera.SetSetting(packetType, setting, value);
         }
 
         public void OnNavigatedFrom(NavigationParameters parameters)
@@ -249,12 +249,6 @@ namespace Arqus
                 SwitchDrawers(mode);
         }
 
-        private void SendCameraSettingValue(string setting, double value)
-        {
-            // Run this on separate thread to keep UI responsive
-            Task.Run(() => CurrentCamera.SetSetting(setting, value));
-        }
-
         public DelegateCommand SetCameraModeToMarkerCommand { get; set; }
         public DelegateCommand SetCameraModeToVideoCommand { get; set; }
         public DelegateCommand SetCameraModeToIntensityCommand { get; set; }
@@ -264,14 +258,8 @@ namespace Arqus
         private Camera currentCamera;
         public Camera CurrentCamera
         {
-            get
-            {
-                return currentCamera;
-            }
-            set
-            {
-                SetProperty(ref currentCamera, value);
-            }
+            get { return currentCamera; }
+            set { SetProperty(ref currentCamera, value); }
         }
 
         private bool isModeToolbarActive = true;
@@ -432,7 +420,7 @@ namespace Arqus
             SnappedValue = lensApertureSnapper.OnSliderValueChanged(value);
 
             // Once value is snapped, set the aperture setting
-            SetCameraSetting(Constants.LENS_APERTURE_PACKET_STRING, SnappedValue, true);
+            SetCameraSetting(Packet.Type.LensControl, Constants.LENS_APERTURE_PACKET_STRING, SnappedValue, true);
         }
 
         public string PageTitle

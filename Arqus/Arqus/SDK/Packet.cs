@@ -11,6 +11,12 @@ namespace Arqus.Helpers
 
     public static class Packet
     {
+        public enum Type
+        {
+            LensControl,
+            AutoExposure,
+            Default
+        }
 
         public static string CameraImage(int id, bool enabled)
         {
@@ -97,6 +103,30 @@ namespace Arqus.Helpers
                             <LensControl>                                
                                 <" + parameter + " Value=\"{1}\"/>" +                                
                             "</LensControl >" +
+                    "</Camera>" +
+                "</General>" +
+            "</QTM_Settings>";
+
+            return FormatStringToXML(string.Format(packet, id, value));
+        }
+
+        // Auto exposure-specific packet 
+        public static string AutoExposureParameter(int id, string parameter, string value)
+        {
+            // If parameter is "Enabled", gotta convert from float to string
+            if (parameter == "Enabled")
+            {
+                if (value == "1")
+                    value = "true";
+                else
+                    value = "false";
+            }
+
+            string packet = @"<QTM_Settings>
+                <General>
+                    <Camera>
+                        <ID>"+id+"</ID>" +
+                            "<AutoExposure " + parameter + "=\""+value+"\"/>" +
                     "</Camera>" +
                 "</General>" +
             "</QTM_Settings>";

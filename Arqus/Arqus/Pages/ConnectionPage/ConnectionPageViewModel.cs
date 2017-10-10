@@ -57,6 +57,10 @@ namespace Arqus
                 IsDiscovery = true;
             }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
 
+            // Run discovery command when starting application!
+            LoadQTMServers();
+            IsDiscovery = true;
+
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
             ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 

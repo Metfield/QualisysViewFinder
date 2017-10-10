@@ -164,6 +164,10 @@ namespace Arqus.Visualization
             {
                 if (Camera.Zoom == 1)
                 {
+                    // Don't scroll carousel if there is only one camera in the system
+                    if (ItemCount == 1)
+                        return;
+
                     if (Math.Abs(eventArgs.DX) > swipeThreshold && swipeSelectionThrottle < Time.SystemTime)
                     {
                         swipeSelectionThrottle = Time.SystemTime + 500;

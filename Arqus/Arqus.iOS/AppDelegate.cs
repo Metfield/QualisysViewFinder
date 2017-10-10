@@ -23,6 +23,10 @@ namespace Arqus.iOS
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
 			global::Xamarin.Forms.Forms.Init ();
+
+            // Prevents keyboard from overlapping any important rendered (like an input field)
+            KeyboardOverlap.Forms.Plugin.iOSUnified.KeyboardOverlapRenderer.Init();
+
 			LoadApplication (new Arqus.App ());
 
 			return base.FinishedLaunching (app, options);

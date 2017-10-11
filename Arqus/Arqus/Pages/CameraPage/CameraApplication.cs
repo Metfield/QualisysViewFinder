@@ -123,10 +123,11 @@ namespace Arqus
             // Create camera 
             Node cameraNode = scene.CreateChild("camera");
             camera = cameraNode.CreateComponent<Camera>();
-            
-            // Arbitrary far clipping plane
-            camera.FarClip = 50.0f;
-            
+
+            // Arbitrary clipping space
+            camera.NearClip = 0.05f;
+            camera.FarClip = 100.0f;
+
             // Reposition it..
             cameraNode.Position = new Vector3(0, 0, 0);
             

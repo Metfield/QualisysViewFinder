@@ -310,8 +310,13 @@ namespace QTMRealTimeSDK.Network
                 {
                     foreach (NetworkInterface nic in networkInterfaces)
                     {
+                        // There is a bug on android that causes a native crash
+                        // Bugzilla: https://bugzilla.xamarin.com/show_bug.cgi?id=52733
+#if !__ANDROID__
                         if (nic.OperationalStatus != OperationalStatus.Up)
                             continue;
+#endif
+
                         if (nic.NetworkInterfaceType != 0)
                         {
                             if (nic.NetworkInterfaceType != NetworkInterfaceType.Ethernet &&

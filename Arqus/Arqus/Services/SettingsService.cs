@@ -137,8 +137,9 @@ namespace Arqus.Services
             if (isDemoModeActive)
                 return generalSettings;
 
-            // Refresh general settings
-            connection.Protocol.GetGeneralSettings();
+            // Refresh general settings, return previous one if there was an error when fetching it
+            if (!connection.Protocol.GetGeneralSettings())
+                return generalSettings;
 
             if (connection.Protocol.GetErrorString() == "Camera system not running")
             {

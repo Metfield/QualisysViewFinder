@@ -10,42 +10,25 @@
              Title="Home Page"
              NavigationPage.HasNavigationBar="False"
              BackgroundImage="arqus_background.jpg">
-    
+
     <StackLayout VerticalOptions="FillAndExpand" >
 
-        <Image Source="qvf_logo" Margin="0, 40, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
+        <Image Source="qvf_logo" Margin="0, 20, 0, 0" HorizontalOptions="Center" HeightRequest="250" MinimumHeightRequest="50"/>
 
-        <Grid   
+        <StackLayout   
             VerticalOptions="Start" 
-            HorizontalOptions="CenterAndExpand">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
+            HorizontalOptions="CenterAndExpand" Orientation="Horizontal">
 
             <ui:JiggleButton Text="DISCOVER"
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    HorizontalOptions="End" 
                     VerticalOptions="FillAndExpand"
                     Style="{StaticResource primaryButton}"
                     Command="{Binding ConnectionModeDiscoveryCommand}"/>
 
-            <ui:JiggleButton Text="MANUALLY"
-                             Grid.Row="0"
-                             Grid.Column="1"
-                             HorizontalOptions="Start" 
-                             VerticalOptions="FillAndExpand"
-                             Style="{StaticResource primaryButton}"
-                             Command="{Binding ConnectionModeManuallyCommand}"/>
-        </Grid>
+            <ui:JiggleButton Text="MANUALLY" 
+                    VerticalOptions="FillAndExpand"
+                    Style="{StaticResource primaryButton}"
+                    Command="{Binding ConnectionModeManuallyCommand}"/>
+        </StackLayout>
 
         <Frame IsVisible="{Binding IsDiscovery}"
                Style="{StaticResource Card}"
@@ -70,31 +53,44 @@
 
             <ui:JiggleButton Text="CONNECT"
                     Style="{StaticResource primaryButton}"
-                    Command="{Binding ConnectCommand}" />
+                    Command="{Binding ConnectCommand}" >
+
+                <ContentView.Margin>
+                    <OnPlatform x:TypeArguments="Thickness"
+                    iOS="20, 0, 20, 0"/>
+                </ContentView.Margin>
+            </ui:JiggleButton>
 
         </StackLayout>
 
         <StackLayout VerticalOptions="EndAndExpand" Orientation="Horizontal">
 
             <Button HorizontalOptions="StartAndExpand"
-                             Text="Demo Mode"
+                             Text="DEMO MODE"
                              TextColor="White"
                              BackgroundColor="Transparent"
                              Command="{Binding ConnectionModeDemoCommand}">
                 <Button.Effects>
                     <local:FlatButtonEffect />
                 </Button.Effects>
+
+                <!-- Add little margin on the left for iOS -->
+                <ContentView.Margin>
+                    <OnPlatform x:TypeArguments="Thickness"
+                    iOS="10, 0, 0, 0"/>
+                </ContentView.Margin>
+
             </Button>
 
             <Image Source="Qualisys_Home.png" HorizontalOptions="CenterAndExpand" HeightRequest="40" Scale="0.6" Margin="-90, 0, 0, 8"/>
-                <Button WidthRequest="145" Margin="-220, 0, 0, 0"  BackgroundColor="Transparent"
+            <Button WidthRequest="145" Margin="-220, 0, 0, 0"  BackgroundColor="Transparent"
                         Command="{Binding OnQualisysLinkTappedCommand}">
-                
+
                 <Button.Effects>
                     <local:FlatButtonEffect />
                 </Button.Effects>
             </Button>
-            
+
             <Button HorizontalOptions="EndAndExpand"
                              Image="ic_info_outline_white_24dp" 
                              Command="{Binding OnAboutButtonPressedCommand}" 
@@ -108,8 +104,5 @@
 
         </StackLayout>
     </StackLayout>
-
-
-
 
 </ContentPage>

@@ -11,15 +11,24 @@ namespace Arqus.UI
 
         public JiggleButton()
         {
-            Clicked += async (sender, args) => {
-                if (isJiggling) return;
+            Clicked += async (sender, args) => 
+            {
+                if (isJiggling)
+                    return;
 
                 isJiggling = true;
 
                 await this.ScaleTo(1.1, 150, new Easing(t => Math.Sin(t)));
                 await this.ScaleTo(1, 150, new Easing(t => Math.Sin(t)));
+
                 isJiggling = false;
             };
+
+            // iOS specific button tweaks
+#if __IOS__
+            BorderRadius = 2;
+            HeightRequest = 40;
+#endif
         }
     }
 }

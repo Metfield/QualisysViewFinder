@@ -2,8 +2,9 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Arqus.AboutPage" 
-             Title="About">
-
+             Title="About"
+             BackgroundColor="#303030">
+    
     <ContentPage.Content>
         <ScrollView>
             <StackLayout VerticalOptions="FillAndExpand" HorizontalOptions="CenterAndExpand" Style="{StaticResource Background}">

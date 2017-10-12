@@ -417,7 +417,7 @@ namespace Arqus
         bool connectionPendant;
 
         // Provides protection when a connection routine has been started
-        // Ignore more requests for 2 seconds, this include server selection,
+        // Ignore more requests for 1 second, this include server selection,
         //  manual connection and demo mode
         bool IsAttemptingConnection()
         {
@@ -427,7 +427,7 @@ namespace Arqus
             Task.Run(() =>
             {
                 connectionPendant = true;
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(1000);
                 connectionPendant = false;
             });
 

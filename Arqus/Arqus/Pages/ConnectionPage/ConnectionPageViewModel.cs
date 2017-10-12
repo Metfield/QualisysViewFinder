@@ -57,9 +57,6 @@ namespace Arqus
                 IsDiscovery = true;
             }).ObservesCanExecute(() => IsDiscoverButtonEnabled);
 
-            // Run discovery command when starting application!
-            ConnectionModeDiscoveryCommand.Execute();
-
             ConnectionModeManuallyCommand = new DelegateCommand(() => { IsManually = true; }).ObservesCanExecute(() => IsManualButtonEnabled);
             ConnectionModeDemoCommand = new DelegateCommand(() => Task.Run(() => StartDemoMode()));
 
@@ -83,7 +80,14 @@ namespace Arqus
 
             NavigationMode navigationMode = parameters.GetValue<NavigationMode>("__NavigationMode");
 
-            if (navigationMode == NavigationMode.Back)
+            // App was just started
+            if (navigationMode == NavigationMode.New)
+            {
+                // Run the discovery command!
+                // This shows and loads available servers in the network when starting the app
+                Task.Run(() => ConnectionModeDiscoveryCommand.Execute());
+            }
+            else if (navigationMode == NavigationMode.Back)
             {
                 connection.Dispose();
 

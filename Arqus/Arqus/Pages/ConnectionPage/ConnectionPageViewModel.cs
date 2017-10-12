@@ -298,6 +298,10 @@ namespace Arqus
         /// </summary>
         async void OnConnectionStarted()
         {
+            // Bail if the user has already started a connection
+            if (IsAttemptingConnection())
+                return;
+
             try
             {
                 // Connect to IP
@@ -386,6 +390,10 @@ namespace Arqus
         // Start app using demo mode
         void StartDemoMode()
         {
+            // Bail if the user has already started a connection
+            if (IsAttemptingConnection())
+                return;
+
             // Show loading screen whilst connecting
             // This loading screen is disabled in the CameraPageViewModel constructor
             Task.Run(() => userDialogs.ShowLoading("Loading demo mode..."));
@@ -405,6 +413,26 @@ namespace Arqus
         {
             Device.BeginInvokeOnMainThread(() => navigationService.NavigateAsync("AboutPage"));
         }
-    }      
+
+        bool connectionPendant;
+
+        // Provides protection when a connection routine has been started
+        // Ignore more requests for 2 seconds, this include server selection,
+        //  manual connection and demo mode
+        bool IsAttemptingConnection()
+        {
+            if (connectionPendant)
+                return true;
+
+            Task.Run(() =>
+            {
+                connectionPendant = true;
+                System.Threading.Thread.Sleep(2000);
+                connectionPendant = false;
+            });
+
+            return false;
+        }
+    }
 }
 

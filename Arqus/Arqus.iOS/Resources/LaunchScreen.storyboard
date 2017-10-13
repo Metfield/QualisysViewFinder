@@ -7,7 +7,6 @@
     </dependencies>
     <scenes/>
     <resources>
-        <image name="arqus_background.jpg" width="1600" height="1200"/>
         <image name="ic_arrow_drop_down_white_24dp.png" width="24" height="24"/>
         <image name="ic_grid_white_24dp.png" width="24" height="24"/>
         <image name="ic_info_outline_white_24dp.png" width="24" height="24"/>
@@ -21,5 +20,6 @@
         <image name="Qualisys_Home.png" width="500" height="108"/>
         <image name="Qualisys_White_Transparency_2000x.png" width="2000" height="522"/>
         <image name="qvf_logo.png" width="2000" height="1370"/>
+        <image name="arqus_background.jpg" width="1600" height="1200"/>
     </resources>
 </document>

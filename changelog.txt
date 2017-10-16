@@ -1,6 +1,4 @@
-Qualisys Viewfinder 2.0 is out!
+﻿Qualisys Viewfinder 2.1.0 is out!
 
-• Revamped interface and controls built for modern phones and tablets.
-• Supports new Miqus cameras.
-• Change lens aperture and focus on Oqus 7+ cameras.
-• New grid layout provides a neat way to visualize multiple cameras at the same time.
+• Auto exposure feature now available for supported Oqus cameras and Miqus Video.
+• Minor bug fixes.

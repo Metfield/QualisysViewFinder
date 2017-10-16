@@ -66,7 +66,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
     <BundleAssemblies>true</BundleAssemblies>
-    <AndroidVersionCodePattern>{abi}{versionCode}</AndroidVersionCodePattern>
     <NoWarn>CS2014; CS4014; CS1998</NoWarn>
   </PropertyGroup>
   <ItemGroup>

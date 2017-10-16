@@ -40,11 +40,11 @@
   <string>Qualisys Viewfinder would like to access your contacts.</string>
   <key>NSCalendarsUsageDescription</key>
   <string>Qualisys Viewfinder would like to access your calendar.</string>
-  <key>NSMicrophoneUsageDescription </key>
+  <key>NSMicrophoneUsageDescription</key>
   <string>Qualisys Viewfinder would like to use your microphone.</string>
-  <key>NSAppleMusicUsageDescription </key>
+  <key>NSAppleMusicUsageDescription</key>
   <string>Qualisys Viewfinder would like to access your music.</string>
-  <key>NSSiriUsageDescription  </key>
+  <key>NSSiriUsageDescription</key>
   <string>Qualisys Viewfinder would like to use Siri.</string>
 </dict>
 </plist>

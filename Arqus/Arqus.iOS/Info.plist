@@ -27,24 +27,24 @@
 	<key>CFBundleIdentifier</key>
 	<string>se.qualisys.Viewfinder</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.1.0</string>
+	<string>2.1.1</string>
 	<key>CFBundleVersion</key>
-	<string>2.1.0</string>
+	<string>2.1.1</string>
 	<key>XSAppIconAssets</key>
 	<string>Resources/Media.xcassets/AppIcons.appiconset</string>
 	<key>XSLaunchImageAssets</key>
 	<string>Resources/Media.xcassets/LaunchImages.launchimage</string>
 	<key>UIRequiresFullScreen</key>
 	<true/>
-  <key>NSContactsUsageDescription</key>
-  <string>Qualisys Viewfinder would like to access your contacts.</string>
-  <key>NSCalendarsUsageDescription</key>
-  <string>Qualisys Viewfinder would like to access your calendar.</string>
-  <key>NSMicrophoneUsageDescription</key>
-  <string>Qualisys Viewfinder would like to use your microphone.</string>
-  <key>NSAppleMusicUsageDescription</key>
-  <string>Qualisys Viewfinder would like to access your music.</string>
-  <key>NSSiriUsageDescription</key>
-  <string>Qualisys Viewfinder would like to use Siri.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Qualisys Viewfinder would like to access your contacts.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Qualisys Viewfinder would like to access your calendar.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Qualisys Viewfinder would like to use your microphone.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Qualisys Viewfinder would like to access your music.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Qualisys Viewfinder would like to use Siri.</string>
 </dict>
 </plist>

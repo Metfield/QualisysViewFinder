@@ -1,4 +1,4 @@
-﻿Qualisys Viewfinder 2.1.0 is out!
+﻿Qualisys Viewfinder 2.1.1 is here!
 
 • Auto exposure feature now available for supported Oqus cameras and Miqus Video.
 • Minor bug fixes.

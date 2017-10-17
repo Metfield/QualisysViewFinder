@@ -95,6 +95,17 @@ namespace Arqus
             
             versionString = versionString.Remove(versionString.IndexOf(" ") + 1);
 
+            int QTMMajorVersion= int.Parse(versionString[0].ToString());
+            int compatibleMajorVersion = int.Parse(MINIMUM_SUPPORTED_QTM_VERSION.ToString()[0].ToString());
+
+            // Check major version
+            if (QTMMajorVersion > compatibleMajorVersion)
+                return true;
+
+            if (QTMMajorVersion < compatibleMajorVersion)
+                return false;
+
+            // It's version 2, but is minor bigger or equal than 16?
             if (int.Parse(versionString) < MINIMUM_SUPPORTED_QTM_VERSION)
                 return false;
 
